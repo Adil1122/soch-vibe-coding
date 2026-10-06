@@ -1,0 +1,41 @@
+@import "tailwindcss";
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem;
+    font-family: 'Lato', sans-serif;
+    color: #1E2A4F;
+    background-color: #FFFFFF;
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-poppins {
+    font-family: 'Poppins', sans-serif;
+  }
+}
+
+/* Custom utility colors matching SOCH Palette */
+:root {
+  --color-soch-navy: #1E2A4F;
+  --color-soch-seek: #2A6EB4;
+  --color-soch-observe: #458543;
+  --color-soch-create: #F38A32;
+  --color-soch-hope: #7D52A0;
+  --color-soch-bg: #F4F6F9;
+  --color-soch-canvas: #FFFFFF;
+}
+
+/* Refined, smooth scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: #F4F6F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 5px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
