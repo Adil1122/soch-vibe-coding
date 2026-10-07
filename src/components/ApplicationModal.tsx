@@ -87,7 +87,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
           <div className="flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-[#78daeb]" />
             <h3 className="text-lg font-bold text-white">
-              Apply for Vibe Academy — Cohort 01
+              Apply for Vibe Academy — Cohort 02
             </h3>
           </div>
           <button
@@ -106,7 +106,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
               <CheckCircle2 className="w-16 h-16 text-[#78daeb] mx-auto animate-bounce" />
               <h4 className="text-2xl font-bold text-white">Application Submitted!</h4>
               <p className="text-sm text-white/70 max-w-md mx-auto">
-                Your application for Cohort 01 has been registered. Reference ID:{' '}
+                Your application for Cohort 02 has been registered. Reference ID:{' '}
                 <span className="font-mono font-bold text-[#c9459c]">{referenceId}</span>.
                 We will contact you via WhatsApp / Email shortly.
               </p>
@@ -239,7 +239,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                   }}
                 >
                   <Send className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Submitting...' : 'Submit Cohort 01 Application'}</span>
+                  <span>{isSubmitting ? 'Submitting...' : 'Submit Cohort 02 Application'}</span>
                 </button>
               </div>
             </form>

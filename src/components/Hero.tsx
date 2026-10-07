@@ -20,22 +20,21 @@ export const Hero: React.FC = () => {
 
       {/* Main Centered Content */}
       <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 sm:space-y-8 my-auto py-12">
-        {/* Main Headline */}
-        <h1 className="text-4xl sm:text-6xl md:text-7xl lg:text-[76px] font-black text-white tracking-tight leading-[1.1] font-sans">
+        {/* Main Headline (matches 0-top-section.PNG) */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-semibold text-white tracking-tight leading-[1.15] font-sans">
           Master AI-Accelerated <br />
           Software Engineering
         </h1>
 
-        {/* Subtitle Paragraph (matching reference size and text) */}
-        <p className="text-lg sm:text-xl md:text-[21px] text-white/80 max-w-3xl mx-auto leading-relaxed md:leading-[35px] font-normal">
-          Ready to go from zero building knowledge to a full-stack AI engineering pro? Our 'Vibe Coding' journey is explicitly engineered to transform you, step-by-step, into an in-demand global tech talent. This isn't just a course; it's your operational blueprint to becoming a digital architect backed by the University of Haripur BIC.
+        {/* Subtitle Paragraph (matches 0-top-section.PNG) */}
+        <p className="text-lg sm:text-xl md:text-[21px] text-white/90 max-w-3xl mx-auto leading-relaxed md:leading-[34px] font-normal">
+          Build production-ready software 5x faster using next-generation AI workflows. Officially backed by the UOH Business Incubation Center (BIC)
         </p>
 
         {/* View Course Action Button */}
-        <div className="pt-4 flex justify-center">
+        <div className="pt-2 flex justify-center">
           <a href="#Curriculum-pricing" className="custom-btn cursor-pointer">
             <span className="btn-text">View Course</span>
-            <span className="btn-icon">→</span>
           </a>
         </div>
       </div>

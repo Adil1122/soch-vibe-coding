@@ -8,6 +8,7 @@ import { WhyChooseUs } from './components/WhyChooseUs';
 import { VibeShift } from './components/VibeShift';
 import { Team } from './components/Team';
 import { Contact } from './components/Contact';
+import { MapSection } from './components/MapSection';
 import { Footer } from './components/Footer';
 import { ApplicationModal } from './components/ApplicationModal';
 import { VideoModal } from './components/VideoModal';
@@ -32,9 +33,14 @@ export function App() {
     setIsVideoModalOpen(true);
   };
 
+  const handleOpenSuccessVideo = (videoInfo: { title: string; subtitle: string; tagline: string; src: string }) => {
+    setActiveVideoData(videoInfo);
+    setIsVideoModalOpen(true);
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col font-sans selection:bg-[#c9459c] selection:text-white overflow-x-hidden">
-      {/* 1. Header (Vibe Academy Logo, Menu toggle + APPLY FOR COHORT 01 pill) */}
+    <div className="min-h-screen bg-[#f2f2f2] text-black flex flex-col font-sans selection:bg-[#c9459c] selection:text-white overflow-x-hidden">
+      {/* 1. Header (Vibe Academy Logo, Menu toggle + APPLY FOR COHORT 02 pill) */}
       <Navbar onOpenApply={() => setIsApplyModalOpen(true)} />
 
       {/* Main Sections (100% clone of vibeacademy.info) */}
@@ -51,8 +57,8 @@ export function App() {
         {/* 5. 03. Curriculum & Pay-As-You-Go Modules (Curriculum pillars, Download PDF, Pricing tiers) */}
         <Modules onOpenApply={() => setIsApplyModalOpen(true)} />
 
-        {/* 6. 05. Why Choose Us? (Values, Local Opportunity, Pakistan's Digital Ascent, Revenue, Salary premium) */}
-        <WhyChooseUs />
+        {/* 6. 05. Why Choose Us? (Values, Local Opportunity, Pakistan's Digital Ascent, Revenue, Salary premium, Cohort 01 Success Stories) */}
+        <WhyChooseUs onOpenVideo={handleOpenSuccessVideo} />
 
         {/* 7. 06. The Vibe Shift (3 Blog Articles: Shaping the Future, Gig Economy, AI Skills) */}
         <VibeShift />
@@ -62,9 +68,12 @@ export function App() {
 
         {/* 9. 08. Contact (Background video, Your Competitors Are Automating, Full application form) */}
         <Contact onOpenApply={() => setIsApplyModalOpen(true)} />
+
+        {/* 10. Map (Full-width University of Haripur BIC Google Map embed) */}
+        <MapSection />
       </main>
 
-      {/* 10. Footer (Logo, Social links, Copyright, Back to top) */}
+      {/* 11. Footer (Logo, Social links, Copyright, Back to top) */}
       <Footer />
 
       {/* Application Form Modal */}

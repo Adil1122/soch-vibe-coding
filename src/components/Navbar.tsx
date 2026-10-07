@@ -107,7 +107,7 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenApply }) => {
             >
               <div className="px-4 py-1.5 sm:px-6 sm:py-2 rounded-full bg-black/60 hover:bg-transparent transition-colors">
                 <span className="text-white text-xs sm:text-sm font-semibold uppercase tracking-wider font-sans whitespace-nowrap">
-                  APPLY FOR COHORT 01
+                  APPLY FOR COHORT 02
                 </span>
               </div>
             </button>

@@ -52,6 +52,7 @@ export const Roadmap: React.FC<RoadmapProps> = ({ onOpenApply }) => {
       const rect = containerRef.current.getBoundingClientRect();
       const windowHeight = window.innerHeight;
       const totalH = rect.height;
+      // Progress calculation to match reference site line fill
       const progress = ((windowHeight * 0.7 - rect.top) / totalH) * 100;
       setFillHeight(Math.min(100, Math.max(0, progress)));
     };
@@ -67,32 +68,41 @@ export const Roadmap: React.FC<RoadmapProps> = ({ onOpenApply }) => {
   }, []);
 
   return (
-    <section id="road-map" className="py-20 md:py-28 bg-black border-t border-white/10 relative overflow-hidden">
+    <section
+      id="road-map"
+      className="py-20 md:py-28 relative overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, #FFFFFF 29%, #F2F2F2 100%)'
+      }}
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 text-center">
         {/* Section Tag */}
         <div>
-          <span className="section-tag">
+          <span className="section-tag-light">
             02. Roadmap
           </span>
         </div>
 
         {/* Heading */}
-        <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight">
+        <h2 className="text-2xl sm:text-4xl md:text-[40px] font-bold text-black tracking-tight leading-snug font-sans">
           The 'Zero to Hero' Roadmap
         </h2>
 
         {/* Description */}
-        <p className="text-base sm:text-lg text-white/80 max-w-3xl mx-auto leading-relaxed">
-          Ready to go from zero building knowledge to a full-stack AI engineering pro? Our 'Vibe Coding' journey is explicitly engineered to transform you, step-by-step, into an in-demand global tech talent. This isn't just a course; it's your operational blueprint to becoming a digital architect backed by the University of Haripur BIC.
+        <p className="text-base sm:text-lg md:text-[19px] text-[#444444] max-w-3xl mx-auto leading-relaxed font-normal">
+          Ready to go from zero building knowledge to a full-stack AI engineering pro? Our 'Vibe Coding' journey is explicitly engineered to transform you, step-by-step, into an in-demand global tech talent. This isn't just a course; it's your operational blueprint to becoming a digital architect backed by the <strong>University of Haripur BIC.</strong>
         </p>
       </div>
 
       {/* Interactive Timeline Container */}
-      <div ref={containerRef} className="max-w-5xl mx-auto px-4 sm:px-6 mt-16 sm:mt-24 relative">
-        {/* Center Connecting Vertical Line */}
-        <div className="hidden md:block absolute left-1/2 top-0 bottom-0 w-2.5 -translate-x-1/2 bg-white/15 rounded-full overflow-hidden z-0">
+      <div ref={containerRef} className="max-w-[1000px] mx-auto px-4 sm:px-6 mt-16 sm:mt-24 relative">
+        {/* Center Connecting Vertical Line (passes through the center of boxes and terminates right at the Trophy) */}
+        <div
+          className="hidden md:block absolute left-1/2 top-4 bottom-20 w-[10px] -translate-x-1/2 bg-[#dddddd] rounded-full overflow-hidden"
+          style={{ zIndex: 5 }}
+        >
           <div
-            className="w-full transition-all duration-200"
+            className="w-full transition-all duration-300 ease-out"
             style={{
               height: `${fillHeight}%`,
               background: 'linear-gradient(180deg, #4467b0, #6b388d, #78daeb, #c9459a)'
@@ -101,54 +111,121 @@ export const Roadmap: React.FC<RoadmapProps> = ({ onOpenApply }) => {
         </div>
 
         {/* Timeline Items */}
-        <div className="space-y-8 sm:space-y-12 relative z-10">
+        <div className="space-y-6 sm:space-y-8 relative" style={{ zIndex: 1 }}>
           {stages.map((stage, idx) => {
-            const isEven = idx % 2 === 1;
+            const isEven = idx % 2 === 1; // 01, 03, 05 are odd (false), 02, 04 are even (true)
+            const itemThreshold = (idx / stages.length) * 100;
+            const isDotActive = fillHeight > itemThreshold;
 
             return (
               <div
                 key={stage.num}
-                className="flex flex-col md:flex-row items-center justify-between bg-[#f3f3f3] text-black rounded-[35px] md:rounded-[60px] p-6 sm:p-8 md:p-10 shadow-2xl relative transition-transform duration-300 hover:scale-[1.01]"
+                className="flex flex-col md:flex-row items-center justify-between bg-[#f3f3f3] text-black rounded-[35px] md:rounded-[60px] p-6 sm:p-7 md:p-8 shadow-sm hover:shadow-md relative transition-transform duration-300"
+                style={{ zIndex: 1 }}
               >
+                {/* Center Glowing Dot for Desktop */}
+                <div
+                  className="hidden md:block absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-300"
+                  style={{
+                    width: '24px',
+                    height: '24px',
+                    background: isDotActive ? '#ff4fd8' : '#ffffff',
+                    border: '4px solid #ff1493',
+                    zIndex: 10,
+                    boxShadow: isDotActive ? '0 0 14px rgba(255, 20, 147, 0.7)' : 'none'
+                  }}
+                />
+
                 {/* Left Side Content (Desktop) */}
                 <div
-                  className={`w-full md:w-[44%] flex flex-col ${
-                    isEven ? 'md:order-3 md:items-start md:text-left' : 'md:order-1 md:items-end md:text-right'
-                  } space-y-3`}
-                >
-                  <div className="inline-block md:hidden bg-black text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider w-fit">
-                    Stage {stage.num}
-                  </div>
-                  <h3 className="text-xl sm:text-2xl font-black text-black leading-tight">
-                    {stage.title}
-                  </h3>
-                  <p className="text-sm sm:text-base text-[#333333] leading-relaxed">
-                    {stage.description}
-                  </p>
-                </div>
-
-                {/* Center Badge Number (Desktop) */}
-                <div className="hidden md:flex order-2 w-12 h-12 rounded-full bg-white text-[#2b2b2b] items-center justify-center font-black text-sm shadow-md border-2 border-black/10 z-20">
-                  {stage.num}
-                </div>
-
-                {/* Right Side Image Thumbnail */}
-                <div
-                  className={`w-full md:w-[44%] mt-6 md:mt-0 flex ${
-                    isEven ? 'md:order-1 justify-center md:justify-start' : 'md:order-3 justify-center md:justify-end'
+                  className={`w-full md:w-[45%] flex ${
+                    isEven
+                      ? 'flex-col items-start md:items-end md:text-right'
+                      : 'items-center justify-start md:justify-end gap-4'
                   }`}
                 >
-                  <div className="w-40 h-40 sm:w-44 sm:h-44 bg-[#2b2b2b] rounded-2xl sm:rounded-3xl p-3 flex items-center justify-center shadow-lg shrink-0">
-                    <img
-                      src={stage.img}
-                      alt={stage.title}
-                      className="w-full h-full object-contain filter drop-shadow"
-                    />
-                  </div>
+                  {isEven ? (
+                    // Even items (02, 04): text on the left
+                    <div className="space-y-2">
+                      <div className="inline-block md:hidden bg-black text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+                        Stage {stage.num}
+                      </div>
+                      <h3 className="text-lg sm:text-[20px] font-bold text-black leading-snug">
+                        {stage.title}
+                      </h3>
+                      <p className="text-sm text-[#333333] leading-relaxed">
+                        {stage.description}
+                      </p>
+                    </div>
+                  ) : (
+                    // Odd items (01, 03, 05): icon + number on the left
+                    <>
+                      <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-[160px] md:h-[160px] bg-[#2b2b2b] rounded-[18px] p-2 flex items-center justify-center shrink-0 shadow-md">
+                        <img
+                          src={stage.img}
+                          alt={stage.title}
+                          className="w-[90%] h-[90%] object-contain"
+                        />
+                      </div>
+                      <span className="hidden md:inline-flex bg-white text-[#888] font-bold text-xs sm:text-[13px] px-3 py-1.5 rounded-full shadow-sm shrink-0">
+                        {stage.num}
+                      </span>
+                    </>
+                  )}
+                </div>
+
+                {/* Right Side Content (Desktop) */}
+                <div
+                  className={`w-full md:w-[45%] mt-4 md:mt-0 flex ${
+                    isEven
+                      ? 'items-center justify-start gap-4'
+                      : 'flex-col items-start text-left'
+                  }`}
+                >
+                  {isEven ? (
+                    // Even items (02, 04): number + icon on the right
+                    <>
+                      <span className="hidden md:inline-flex bg-white text-[#888] font-bold text-xs sm:text-[13px] px-3 py-1.5 rounded-full shadow-sm shrink-0">
+                        {stage.num}
+                      </span>
+                      <div className="w-28 h-28 sm:w-36 sm:h-36 md:w-[160px] md:h-[160px] bg-[#2b2b2b] rounded-[18px] p-2 flex items-center justify-center shrink-0 shadow-md">
+                        <img
+                          src={stage.img}
+                          alt={stage.title}
+                          className="w-[90%] h-[90%] object-contain"
+                        />
+                      </div>
+                    </>
+                  ) : (
+                    // Odd items (01, 03, 05): text on the right
+                    <div className="space-y-2">
+                      <div className="inline-block md:hidden bg-black text-white text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider mb-2">
+                        Stage {stage.num}
+                      </div>
+                      <h3 className="text-lg sm:text-[20px] font-bold text-black leading-snug">
+                        {stage.title}
+                      </h3>
+                      <p className="text-sm text-[#333333] leading-relaxed">
+                        {stage.description}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             );
           })}
+        </div>
+
+        {/* Central Vertical Line Terminal / Ending Trophy (Smaller trophy matching reference site) */}
+        <div className="relative flex flex-col items-center justify-center pt-4 pb-2" style={{ zIndex: 10 }}>
+          {/* Trophy image (Untitled-design-1-1-814x1024.webp from vibeacademy.info) */}
+          <div className="relative group cursor-pointer flex flex-col items-center">
+            <img
+              src="https://vibeacademy.info/wp-content/uploads/2026/05/Untitled-design-1-1-814x1024.webp"
+              alt="Vibe Academy Haripur Graduation Trophy"
+              className="w-16 sm:w-20 md:w-22 h-auto object-contain drop-shadow-md transition-transform duration-300 hover:scale-105"
+            />
+          </div>
         </div>
       </div>
     </section>

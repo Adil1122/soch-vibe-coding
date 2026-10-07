@@ -45,20 +45,26 @@ export const Team: React.FC = () => {
   };
 
   return (
-    <section id="team" className="py-20 md:py-28 bg-black border-t border-white/10 text-white relative">
+    <section
+      id="team"
+      className="py-20 md:py-28 relative"
+      style={{
+        background: 'linear-gradient(180deg, #F2F2F2 0%, #F2F2F2 100%)'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Section Tag & Heading */}
         <div className="text-center space-y-4">
-          <span className="section-tag">
+          <span className="section-tag-light">
             07. Team
           </span>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-[40px] font-bold text-black tracking-tight leading-snug font-sans">
             Meet the Vibe Academy Minds
           </h2>
         </div>
 
         {/* Team Cards Slider */}
-        <div className="mt-12 space-y-8">
+        <div className="mt-12 space-y-8 max-w-[1200px] mx-auto">
           <div
             ref={sliderRef}
             className="flex gap-6 overflow-x-auto scroll-smooth pb-4 no-scrollbar"
@@ -67,20 +73,20 @@ export const Team: React.FC = () => {
             {members.map((m, idx) => (
               <div
                 key={idx}
-                className="w-72 sm:w-80 shrink-0 bg-[#141414] border border-white/10 rounded-[35px] overflow-hidden p-4 text-center hover:border-white/30 transition-all duration-300 group"
+                className="w-72 sm:w-80 shrink-0 text-center transition-all duration-300 group"
               >
-                <div className="w-full h-80 rounded-[28px] overflow-hidden bg-black/50">
+                <div className="w-full h-[340px] rounded-[35px] overflow-hidden bg-black/10 shadow-md">
                   <img
                     src={m.img}
                     alt={m.name}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
-                <div className="pt-5 pb-3 space-y-1">
-                  <h3 className="text-2xl font-bold text-white group-hover:text-[#78daeb] transition-colors">
+                <div className="pt-5 pb-2 space-y-1">
+                  <h3 className="text-[28px] sm:text-[34px] font-bold text-[#222222] tracking-tight">
                     {m.name}
                   </h3>
-                  <p className="text-sm font-medium text-white/60">
+                  <p className="text-[16px] sm:text-[20px] font-normal text-[#777777]">
                     {m.role}
                   </p>
                 </div>
@@ -89,12 +95,12 @@ export const Team: React.FC = () => {
           </div>
 
           {/* Bottom Controls Bar (matching reference 100%) */}
-          <div className="flex items-center justify-between gap-6 pt-4">
-            {/* Multi-color gradient bar */}
+          <div className="flex items-center justify-between gap-6 pt-6">
+            {/* Multi-color gradient line */}
             <div
-              className="flex-1 h-1 rounded-full opacity-70"
+              className="flex-1 h-[3px] rounded-full"
               style={{
-                background: 'linear-gradient(to right, #f7d06c, #ff6ac1, #6fa8ff, #ffffff)'
+                background: 'linear-gradient(to right, #f7d06c, #ff6ac1, #6fa8ff, #dddddd)'
               }}
             />
 
@@ -103,14 +109,14 @@ export const Team: React.FC = () => {
               <button
                 onClick={() => handleScroll('left')}
                 aria-label="Previous Team Member"
-                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white text-white hover:text-black flex items-center justify-center transition-all cursor-pointer border border-white/20"
+                className="w-[52px] h-[52px] rounded-full bg-black hover:bg-[#333333] text-white flex items-center justify-center transition-all cursor-pointer shadow-lg"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
               <button
                 onClick={() => handleScroll('right')}
                 aria-label="Next Team Member"
-                className="w-12 h-12 rounded-full bg-white/10 hover:bg-white text-white hover:text-black flex items-center justify-center transition-all cursor-pointer border border-white/20"
+                className="w-[52px] h-[52px] rounded-full bg-black hover:bg-[#333333] text-white flex items-center justify-center transition-all cursor-pointer shadow-lg"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>

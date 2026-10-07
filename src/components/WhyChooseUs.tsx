@@ -1,68 +1,136 @@
 import React from 'react';
+import { Play, Award, CheckCircle2 } from 'lucide-react';
+import { SUCCESS_STORIES } from '../data/websiteData';
 
-export const WhyChooseUs: React.FC = () => {
-  const cards = [
-    {
-      title: 'Local opportunity',
-      desc: 'Skip the underpaid junior dev grind. Entry-level AI engineers in Pakistan are pulling PKR 150,000+ monthly. Secure your unfair advantage in a high-demand tech market.',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Local-opportunity.webp'
-    },
-    {
-      title: "Pakistan's Digital Ascent+",
-      desc: "Position yourself at the absolute center of Pakistan's digital explosion. As global companies outsource complex AI workflows, our local graduates plug directly into contracts.",
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Pakistan-digital-ascent.webp'
-    },
-    {
-      title: 'Record freelance Revenue',
-      desc: 'Stop competing on low-value gigs. Pakistani tech freelancers recently cleared a record $557M in just six months. We show you how to capture that premium dollar volume.',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Record-breaking-freelance-earning.webp'
-    },
-    {
-      title: 'The Ai salary premium',
-      desc: 'Standard development is rapidly commoditizing. Global AI adoption is forcing a massive structural wage premium for builders who can engineer intelligent, automated workflows.',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/The-Ai-salary-premium-1.webp'
+interface WhyChooseUsProps {
+  onOpenVideo?: (videoData: { title: string; subtitle: string; tagline: string; src: string }) => void;
+}
+
+export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenVideo }) => {
+  const handlePlayStory = (story: typeof SUCCESS_STORIES[0]) => {
+    if (onOpenVideo) {
+      onOpenVideo({
+        title: `${story.studentName} – ${story.projectBuilt.split('—')[0]}`,
+        subtitle: story.quote,
+        tagline: 'Cohort 01 Success Story',
+        src: 'https://vibeacademy.info/wp-content/uploads/2026/05/WhatsApp-Video-2026-05-21-at-7.16.02-PM.mp4'
+      });
     }
-  ];
+  };
 
   return (
-    <section id="why-choose-us" className="py-20 md:py-28 bg-black border-t border-white/10 text-white relative">
+    <section
+      id="why-choose-us"
+      className="py-20 md:py-28 relative border-t border-black/5"
+      style={{
+        background: 'linear-gradient(180deg, #F2F2F2 0%, #FFFFFF 100%)'
+      }}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Section Tag & Heading */}
         <div className="text-center space-y-4">
-          <span className="section-tag">
+          <span className="section-tag-light">
             05. Values
           </span>
-          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight">
+          <h2 className="text-2xl sm:text-4xl md:text-[40px] font-bold text-black tracking-tight leading-snug font-sans">
             Why Choose Us?
           </h2>
+          <p className="text-base sm:text-lg md:text-[19px] text-[#555555] max-w-2xl mx-auto font-normal">
+            Proven Outcomes • Watch real software &amp; careers shipped by our COHORT 01 graduates.
+          </p>
         </div>
 
-        {/* 4 Cards Grid (matching reference 100%) */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mt-12">
-          {cards.map((card, idx) => (
-            <div
-              key={idx}
-              className="bg-[#141414] border border-white/10 rounded-3xl p-6 sm:p-7 flex flex-col justify-between space-y-6 hover:border-white/30 transition-all duration-300 hover:-translate-y-1 group"
-            >
-              <div className="space-y-4">
-                <div className="w-full aspect-square rounded-2xl overflow-hidden bg-black/50 border border-white/10">
+        {/* COHORT 01 Video Success Stories Grid */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between pb-2 border-b border-black/10">
+            <div className="flex items-center gap-2">
+              <Award className="w-5 h-5 text-[#2A6EB4]" />
+              <h3 className="text-lg sm:text-xl font-bold text-black">
+                Cohort 01 Video Success Stories
+              </h3>
+            </div>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#458543] bg-[#458543]/10 px-3 py-1 rounded-full">
+              100% Shipped Live Code
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {SUCCESS_STORIES.map((story) => (
+              <div
+                key={story.id}
+                className="bg-white rounded-[32px] border border-black/10 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group hover:-translate-y-1"
+              >
+                {/* Video Thumbnail with Play Button */}
+                <div
+                  onClick={() => handlePlayStory(story)}
+                  className="relative aspect-video bg-black overflow-hidden cursor-pointer"
+                >
                   <img
-                    src={card.img}
-                    alt={card.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    src={story.thumbnailUrl}
+                    alt={story.studentName}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 opacity-90"
                   />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-center justify-center">
+                    <div
+                      className="w-14 h-14 rounded-full flex items-center justify-center text-white shadow-2xl group-hover:scale-110 transition-transform duration-300"
+                      style={{
+                        background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
+                      }}
+                    >
+                      <Play className="w-6 h-6 fill-white ml-0.5" />
+                    </div>
+                  </div>
+
+                  {/* Duration badge */}
+                  <div className="absolute bottom-3 right-3 bg-black/80 text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded backdrop-blur-sm">
+                    {story.videoDuration}
+                  </div>
+
+                  {/* Cohort 01 Tag */}
+                  <div className="absolute top-3 left-3 bg-black/80 text-white text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full border border-white/20">
+                    Cohort 01 Graduate
+                  </div>
                 </div>
 
-                <h3 className="text-xl sm:text-2xl font-bold text-white group-hover:text-[#78daeb] transition-colors">
-                  {card.title}
-                </h3>
+                {/* Details */}
+                <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
+                  <div className="space-y-3">
+                    <div>
+                      <h4 className="text-xl font-bold text-black">
+                        {story.studentName}
+                      </h4>
+                      <p className="text-xs font-semibold text-[#2A6EB4] mt-0.5">
+                        {story.role}
+                      </p>
+                    </div>
 
-                <p className="text-sm text-white/70 leading-relaxed font-normal">
-                  {card.desc}
-                </p>
+                    <div className="bg-[#f6f6f6] p-3 rounded-2xl text-xs text-[#333333] border border-black/5">
+                      <strong className="text-black block mb-0.5">Project Built:</strong>
+                      {story.projectBuilt}
+                    </div>
+
+                    <p className="text-xs text-[#555555] italic leading-relaxed border-l-2 border-[#c9459c] pl-3">
+                      "{story.quote}"
+                    </p>
+                  </div>
+
+                  <div className="pt-3 border-t border-black/5 flex items-center justify-between text-xs">
+                    <span className="font-bold text-[#458543] flex items-center gap-1">
+                      <CheckCircle2 className="w-3.5 h-3.5" />
+                      <span>{story.achievement}</span>
+                    </span>
+                    <button
+                      onClick={() => handlePlayStory(story)}
+                      className="text-black hover:text-[#4467b0] font-semibold text-xs cursor-pointer flex items-center gap-1"
+                    >
+                      <span>Watch Story</span>
+                      <span>→</span>
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </section>
