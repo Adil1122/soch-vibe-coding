@@ -1,15 +1,16 @@
 import React, { useState } from 'react';
-import { Mail, Phone, MapPin, Send, ArrowRight, CheckCircle2, Globe } from 'lucide-react';
-import { LinkedinIcon, TwitterIcon, GithubIcon } from './SocialIcons';
+import { Mail, Phone, MapPin, Send, CheckCircle2 } from 'lucide-react';
 
 interface ContactProps {
-  onOpenApply: () => void;
+  onOpenApply?: () => void;
 }
 
-export const Contact: React.FC<ContactProps> = ({ onOpenApply }) => {
+export const Contact: React.FC<ContactProps> = () => {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
+    phone: '',
+    status: 'UOH IT Student',
     message: ''
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -19,173 +20,158 @@ export const Contact: React.FC<ContactProps> = ({ onOpenApply }) => {
     if (!formData.name || !formData.email) return;
     setIsSubmitted(true);
     setTimeout(() => {
-      setFormData({ name: '', email: '', message: '' });
+      setFormData({
+        name: '',
+        email: '',
+        phone: '',
+        status: 'UOH IT Student',
+        message: ''
+      });
       setIsSubmitted(false);
     }, 4000);
   };
 
   return (
-    <section id="contact" className="py-20 md:py-28 bg-[#F4F6F9] border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-        {/* Strong CTA Banner Header */}
-        <div className="bg-[#1E2A4F] text-white rounded-3xl p-8 sm:p-12 shadow-2xl text-center space-y-5 relative overflow-hidden">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-[#F38A32] text-white uppercase tracking-wider font-poppins">
-            Cohort 02 Applications Active
-          </div>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold font-poppins text-white tracking-tight">
-            Ready to Build the Future?
-          </h2>
-          <p className="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed">
-            Join the next generation of AI-accelerated software engineers. Learn from seasoned mentors at the University of Haripur Business Incubation Center.
-          </p>
-          <div className="pt-2">
-            <button
-              onClick={onOpenApply}
-              className="px-8 py-4 bg-[#F38A32] hover:bg-[#e07b27] text-white rounded-xl text-sm font-bold uppercase tracking-wider font-poppins shadow-xl hover:shadow-2xl transition hover:-translate-y-0.5 cursor-pointer inline-flex items-center gap-2"
-            >
-              <span>Apply for Cohort 02</span>
-              <ArrowRight className="w-4 h-4" />
-            </button>
-          </div>
+    <section id="contact" className="relative py-24 md:py-32 bg-black border-t border-white/10 text-white overflow-hidden">
+      {/* Background Video (matching reference 100%) */}
+      <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          className="w-full h-full object-cover opacity-25 filter brightness-50 contrast-125"
+          src="https://vibeacademy.info/wp-content/uploads/2026/05/123.mp4"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-black/85 to-black pointer-events-none"></div>
+      </div>
+
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12 text-center">
+        {/* Section Tag */}
+        <div>
+          <span className="section-tag">
+            08. Contact
+          </span>
         </div>
 
-        {/* Contact Form & Information Split Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-          {/* Contact Details Column */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="space-y-2">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#2A6EB4] font-poppins">
-                Direct Communication
-              </span>
-              <h3 className="text-2xl font-bold font-poppins text-[#1E2A4F]">
-                Get in Touch With Admissions
-              </h3>
-              <p className="text-sm text-slate-600">
-                Have questions about the syllabus, prerequisites, or incubation facilities? Reach out directly.
+        {/* Narrative Heading */}
+        <div className="space-y-4 max-w-3xl mx-auto">
+          <h2 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-tight">
+            Your Competitors Are Automating. <br className="hidden sm:inline" />
+            Are you?
+          </h2>
+          <p className="text-base sm:text-lg md:text-xl text-white/80 leading-relaxed font-normal">
+            Stop wasting hours on manual syntax. Start building at terminal velocity. Apply for an exclusive seat in the next cohort.
+          </p>
+        </div>
+
+        {/* Contact Form Card */}
+        <div className="max-w-2xl mx-auto bg-[#141414]/90 backdrop-blur-xl border border-white/15 rounded-[35px] p-6 sm:p-10 shadow-2xl text-left">
+          {isSubmitted ? (
+            <div className="py-12 text-center space-y-3">
+              <CheckCircle2 className="w-14 h-14 text-[#78daeb] mx-auto animate-bounce" />
+              <h3 className="text-2xl font-bold text-white">Application Received!</h3>
+              <p className="text-white/70 text-sm max-w-sm mx-auto">
+                Thank you for applying. The Vibe Academy admissions team will review your application and reach out shortly.
               </p>
             </div>
-
-            <div className="space-y-4">
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 flex items-start gap-3.5 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#2A6EB4]/10 text-[#2A6EB4] flex items-center justify-center shrink-0">
-                  <Mail className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Email Us</div>
-                  <a href="mailto:admissions@sochvibecoding.com" className="text-sm font-bold text-[#1E2A4F] hover:text-[#2A6EB4] transition">
-                    admissions@sochvibecoding.com
-                  </a>
-                  <div className="text-xs text-slate-500">bic@uoh.edu.pk</div>
-                </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
+                  Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  placeholder="Your full name"
+                  value={formData.name}
+                  onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                  className="w-full px-4 py-3 rounded-2xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] transition-colors text-sm"
+                />
               </div>
 
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 flex items-start gap-3.5 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#458543]/10 text-[#458543] flex items-center justify-center shrink-0">
-                  <Phone className="w-5 h-5" />
-                </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                 <div>
-                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">WhatsApp & Hotline</div>
-                  <a href="tel:+923129582101" className="text-sm font-bold text-[#1E2A4F] hover:text-[#458543] transition">
-                    +92 312 9582101
-                  </a>
-                  <div className="text-xs text-slate-500">Mon-Fri, 9:00 AM – 5:00 PM PKT</div>
-                </div>
-              </div>
-
-              <div className="bg-white p-4 rounded-2xl border border-slate-200 flex items-start gap-3.5 shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-[#F38A32]/10 text-[#F38A32] flex items-center justify-center shrink-0">
-                  <MapPin className="w-5 h-5" />
-                </div>
-                <div>
-                  <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Campus Location</div>
-                  <div className="text-sm font-bold text-[#1E2A4F]">
-                    Business Incubation Center (BIC)
-                  </div>
-                  <div className="text-xs text-slate-600">
-                    University of Haripur, Khyber Pakhtunkhwa, Pakistan
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Social links */}
-            <div className="pt-2">
-              <span className="text-xs font-semibold text-slate-500 block mb-2">Connect on Social Channels:</span>
-              <div className="flex gap-2">
-                <a href="https://linkedin.com" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-[#1E2A4F] hover:text-[#2A6EB4] transition">
-                  <LinkedinIcon className="w-4 h-4" />
-                </a>
-                <a href="https://twitter.com" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-[#1E2A4F] hover:text-[#2A6EB4] transition">
-                  <TwitterIcon className="w-4 h-4" />
-                </a>
-                <a href="https://github.com" target="_blank" rel="noreferrer" className="w-9 h-9 rounded-xl bg-white border border-slate-200 flex items-center justify-center text-[#1E2A4F] hover:text-[#2A6EB4] transition">
-                  <GithubIcon className="w-4 h-4" />
-                </a>
-              </div>
-            </div>
-          </div>
-
-          {/* Interactive Contact Form Column */}
-          <div className="lg:col-span-7 bg-white p-6 sm:p-8 rounded-3xl border border-slate-200 shadow-lg">
-            <h3 className="text-xl font-bold font-poppins text-[#1E2A4F] mb-1">
-              Send an Inquiry
-            </h3>
-            <p className="text-xs text-slate-500 mb-6">
-              Fill out this form and our academic coordinator will reply within 24 hours.
-            </p>
-
-            {isSubmitted ? (
-              <div className="bg-[#458543]/10 border border-[#458543]/30 p-6 rounded-2xl text-center space-y-2">
-                <CheckCircle2 className="w-10 h-10 text-[#458543] mx-auto" />
-                <h4 className="text-base font-bold text-[#1E2A4F]">Inquiry Sent Successfully</h4>
-                <p className="text-xs text-slate-600">Thank you! We will get in touch with you shortly.</p>
-              </div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">Your Name *</label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    placeholder="e.g. Asad Ullah"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-[#1E2A4F] focus:outline-none focus:border-[#2A6EB4]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">Email Address *</label>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
+                    Email *
+                  </label>
                   <input
                     type="email"
                     required
+                    placeholder="email@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="name@example.com"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-[#1E2A4F] focus:outline-none focus:border-[#2A6EB4]"
+                    className="w-full px-4 py-3 rounded-2xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] transition-colors text-sm"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">Message / Question</label>
-                  <textarea
-                    rows={4}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    placeholder="Ask about class timings, prerequisites, or incubation support..."
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-[#1E2A4F] focus:outline-none focus:border-[#2A6EB4]"
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
+                    Phone *
+                  </label>
+                  <input
+                    type="tel"
+                    required
+                    placeholder="+92 300 0000000"
+                    value={formData.phone}
+                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    className="w-full px-4 py-3 rounded-2xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] transition-colors text-sm"
                   />
                 </div>
+              </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-[#1E2A4F] hover:bg-[#2A6EB4] text-white rounded-xl text-xs font-bold uppercase tracking-wider font-poppins transition shadow flex items-center justify-center gap-2 cursor-pointer"
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
+                  Status
+                </label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-4 py-3 rounded-2xl bg-black/60 border border-white/20 text-white focus:outline-none focus:border-[#78daeb] transition-colors text-sm cursor-pointer"
                 >
-                  <Send className="w-3.5 h-3.5" />
-                  <span>Send Inquiry</span>
-                </button>
-              </form>
-            )}
+                  <option value="UOH IT Student" className="bg-[#141414] text-white">UOH IT Student</option>
+                  <option value="UOH Non-IT Student" className="bg-[#141414] text-white">UOH Non-IT Student</option>
+                  <option value="External Candidate" className="bg-[#141414] text-white">External Candidate</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-2">
+                  Message
+                </label>
+                <textarea
+                  rows={4}
+                  placeholder="Tell us about your background or aspirations..."
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full px-4 py-3 rounded-2xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] transition-colors text-sm"
+                />
+              </div>
+
+              <button
+                type="submit"
+                className="w-full py-4 rounded-full text-sm font-bold uppercase tracking-wider text-white shadow-2xl transition-all duration-300 hover:scale-[1.01] cursor-pointer flex items-center justify-center gap-2"
+                style={{
+                  background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
+                }}
+              >
+                <span>Send You Request</span>
+                <Send className="w-4 h-4 ml-1" />
+              </button>
+            </form>
+          )}
+
+          {/* Contact Details Footnote */}
+          <div className="mt-8 pt-6 border-t border-white/10 grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs text-white/70">
+            <div className="flex items-start gap-2.5">
+              <MapPin className="w-4 h-4 text-[#78daeb] shrink-0 mt-0.5" />
+              <span>Office 330 second floor admin block university of haripur</span>
+            </div>
+            <div className="flex items-start gap-2.5">
+              <Phone className="w-4 h-4 text-[#c9459c] shrink-0 mt-0.5" />
+              <span>+92 371 9330600 / 03301584825</span>
+            </div>
           </div>
         </div>
       </div>

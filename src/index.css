@@ -4,28 +4,94 @@
   html {
     scroll-behavior: smooth;
     scroll-padding-top: 5rem;
-    font-family: 'Lato', sans-serif;
-    color: #1E2A4F;
-    background-color: #FFFFFF;
+    font-family: 'Geist', 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #ffffff;
+    background-color: #000000;
   }
 
-  h1, h2, h3, h4, h5, h6, .font-poppins {
-    font-family: 'Poppins', sans-serif;
+  body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: 'Geist', 'Inter', sans-serif;
+    overflow-x: hidden;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Geist', 'Inter', sans-serif;
+    font-weight: 700;
   }
 }
 
-/* Custom utility colors matching SOCH Palette & Reference */
+/* Reference 4-color gradient */
 :root {
-  --color-soch-navy: #1E2A4F;
-  --color-soch-seek: #2A6EB4;
-  --color-soch-observe: #458543;
-  --color-soch-create: #F38A32;
-  --color-soch-hope: #7D52A0;
-  --color-soch-bg: #F4F6F9;
-  --color-soch-canvas: #FFFFFF;
+  --vibe-gradient: linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c);
+  --vibe-gradient-h: linear-gradient(90deg, #4467b0, #6b388d, #78daeb, #c9459a);
+  --vibe-dark: #000000;
+  --vibe-surface: #0e0e0e;
+  --vibe-card: #141414;
 }
 
-/* Continuous Marquee Animation */
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(90deg, #4467b0, #6b388d, #78daeb, #c9459a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Gradient outline pill button (matching reference .custom-btn) */
+.custom-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 42px;
+  border-radius: 50px;
+  text-decoration: none;
+  font-family: "Geist", sans-serif;
+  font-weight: 500;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+  z-index: 1;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.custom-btn::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 150px;
+  padding: 2px;
+  background: linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  transition: all 0.3s ease;
+}
+
+.custom-btn:hover {
+  background: linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c);
+  box-shadow: 0 0 25px rgba(120, 218, 235, 0.4);
+}
+
+/* Tag badge used on every section of vibeacademy.info */
+.section-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 18px;
+  border-radius: 9999px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #2b2b2b;
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Marquee Animations */
 @keyframes marqueeScroll {
   0% {
     transform: translateX(0);
@@ -38,32 +104,32 @@
 .animate-marquee {
   display: flex;
   width: max-content;
-  animation: marqueeScroll 20s linear infinite;
+  animation: marqueeScroll 25s linear infinite;
 }
 
-.animate-marquee:hover {
+.animate-marquee-slow {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 18s linear infinite;
+}
+
+.animate-marquee:hover,
+.animate-marquee-slow:hover {
   animation-play-state: paused;
 }
 
-/* Gradient text utility */
-.gradient-vibe-text {
-  background: linear-gradient(90deg, #4467b0, #6b388d, #78daeb, #c9459a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Refined, smooth scrollbars */
+/* Custom sleek scrollbar */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
+  height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: #F4F6F9;
+  background: #000000;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #333333;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #555555;
 }

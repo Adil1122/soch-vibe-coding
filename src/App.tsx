@@ -4,11 +4,10 @@ import { Hero } from './components/Hero';
 import { WhatIsVibeCoding } from './components/WhatIsVibeCoding';
 import { Roadmap } from './components/Roadmap';
 import { Modules } from './components/Modules';
-import { WhyChooseUs, SuccessStoryItem } from './components/WhyChooseUs';
+import { WhyChooseUs } from './components/WhyChooseUs';
 import { VibeShift } from './components/VibeShift';
 import { Team } from './components/Team';
 import { Contact } from './components/Contact';
-import { MapSection } from './components/MapSection';
 import { Footer } from './components/Footer';
 import { ApplicationModal } from './components/ApplicationModal';
 import { VideoModal } from './components/VideoModal';
@@ -19,78 +18,69 @@ export function App() {
   const [activeVideoData, setActiveVideoData] = useState({
     title: 'What is Vibe Coding?',
     subtitle: 'Learn how developers combine software engineering fundamentals with modern AI workflows.',
-    tagline: 'University of Haripur BIC'
+    tagline: 'Vibe Academy Haripur',
+    src: 'https://vibeacademy.info/wp-content/uploads/2026/05/WhatsApp-Video-2026-05-21-at-7.16.02-PM.mp4'
   });
 
   const handleOpenGeneralVideo = () => {
     setActiveVideoData({
       title: 'What is Vibe Coding?',
       subtitle: 'Learn how developers combine software engineering fundamentals with modern AI workflows.',
-      tagline: 'University of Haripur BIC'
-    });
-    setIsVideoModalOpen(true);
-  };
-
-  const handleSelectStoryVideo = (story: SuccessStoryItem) => {
-    setActiveVideoData({
-      title: `${story.name} — ${story.project}`,
-      subtitle: `"${story.quote}" (${story.achievement})`,
-      tagline: 'Cohort 01 Success Story Video'
+      tagline: 'Vibe Academy Haripur',
+      src: 'https://vibeacademy.info/wp-content/uploads/2026/05/WhatsApp-Video-2026-05-21-at-7.16.02-PM.mp4'
     });
     setIsVideoModalOpen(true);
   };
 
   return (
-    <div className="min-h-screen bg-white text-[#1E2A4F] flex flex-col font-sans selection:bg-[#F38A32] selection:text-white">
-      {/* 1. Header (Centered SOCH Vibe Coding, Apply button, Vertical Menu icon) */}
+    <div className="min-h-screen bg-black text-white flex flex-col font-sans selection:bg-[#c9459c] selection:text-white overflow-x-hidden">
+      {/* 1. Header (Vibe Academy Logo, Menu toggle + APPLY FOR COHORT 01 pill) */}
       <Navbar onOpenApply={() => setIsApplyModalOpen(true)} />
 
-      {/* Main Flow Matching Reference Site Exactly */}
+      {/* Main Sections (100% clone of vibeacademy.info) */}
       <main className="flex-1">
-        {/* 2. Hero Section (Centered, View Course button only, Full-width Tools marquee) */}
+        {/* 2. Hero Section (Background video, Master AI-Accelerated Software Engineering, View Course, Tech Logos) */}
         <Hero />
 
-        {/* 4. What is Vibe Coding (Animation running behind centered video across full width) */}
+        {/* 3. 01. What is Vibe Coding (Haripur to the World, Animated marquee background, Video player) */}
         <WhatIsVibeCoding onOpenVideo={handleOpenGeneralVideo} />
 
-        {/* 02. The "Zero to Hero" Roadmap (Vertical timeline with progressive line fill & final trophy) */}
+        {/* 4. 02. The "Zero to Hero" Roadmap (5 Stages with scroll-progress gradient fill line) */}
         <Roadmap onOpenApply={() => setIsApplyModalOpen(true)} />
 
-        {/* 03. Modules (Curriculum & Pay-As-You-Go Modules 100% matching 1-curriculum.PNG) */}
+        {/* 5. 03. Curriculum & Pay-As-You-Go Modules (Curriculum pillars, Download PDF, Pricing tiers) */}
         <Modules onOpenApply={() => setIsApplyModalOpen(true)} />
 
-        {/* 04. Why Choose Us (100% matching 5-why-choose-us.PNG with Success Stories videos & modal) */}
-        <WhyChooseUs onSelectStory={handleSelectStoryVideo} />
+        {/* 6. 05. Why Choose Us? (Values, Local Opportunity, Pakistan's Digital Ascent, Revenue, Salary premium) */}
+        <WhyChooseUs />
 
-        {/* 05. The Vibe Shift (100% matching 4-the-vibe-shift.PNG with neon Pakistan map & carousel) */}
+        {/* 7. 06. The Vibe Shift (3 Blog Articles: Shaping the Future, Gig Economy, AI Skills) */}
         <VibeShift />
 
-        {/* 07. The Team (Matching reference horizontal slider) */}
+        {/* 8. 07. Team (Meet the Vibe Academy Minds with horizontal carousel and gradient bar) */}
         <Team />
 
-        {/* Contact Section (Matching reference design with inquiry form and direct communication) */}
+        {/* 9. 08. Contact (Background video, Your Competitors Are Automating, Full application form) */}
         <Contact onOpenApply={() => setIsApplyModalOpen(true)} />
-
-        {/* Map Section (University of Haripur, Haripur, Khyber Pakhtunkhwa, Pakistan) */}
-        <MapSection />
       </main>
 
-      {/* Footer */}
+      {/* 10. Footer (Logo, Social links, Copyright, Back to top) */}
       <Footer />
 
-      {/* Interactive Application Modal Popup */}
+      {/* Application Form Modal */}
       <ApplicationModal
         isOpen={isApplyModalOpen}
         onClose={() => setIsApplyModalOpen(false)}
       />
 
-      {/* Interactive Responsive Video Modal Lightbox for Intro & Success Stories */}
+      {/* Video Lightbox Modal */}
       <VideoModal
         isOpen={isVideoModalOpen}
         onClose={() => setIsVideoModalOpen(false)}
         title={activeVideoData.title}
         subtitle={activeVideoData.subtitle}
         tagline={activeVideoData.tagline}
+        videoSrc={activeVideoData.src}
       />
     </div>
   );

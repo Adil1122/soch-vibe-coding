@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { X, CheckCircle2, Sparkles, Send, GraduationCap, ShieldCheck, ArrowRight } from 'lucide-react';
+import { X, CheckCircle2, Send, GraduationCap } from 'lucide-react';
 
 interface ApplicationModalProps {
   isOpen: boolean;
@@ -13,7 +13,6 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
     phone: '',
     city: 'Haripur',
     status: 'University Student',
-    institution: 'University of Haripur',
     experienceLevel: 'Basic Coding Knowledge',
     reasonForJoining: '',
     agreedToCommit: false
@@ -54,11 +53,8 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
     if (!formData.phone.trim()) {
       newErrors.phone = 'Phone / WhatsApp number is required';
     }
-    if (!formData.reasonForJoining.trim()) {
-      newErrors.reasonForJoining = 'Please briefly share why you want to join Cohort 02';
-    }
     if (!formData.agreedToCommit) {
-      newErrors.agreedToCommit = 'Please confirm your commitment to attend sessions';
+      newErrors.agreedToCommit = 'You must confirm commitment to participate';
     }
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -67,300 +63,183 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
-
     setIsSubmitting(true);
-    // Simulate API registration delay
     setTimeout(() => {
-      const randomCode = Math.floor(1000 + Math.random() * 9000);
-      setReferenceId(`SOCH-C02-${randomCode}`);
+      const randomRef = 'VB-' + Math.floor(100000 + Math.random() * 900000);
+      setReferenceId(randomRef);
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 800);
-  };
-
-  const handleResetAndClose = () => {
-    setIsSubmitted(false);
-    setFormData({
-      fullName: '',
-      email: '',
-      phone: '',
-      city: 'Haripur',
-      status: 'University Student',
-      institution: 'University of Haripur',
-      experienceLevel: 'Basic Coding Knowledge',
-      reasonForJoining: '',
-      agreedToCommit: false
-    });
-    setErrors({});
-    onClose();
+    }, 1200);
   };
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
       {/* Backdrop */}
       <div
-        onClick={handleResetAndClose}
-        className="fixed inset-0 bg-[#1E2A4F]/70 backdrop-blur-sm transition-opacity animate-fade-in"
+        onClick={onClose}
+        className="fixed inset-0 bg-black/80 backdrop-blur-md transition-opacity"
       />
 
-      {/* Modal Container */}
-      <div className="relative bg-white w-full max-w-2xl rounded-2xl shadow-2xl border border-slate-200 overflow-hidden z-10 my-8 animate-scale-up">
-        {/* Modal Top Header */}
-        <div className="bg-[#1E2A4F] text-white px-6 py-5 flex items-center justify-between border-b border-[#2A6EB4]/30">
-          <div>
-            <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-[#F38A32] text-white mb-1 uppercase tracking-wider">
-              Cohort 02 Admissions Active
-            </div>
-            <h2 className="text-xl sm:text-2xl font-bold font-poppins text-white">
-              Application for SOCH – Vibe Coding
-            </h2>
-            <p className="text-xs text-slate-300 mt-0.5">
-              Backed by University of Haripur Business Incubation Center (BIC)
-            </p>
+      {/* Modal Box */}
+      <div className="relative bg-[#121212] text-white w-full max-w-2xl rounded-3xl shadow-2xl border border-white/15 overflow-hidden z-10 my-8">
+        {/* Header */}
+        <div className="px-6 py-5 bg-[#181818] border-b border-white/10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <GraduationCap className="w-5 h-5 text-[#78daeb]" />
+            <h3 className="text-lg font-bold text-white">
+              Apply for Vibe Academy — Cohort 01
+            </h3>
           </div>
           <button
-            onClick={handleResetAndClose}
+            onClick={onClose}
             aria-label="Close modal"
-            className="p-2 text-slate-300 hover:text-white hover:bg-white/10 rounded-xl transition"
+            className="p-1 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Modal Body */}
-        <div className="p-6 sm:p-8 max-h-[80vh] overflow-y-auto">
+        {/* Content */}
+        <div className="p-6 sm:p-8">
           {isSubmitted ? (
-            <div className="text-center py-6 space-y-4">
-              <div className="w-16 h-16 bg-[#458543]/15 text-[#458543] rounded-full flex items-center justify-center mx-auto ring-8 ring-[#458543]/10">
-                <CheckCircle2 className="w-10 h-10" />
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-bold font-poppins text-[#1E2A4F]">
-                  Application Received!
-                </h3>
-                <p className="text-sm text-slate-600 mt-2 max-w-md mx-auto">
-                  Thank you, <strong className="text-[#1E2A4F]">{formData.fullName}</strong>. Your application for <span className="font-semibold text-[#F38A32]">Cohort 02</span> has been registered.
-                </p>
-              </div>
-
-              <div className="bg-[#F4F6F9] border border-slate-200 rounded-xl p-4 max-w-sm mx-auto text-left space-y-1">
-                <div className="text-xs text-slate-500 font-medium">Application Reference ID:</div>
-                <div className="text-lg font-mono font-bold text-[#2A6EB4]">{referenceId}</div>
-                <div className="text-xs text-slate-500 pt-2 border-t border-slate-200">
-                  Confirmation sent to: <span className="text-slate-800 font-medium">{formData.email}</span>
-                </div>
-              </div>
-
-              <div className="text-xs text-slate-500 max-w-md mx-auto space-y-1 pt-2">
-                <p><strong>Next Steps:</strong> The admissions committee at UOH BIC will review your profile. Shortlisted candidates will be invited for a brief technical mindset orientation.</p>
-              </div>
-
+            <div className="text-center py-8 space-y-4">
+              <CheckCircle2 className="w-16 h-16 text-[#78daeb] mx-auto animate-bounce" />
+              <h4 className="text-2xl font-bold text-white">Application Submitted!</h4>
+              <p className="text-sm text-white/70 max-w-md mx-auto">
+                Your application for Cohort 01 has been registered. Reference ID:{' '}
+                <span className="font-mono font-bold text-[#c9459c]">{referenceId}</span>.
+                We will contact you via WhatsApp / Email shortly.
+              </p>
               <div className="pt-4">
                 <button
-                  onClick={handleResetAndClose}
-                  className="px-6 py-2.5 bg-[#1E2A4F] hover:bg-[#2A6EB4] text-white rounded-xl text-sm font-semibold transition shadow-md"
+                  onClick={onClose}
+                  className="px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider text-white shadow-xl cursor-pointer"
+                  style={{
+                    background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
+                  }}
                 >
-                  Return to Website
+                  Done
                 </button>
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="bg-[#F4F6F9] border border-slate-200 rounded-xl p-4 text-xs text-slate-600 flex items-start gap-3">
-                <GraduationCap className="w-5 h-5 text-[#2A6EB4] shrink-0 mt-0.5" />
-                <div>
-                  <strong className="text-[#1E2A4F] block mb-0.5">Cohort 02 Information:</strong>
-                  Hands-on, AI-accelerated software engineering with practical production deliverables. Limited seats available at the University of Haripur BIC campus.
-                </div>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  placeholder="e.g. Asad Ullah"
+                  value={formData.fullName}
+                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
+                />
+                {errors.fullName && <p className="text-xs text-red-400 mt-1">{errors.fullName}</p>}
               </div>
 
-              {/* Full Name & Email */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">
-                    Full Name <span className="text-[#F38A32]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.fullName}
-                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                    placeholder="e.g. Muhammad Zeeshan"
-                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#1E2A4F] bg-white focus:outline-none transition ${
-                      errors.fullName ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-300 focus:border-[#2A6EB4]'
-                    }`}
-                  />
-                  {errors.fullName && <p className="text-[11px] text-rose-500 mt-1">{errors.fullName}</p>}
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">
-                    Email Address <span className="text-[#F38A32]">*</span>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                    Email *
                   </label>
                   <input
                     type="email"
+                    placeholder="name@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    placeholder="name@example.com"
-                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#1E2A4F] bg-white focus:outline-none transition ${
-                      errors.email ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-300 focus:border-[#2A6EB4]'
-                    }`}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
                   />
-                  {errors.email && <p className="text-[11px] text-rose-500 mt-1">{errors.email}</p>}
+                  {errors.email && <p className="text-xs text-red-400 mt-1">{errors.email}</p>}
                 </div>
-              </div>
 
-              {/* Phone & City */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">
-                    WhatsApp / Phone Number <span className="text-[#F38A32]">*</span>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                    Phone / WhatsApp *
                   </label>
                   <input
                     type="tel"
+                    placeholder="+92 300 1234567"
                     value={formData.phone}
                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+92 3XX XXXXXXX"
-                    className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#1E2A4F] bg-white focus:outline-none transition ${
-                      errors.phone ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-300 focus:border-[#2A6EB4]'
-                    }`}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
                   />
-                  {errors.phone && <p className="text-[11px] text-rose-500 mt-1">{errors.phone}</p>}
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">
-                    City / Location <span className="text-[#F38A32]">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={formData.city}
-                    onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                    placeholder="e.g. Haripur, Abbottabad, Islamabad"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-[#1E2A4F] bg-white focus:outline-none focus:border-[#2A6EB4]"
-                  />
+                  {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone}</p>}
                 </div>
               </div>
 
-              {/* Status & Institution */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">
-                    Current Status
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                    Status
                   </label>
                   <select
                     value={formData.status}
                     onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-[#1E2A4F] bg-white focus:outline-none focus:border-[#2A6EB4]"
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white focus:outline-none focus:border-[#78daeb] text-sm"
                   >
-                    <option value="University Student">University Student</option>
-                    <option value="Recent Graduate">Recent Graduate</option>
-                    <option value="Working Professional">Working Professional</option>
-                    <option value="Freelancer / Builder">Freelancer / Builder</option>
-                    <option value="High School / College">College Student</option>
+                    <option value="UOH IT Student" className="bg-[#121212] text-white">UOH IT Student</option>
+                    <option value="UOH Non-IT Student" className="bg-[#121212] text-white">UOH Non-IT Student</option>
+                    <option value="External Candidate" className="bg-[#121212] text-white">External Candidate</option>
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">
-                    University / Institution
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                    Experience Level
                   </label>
-                  <input
-                    type="text"
-                    value={formData.institution}
-                    onChange={(e) => setFormData({ ...formData, institution: e.target.value })}
-                    placeholder="e.g. University of Haripur (UOH)"
-                    className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 text-sm text-[#1E2A4F] bg-white focus:outline-none focus:border-[#2A6EB4]"
-                  />
+                  <select
+                    value={formData.experienceLevel}
+                    onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white focus:outline-none focus:border-[#78daeb] text-sm"
+                  >
+                    <option value="Complete Beginner" className="bg-[#121212] text-white">Complete Beginner</option>
+                    <option value="Basic Coding Knowledge" className="bg-[#121212] text-white">Basic Coding Knowledge</option>
+                    <option value="Intermediate Developer" className="bg-[#121212] text-white">Intermediate Developer</option>
+                  </select>
                 </div>
               </div>
 
-              {/* Coding Experience Level */}
               <div>
-                <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">
-                  Current Coding Background
-                </label>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-                  {[
-                    { label: 'Beginner', desc: 'Curious about software & AI' },
-                    { label: 'Intermediate', desc: 'Knows basics of Python/JS/C++' },
-                    { label: 'Advanced', desc: 'Built projects, wants 5x velocity' }
-                  ].map((lvl) => (
-                    <button
-                      type="button"
-                      key={lvl.label}
-                      onClick={() => setFormData({ ...formData, experienceLevel: lvl.label })}
-                      className={`p-3 rounded-xl border text-left transition ${
-                        formData.experienceLevel === lvl.label
-                          ? 'border-[#2A6EB4] bg-[#2A6EB4]/10 text-[#1E2A4F] font-semibold ring-1 ring-[#2A6EB4]'
-                          : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
-                      }`}
-                    >
-                      <div className="font-bold">{lvl.label}</div>
-                      <div className="text-[11px] text-slate-500 font-normal">{lvl.desc}</div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* Why join Cohort 02 */}
-              <div>
-                <label className="block text-xs font-semibold text-[#1E2A4F] mb-1">
-                  Why do you want to join Cohort 02? <span className="text-[#F38A32]">*</span>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                  Why do you want to join? (Optional)
                 </label>
                 <textarea
                   rows={3}
+                  placeholder="Share your goals with AI-driven Vibe Coding..."
                   value={formData.reasonForJoining}
                   onChange={(e) => setFormData({ ...formData, reasonForJoining: e.target.value })}
-                  placeholder="Share your goals: What do you want to build? How will AI-accelerated engineering impact your future?"
-                  className={`w-full px-3.5 py-2.5 rounded-xl border text-sm text-[#1E2A4F] bg-white focus:outline-none transition ${
-                    errors.reasonForJoining ? 'border-rose-500 focus:ring-1 focus:ring-rose-500' : 'border-slate-300 focus:border-[#2A6EB4]'
-                  }`}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
                 />
-                {errors.reasonForJoining && <p className="text-[11px] text-rose-500 mt-1">{errors.reasonForJoining}</p>}
               </div>
 
-              {/* Commitment Checkbox */}
-              <div>
-                <label className="flex items-start gap-2.5 cursor-pointer text-xs text-slate-700">
-                  <input
-                    type="checkbox"
-                    checked={formData.agreedToCommit}
-                    onChange={(e) => setFormData({ ...formData, agreedToCommit: e.target.checked })}
-                    className="mt-0.5 rounded border-slate-300 text-[#F38A32] focus:ring-0"
-                  />
-                  <span>
-                    I commit to active participation in workshops, practical coding assignments, and final capstone project development at UOH BIC.
-                  </span>
+              <div className="flex items-start gap-2 pt-2">
+                <input
+                  type="checkbox"
+                  id="commit"
+                  checked={formData.agreedToCommit}
+                  onChange={(e) => setFormData({ ...formData, agreedToCommit: e.target.checked })}
+                  className="mt-1 accent-[#78daeb]"
+                />
+                <label htmlFor="commit" className="text-xs text-white/70">
+                  I agree to commit 10-15 hours/week for live project building &amp; lab sessions at Haripur BIC.
                 </label>
-                {errors.agreedToCommit && <p className="text-[11px] text-rose-500 mt-1">{errors.agreedToCommit}</p>}
               </div>
+              {errors.agreedToCommit && (
+                <p className="text-xs text-red-400">{errors.agreedToCommit}</p>
+              )}
 
-              {/* Actions */}
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-200">
-                <button
-                  type="button"
-                  onClick={handleResetAndClose}
-                  className="px-4 py-2.5 text-xs font-semibold text-slate-600 hover:text-slate-900 transition"
-                >
-                  Cancel
-                </button>
+              <div className="pt-4">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="px-6 py-2.5 bg-[#F38A32] hover:bg-[#e07b27] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition shadow-md flex items-center gap-2 disabled:opacity-70"
+                  className="w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-wider text-white shadow-xl cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.01] transition-transform"
+                  style={{
+                    background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
+                  }}
                 >
-                  {isSubmitting ? (
-                    <>
-                      <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></span>
-                      <span>Submitting...</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>Submit Application for Cohort 02</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </>
-                  )}
+                  <Send className="w-4 h-4" />
+                  <span>{isSubmitting ? 'Submitting...' : 'Submit Cohort 01 Application'}</span>
                 </button>
               </div>
             </form>
