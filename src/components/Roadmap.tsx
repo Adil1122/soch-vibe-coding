@@ -1,179 +1,242 @@
-import React, { useState } from 'react';
-import { ROADMAP_STAGES, RoadmapStage } from '../data/websiteData';
-import { CheckCircle2, ChevronRight, Sparkles, Layers, ArrowRight, Award } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Trophy, CheckCircle2, Award, Sparkles } from 'lucide-react';
 
 interface RoadmapProps {
   onOpenApply: () => void;
 }
 
 export const Roadmap: React.FC<RoadmapProps> = ({ onOpenApply }) => {
-  const [activeStageIndex, setActiveStageIndex] = useState(0);
-  const activeStage = ROADMAP_STAGES[activeStageIndex];
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [fillHeight, setFillHeight] = useState(0);
+
+  const stages = [
+    {
+      number: '01',
+      title: 'Mastering the Logic (Foundations)',
+      description: "We kick things off by building your core programming muscles. You'll dive deep into modern web architectures, logical problem-solving, and the power of TypeScript supercharged by AI coding workflows. This is where you learn to think like an engineer, not a syntax compiler",
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/1.-Mastering-the-Logic-Foundations.webp',
+      badge: 'Core Foundations'
+    },
+    {
+      number: '02',
+      title: 'Building Reality (MERN Stack)',
+      description: "Ever dreamt of launching production-ready applications? Here, you'll learn to build dynamic, real-world web systems using the MERN Stack (MongoDB, Express.js, React, Node.js), optimized with Next.js. Go from sleek front-ends to robust, scalable backend data layers",
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/2.-Building-Reality-MERN-Stack.webp',
+      badge: 'Full-Stack Architecture'
+    },
+    {
+      number: '03',
+      title: 'Breaking the Matrix (AI Engineering)',
+      description: "This is where you level up to autonomous AI workflows. You'll integrate cutting-edge AI tools and engineering techniques into your development process, learning to automate, innovate, and solve complex production scale problems with artificial intelligence.",
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/3.-Breaking-the-Matrix-AI-Engineering.webp',
+      badge: 'AI Acceleration'
+    },
+    {
+      number: '04',
+      title: 'Project Power-Up (Portfolio Building)',
+      description: "Theory is cool, but execution is king. Throughout the accelerator, you'll build hands-on projects that culminate in a powerful, market-validated portfolio. These aren't generic lab assignments; they're your real-world battle scars for global hiring managers.",
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/4.-Project-Power-Up-Portfolio-Building.webp',
+      badge: 'Production Systems'
+    },
+    {
+      number: '05',
+      title: 'Launchpad to Success (Career Integration)',
+      description: "We don't just teach; we launch tech careers. Backed officially by the University of Haripur Business Incubation Center (BIC), you'll gain elite entry into the job market, rigorous interview prep, and proprietary strategies to land high-paying AI engineering roles.",
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/5.-Launchpad-to-Success-Career-Integration.webp',
+      badge: 'Career & Incubation'
+    }
+  ];
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!containerRef.current) return;
+      const rect = containerRef.current.getBoundingClientRect();
+      const windowHeight = window.innerHeight;
+
+      // Calculate how far the timeline has entered the viewport
+      const totalH = rect.height;
+      const startTrigger = windowHeight * 0.75;
+      const currentScroll = startTrigger - rect.top;
+
+      let progress = (currentScroll / totalH) * 100;
+      if (progress < 0) progress = 0;
+      if (progress > 100) progress = 100;
+
+      setFillHeight(progress);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('resize', handleScroll);
+    handleScroll();
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener('resize', handleScroll);
+    };
+  }, []);
 
   return (
-    <section id="roadmap" className="py-20 md:py-28 bg-white">
+    <section id="roadmap" className="py-20 md:py-28 bg-white border-t border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-[#458543]/10 text-[#458543] border border-[#458543]/30 uppercase tracking-wider font-poppins">
-            <Layers className="w-3.5 h-3.5 text-[#458543]" />
-            <span>Curriculum Progression</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E2A4F] font-poppins tracking-tight">
-            The 10-Stage Student Journey
+        {/* Section Tag */}
+        <div className="text-center">
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider bg-[#1E2A4F] text-white font-poppins">
+            02. Roadmap
+          </span>
+        </div>
+
+        {/* Section Heading & Subhead from Reference */}
+        <div className="text-center max-w-4xl mx-auto space-y-4">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#1E2A4F] font-poppins tracking-tight">
+            The "Zero to Hero" Roadmap
           </h2>
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-            From foundational computational thinking to building, deploying, and monetizing production-ready software with AI acceleration.
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed font-normal">
+            Ready to go from zero building knowledge to a full-stack AI engineering pro? Our 'Vibe Coding' journey is explicitly engineered to transform you, step-by-step, into an in-demand global tech talent. This isn't just a course; it's your operational blueprint to becoming a digital architect backed by the <strong>University of Haripur BIC.</strong>
           </p>
         </div>
 
-        {/* Desktop Horizontal Milestone Selector (Curved visual journey) */}
-        <div className="hidden lg:block relative pb-4">
-          {/* Connecting line */}
-          <div className="absolute top-7 left-12 right-12 h-1 bg-gradient-to-r from-[#2A6EB4] via-[#F38A32] to-[#7D52A0] rounded-full z-0 opacity-40"></div>
-
-          <div className="grid grid-cols-10 gap-2 relative z-10">
-            {ROADMAP_STAGES.map((stg, idx) => {
-              const isSelected = activeStageIndex === idx;
-              return (
-                <button
-                  key={stg.number}
-                  onClick={() => setActiveStageIndex(idx)}
-                  className={`flex flex-col items-center text-center p-2 rounded-xl transition-all duration-200 cursor-pointer ${
-                    isSelected
-                      ? 'scale-105'
-                      : 'hover:opacity-80'
-                  }`}
-                >
-                  <div
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center font-poppins font-bold text-sm shadow-md transition-all ${
-                      isSelected
-                        ? 'bg-[#1E2A4F] text-white ring-4 ring-[#F38A32]/40 shadow-lg'
-                        : 'bg-[#F4F6F9] text-[#1E2A4F] border border-slate-300 hover:bg-slate-100'
-                    }`}
-                  >
-                    {stg.number}
-                  </div>
-                  <span className={`text-[11px] font-poppins font-semibold mt-2 line-clamp-2 leading-tight ${
-                    isSelected ? 'text-[#1E2A4F] font-bold' : 'text-slate-500'
-                  }`}>
-                    {stg.title.split(' ')[0]} {stg.title.split(' ')[1] || ''}
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Selected Stage Detail Showcase Card (Desktop & Mobile view) */}
-        <div className="bg-[#1E2A4F] text-white rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-700/60 relative overflow-hidden">
-          <div className="flex flex-col lg:flex-row gap-8 items-start justify-between">
-            <div className="space-y-4 max-w-2xl">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="px-3 py-1 rounded-full text-xs font-bold font-mono bg-[#F38A32] text-white">
-                  STAGE {activeStage.number} OF 10
-                </span>
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-white/10 text-sky-200">
-                  Focus: {activeStage.focus}
-                </span>
-              </div>
-
-              <h3 className="text-2xl sm:text-3xl font-bold font-poppins text-white">
-                {activeStage.title}
-              </h3>
-
-              <p className="text-sm sm:text-base text-slate-300 leading-relaxed">
-                {activeStage.description}
-              </p>
-
-              {/* Acquired Skills */}
-              <div className="pt-2">
-                <span className="text-xs uppercase tracking-wider text-slate-400 font-bold block mb-2 font-poppins">
-                  Key Skills & Concepts Mastered:
-                </span>
-                <div className="flex flex-wrap gap-2">
-                  {activeStage.keySkills.map((sk, i) => (
-                    <span
-                      key={i}
-                      className="inline-flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-medium bg-white/10 text-white border border-white/15"
-                    >
-                      <CheckCircle2 className="w-3.5 h-3.5 text-[#458543]" />
-                      <span>{sk}</span>
-                    </span>
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            {/* Deliverable Box */}
-            <div className="w-full lg:w-80 bg-white/10 border border-white/15 p-6 rounded-2xl space-y-3 shrink-0">
-              <div className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-[#F38A32] font-poppins">
-                <Award className="w-4 h-4" />
-                <span>Capstone Deliverable</span>
-              </div>
-              <h4 className="text-base font-bold font-poppins text-white">
-                {activeStage.deliverable}
-              </h4>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Every student deploys this milestone to their public portfolio before advancing to the next stage.
-              </p>
-
-              <div className="pt-2">
-                <button
-                  onClick={onOpenApply}
-                  className="w-full py-2.5 bg-[#F38A32] hover:bg-[#e07b27] text-white rounded-xl text-xs font-bold uppercase tracking-wider transition shadow cursor-pointer"
-                >
-                  Join Cohort 02
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Vertical Timeline (320px to 768px) */}
-        <div className="block lg:hidden space-y-4 pt-4">
-          <div className="text-center mb-6">
-            <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-              Tap any stage to view details above
-            </span>
+        {/* Entire Vertical Roadmap with Progressive Connecting Line */}
+        <div ref={containerRef} className="relative max-w-5xl mx-auto pt-8 pb-16">
+          {/* Vertical Connecting Line (Centered on Desktop, Left on Mobile) */}
+          <div className="absolute top-8 bottom-24 left-6 md:left-1/2 w-2.5 -translate-x-1/2 bg-[#E2E8F0] rounded-full overflow-hidden z-0 shadow-inner">
+            <div
+              className="w-full transition-all duration-150 ease-out rounded-full"
+              style={{
+                height: `${fillHeight}%`,
+                background: 'linear-gradient(180deg, #4467b0, #6b388d, #78daeb, #c9459a)'
+              }}
+            />
           </div>
 
-          <div className="relative pl-6 border-l-2 border-[#2A6EB4]/30 space-y-6">
-            {ROADMAP_STAGES.map((stg, idx) => {
-              const isSelected = activeStageIndex === idx;
+          {/* Timeline Stages (01 to 05) */}
+          <div className="space-y-12 sm:space-y-16 relative z-10">
+            {stages.map((stage, idx) => {
+              const isEven = idx % 2 === 1; // Alternating layout on desktop
+              const stageTriggerPct = ((idx + 0.5) / (stages.length + 0.5)) * 100;
+              const isPassed = fillHeight >= stageTriggerPct;
+
               return (
                 <div
-                  key={stg.number}
-                  onClick={() => setActiveStageIndex(idx)}
-                  className={`relative p-4 rounded-xl border transition-all cursor-pointer ${
-                    isSelected
-                      ? 'bg-[#1E2A4F] text-white border-[#F38A32] shadow-md'
-                      : 'bg-[#F4F6F9] border-slate-200 text-[#1E2A4F]'
+                  key={stage.number}
+                  className={`flex flex-col md:flex-row items-center gap-6 sm:gap-10 ${
+                    isEven ? 'md:flex-row-reverse' : ''
                   }`}
                 >
-                  {/* Timeline dot */}
-                  <div
-                    className={`absolute -left-[31px] top-4 w-4 h-4 rounded-full border-2 border-white ${
-                      isSelected ? 'bg-[#F38A32] ring-4 ring-[#F38A32]/30' : 'bg-[#2A6EB4]'
-                    }`}
-                  />
+                  {/* Left Side (or Right if Even on Desktop) */}
+                  <div className={`w-full md:w-1/2 pl-14 md:pl-0 ${
+                    isEven ? 'md:text-left md:pl-8' : 'md:text-right md:pr-8'
+                  }`}>
+                    <div className="bg-[#F8FAFC] border border-slate-200/90 hover:border-[#2A6EB4]/50 p-6 sm:p-8 rounded-3xl shadow-sm hover:shadow-xl transition-all duration-300 group">
+                      <div className={`flex items-center gap-2 mb-3 ${
+                        isEven ? 'justify-start' : 'justify-start md:justify-end'
+                      }`}>
+                        <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-md bg-[#1E2A4F] text-white">
+                          STAGE {stage.number}
+                        </span>
+                        <span className="text-[11px] font-semibold text-[#2A6EB4] bg-[#2A6EB4]/10 px-2 py-0.5 rounded-full">
+                          {stage.badge}
+                        </span>
+                      </div>
 
-                  <div className="flex items-center justify-between mb-1">
-                    <span className={`text-xs font-mono font-bold ${isSelected ? 'text-[#F38A32]' : 'text-[#2A6EB4]'}`}>
-                      STAGE {stg.number}
-                    </span>
-                    <span className="text-[10px] opacity-75 font-medium">{stg.focus}</span>
+                      <h3 className="text-xl sm:text-2xl font-bold font-poppins text-[#1E2A4F] group-hover:text-[#2A6EB4] transition-colors leading-snug">
+                        {stage.title}
+                      </h3>
+
+                      <p className="text-xs sm:text-sm text-slate-600 mt-3 leading-relaxed">
+                        {stage.description}
+                      </p>
+                    </div>
                   </div>
 
-                  <h4 className="font-poppins font-bold text-sm">
-                    {stg.title}
-                  </h4>
-                  <p className={`text-xs mt-1 ${isSelected ? 'text-slate-300' : 'text-slate-600'}`}>
-                    {stg.description}
-                  </p>
+                  {/* Center Node / Dot with Number Indicator */}
+                  <div className="absolute left-6 md:left-1/2 -translate-x-1/2 flex items-center justify-center shrink-0">
+                    <div
+                      className={`w-12 h-12 rounded-full border-4 flex items-center justify-center font-mono font-bold text-xs transition-all duration-300 shadow-md ${
+                        isPassed
+                          ? 'bg-[#1E2A4F] text-white border-[#F38A32] scale-110 ring-4 ring-[#F38A32]/30'
+                          : 'bg-white text-slate-500 border-slate-300'
+                      }`}
+                    >
+                      {stage.number}
+                    </div>
+                  </div>
+
+                  {/* Visual Image / Preview Side */}
+                  <div className={`w-full md:w-1/2 pl-14 md:pl-0 ${
+                    isEven ? 'md:pr-8' : 'md:pl-8'
+                  }`}>
+                    <div className="bg-[#1E2A4F] rounded-3xl p-3 border-2 border-slate-200 shadow-lg overflow-hidden group hover:scale-[1.02] transition-transform">
+                      <div className="aspect-[16/10] bg-slate-900 rounded-2xl overflow-hidden relative flex items-center justify-center">
+                        <img
+                          src={stage.img}
+                          alt={stage.title}
+                          onError={(e) => {
+                            // Fallback visual illustration if image CDN fails
+                            (e.target as HTMLElement).style.opacity = '0.4';
+                          }}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#1E2A4F]/80 via-transparent to-transparent flex items-end p-4">
+                          <span className="text-white text-xs font-poppins font-bold flex items-center gap-1.5">
+                            <Sparkles className="w-3.5 h-3.5 text-[#F38A32]" />
+                            <span>{stage.title}</span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               );
             })}
+          </div>
+
+          {/* Final Milestone: The Golden Trophy at the Bottom */}
+          <div className="pt-16 text-center relative z-20">
+            <div className="inline-block relative">
+              {/* Connecting stub to trophy */}
+              <div className="w-2.5 h-10 bg-[#E2E8F0] mx-auto rounded-full overflow-hidden mb-2">
+                <div
+                  className="w-full h-full transition-all duration-300"
+                  style={{
+                    height: fillHeight >= 95 ? '100%' : '0%',
+                    background: 'linear-gradient(180deg, #78daeb, #c9459a)'
+                  }}
+                />
+              </div>
+
+              {/* Big Golden Trophy Node */}
+              <div
+                className={`w-20 h-20 sm:w-24 sm:h-24 mx-auto rounded-3xl flex items-center justify-center shadow-2xl transition-all duration-500 ${
+                  fillHeight >= 90
+                    ? 'bg-gradient-to-tr from-[#F38A32] to-amber-300 text-white scale-110 ring-8 ring-amber-400/20'
+                    : 'bg-[#1E2A4F] text-slate-400 border-2 border-slate-300'
+                }`}
+              >
+                <Trophy className="w-10 h-10 sm:w-12 sm:h-12" />
+              </div>
+
+              {/* Trophy Description */}
+              <div className="mt-6 space-y-2 max-w-md mx-auto">
+                <span className="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider bg-[#458543]/15 text-[#458543] font-poppins">
+                  Milestone Completed
+                </span>
+                <h3 className="text-2xl sm:text-3xl font-extrabold font-poppins text-[#1E2A4F]">
+                  Certified AI Software Engineer
+                </h3>
+                <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  Graduate equipped with market-validated full-stack MERN & AI engineering workflows, portfolio battle scars, and UOH BIC incubation launch credentials.
+                </p>
+
+                <div className="pt-4">
+                  <button
+                    onClick={onOpenApply}
+                    className="px-8 py-3.5 bg-[#F38A32] hover:bg-[#e07b27] text-white font-bold font-poppins text-xs sm:text-sm uppercase tracking-wider rounded-xl shadow-lg hover:shadow-xl transition-all cursor-pointer"
+                  >
+                    Start Your Journey in Cohort 02
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>

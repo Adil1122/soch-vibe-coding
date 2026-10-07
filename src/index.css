@@ -14,7 +14,7 @@
   }
 }
 
-/* Custom utility colors matching SOCH Palette */
+/* Custom utility colors matching SOCH Palette & Reference */
 :root {
   --color-soch-navy: #1E2A4F;
   --color-soch-seek: #2A6EB4;
@@ -25,16 +25,44 @@
   --color-soch-canvas: #FFFFFF;
 }
 
+/* Continuous Marquee Animation */
+@keyframes marqueeScroll {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marqueeScroll 20s linear infinite;
+}
+
+.animate-marquee:hover {
+  animation-play-state: paused;
+}
+
+/* Gradient text utility */
+.gradient-vibe-text {
+  background: linear-gradient(90deg, #4467b0, #6b388d, #78daeb, #c9459a);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
 /* Refined, smooth scrollbars */
 ::-webkit-scrollbar {
-  width: 10px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
   background: #F4F6F9;
 }
 ::-webkit-scrollbar-thumb {
   background: #cbd5e1;
-  border-radius: 5px;
+  border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;

@@ -1,145 +1,163 @@
 import React, { useState } from 'react';
-import { MODULES_DATA, ModuleItem } from '../data/websiteData';
-import { BookOpen, Check, Layers, Sparkles, Code2, Terminal, Cpu, Rocket } from 'lucide-react';
+import { Download } from 'lucide-react';
 
 interface ModulesProps {
   onOpenApply: () => void;
 }
 
 export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
-  const categories = [
-    { name: 'All Modules', icon: Layers },
-    { name: 'Software Engineering', icon: Code2 },
-    { name: 'Modern Development', icon: Terminal },
-    { name: 'AI-Powered Engineering', icon: Cpu },
-    { name: 'Product Development', icon: Rocket }
-  ] as const;
+  const [activeTier, setActiveTier] = useState<'monthly' | 'bundle'>('monthly');
 
-  const [selectedCategory, setSelectedCategory] = useState<string>('All Modules');
-  const [expandedModule, setExpandedModule] = useState<string | null>(null);
+  const handleDownload = () => {
+    const text = `SOCH – Vibe Coding Curriculum Outline
+University of Haripur Business Incubation Center (BIC)
 
-  const filteredModules = selectedCategory === 'All Modules'
-    ? MODULES_DATA
-    : MODULES_DATA.filter((m) => m.category === selectedCategory);
+Core Pillars:
+1. Foundations of Modern Web Development
+2. MERN Stack Mastery with Next.js
+3. AI Engineering & Intelligent Workflows
+
+Investment:
+- Monthly Tier: PKR 8,500
+- Total Program Bundle: PKR 25,500
+Limited seats available for Cohort 02. BIC Lab capacity capped.`;
+
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'SOCH-Vibe-Coding-Curriculum.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
-    <section id="modules" className="py-20 md:py-28 bg-[#F4F6F9] border-t border-slate-200">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-14">
-        {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-[#F38A32]/10 text-[#F38A32] border border-[#F38A32]/30 uppercase tracking-wider font-poppins">
-            <BookOpen className="w-3.5 h-3.5 text-[#F38A32]" />
-            <span>Comprehensive Syllabus</span>
-          </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-[#1E2A4F] font-poppins tracking-tight">
-            Curated Academic & Technical Modules
+    <section id="modules" className="py-20 md:py-28 bg-[#F8FAFC] border-t border-slate-200">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+        {/* Main Heading (100% matching 1-curriculum.PNG) */}
+        <div className="text-center">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#111827] font-poppins tracking-tight">
+            Curriculum & Pay-As-You-Go Modules
           </h2>
-          <p className="text-base sm:text-lg text-slate-600 leading-relaxed">
-            Balanced curriculum designed to build both deep computer science comprehension and modern AI-accelerated execution speed.
-          </p>
         </div>
 
-        {/* Category Tabs */}
-        <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {categories.map((cat) => {
-            const Icon = cat.icon;
-            const isSelected = selectedCategory === cat.name;
-            return (
-              <button
-                key={cat.name}
-                onClick={() => setSelectedCategory(cat.name)}
-                className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold font-poppins whitespace-nowrap transition-all duration-200 cursor-pointer ${
-                  isSelected
-                    ? 'bg-[#1E2A4F] text-white shadow-md'
-                    : 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50'
-                }`}
-              >
-                <Icon className={`w-3.5 h-3.5 ${isSelected ? 'text-[#F38A32]' : 'text-slate-500'}`} />
-                <span>{cat.name}</span>
-              </button>
-            );
-          })}
-        </div>
+        {/* Two-Column Grid matching 1-curriculum.PNG */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+          {/* Left Column: Curriculum Text & Core Pillars */}
+          <div className="lg:col-span-7 space-y-6 text-left">
+            <h3 className="text-3xl sm:text-4xl font-bold font-poppins text-[#111827]">
+              Curriculum
+            </h3>
 
-        {/* Modules Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredModules.map((item) => {
-            const isExpanded = expandedModule === item.number;
-            return (
-              <div
-                key={item.number}
-                className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between hover:shadow-xl hover:border-[#2A6EB4]/40 transition-all duration-200 group"
-              >
-                <div className="space-y-4">
-                  {/* Top Bar inside card */}
-                  <div className="flex items-center justify-between">
-                    <span className="font-mono text-xs font-bold text-[#2A6EB4] bg-[#2A6EB4]/10 px-2.5 py-1 rounded-md">
-                      {item.number}
-                    </span>
-                    <span className="text-[11px] font-medium text-slate-500 bg-[#F4F6F9] px-2 py-0.5 rounded">
-                      {item.category}
-                    </span>
-                  </div>
-
-                  {/* Title & Desc */}
-                  <div>
-                    <h3 className="font-poppins font-bold text-base text-[#1E2A4F] group-hover:text-[#2A6EB4] transition-colors">
-                      {item.title}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-slate-600 mt-2 leading-relaxed">
-                      {item.description}
-                    </p>
-                  </div>
-
-                  {/* Technologies Pills */}
-                  <div className="pt-2">
-                    <span className="text-[11px] uppercase tracking-wider text-slate-400 font-bold block mb-1.5 font-poppins">
-                      Core Technologies:
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {item.technologies.map((tech, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-0.5 rounded-md text-[11px] font-mono font-medium bg-[#F4F6F9] text-slate-700 border border-slate-200"
-                        >
-                          {tech}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                {/* Learning Outcome */}
-                <div className="mt-5 pt-4 border-t border-slate-100 space-y-2">
-                  <div className="text-[11px] font-bold text-[#458543] uppercase tracking-wider flex items-center gap-1 font-poppins">
-                    <Check className="w-3.5 h-3.5" />
-                    <span>Learning Outcome:</span>
-                  </div>
-                  <p className="text-xs text-slate-600 leading-relaxed italic">
-                    "{item.learningOutcome}"
-                  </p>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Section Bottom Banner */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-left">
-          <div>
-            <h4 className="text-lg font-bold font-poppins text-[#1E2A4F]">
-              Ready to experience this modern curriculum?
-            </h4>
-            <p className="text-xs text-slate-500 mt-0.5">
-              Cohort 02 classes commence at the University of Haripur Business Incubation Center.
+            <p className="text-base sm:text-lg text-slate-700 leading-relaxed font-normal">
+              it’s a strategic power move for your career. We’re not just another building course; we’re your launchpad into the future of tech, backed by solid stats and a mission to make you unstoppable. Here’s why you need to be with us:
             </p>
+
+            <div className="space-y-4 pt-2">
+              <h4 className="text-xl sm:text-2xl font-bold font-poppins text-[#111827]">
+                Core Pillars:
+              </h4>
+
+              <div className="space-y-3">
+                {[
+                  'Foundations of Modern Web Development.',
+                  'MERN Stack Mastery with Next.js.',
+                  'AI Engineering & Intelligent Workflows'
+                ].map((pillar, idx) => (
+                  <div key={idx} className="flex items-center gap-3 text-base sm:text-lg text-slate-800 font-medium">
+                    {/* Concentric Target Circle Icon matching reference screenshot */}
+                    <span className="w-5 h-5 rounded-full border-2 border-slate-800 flex items-center justify-center shrink-0">
+                      <span className="w-2 h-2 rounded-full bg-slate-800"></span>
+                    </span>
+                    <span>{pillar}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Download Curriculum Button matching pill style in screenshot */}
+            <div className="pt-4">
+              <button
+                onClick={handleDownload}
+                className="px-7 py-3 rounded-full border-2 border-[#1E2A4F] hover:border-[#F38A32] text-[#1E2A4F] hover:text-[#F38A32] bg-white font-bold font-poppins text-xs sm:text-sm uppercase tracking-wider transition-all duration-200 shadow-sm hover:shadow flex items-center gap-2 cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>DOWNLOAD CURRICULUM FOR FREE</span>
+              </button>
+            </div>
           </div>
-          <button
-            onClick={onOpenApply}
-            className="px-6 py-3 bg-[#F38A32] hover:bg-[#e07b27] text-white rounded-xl text-xs font-bold uppercase tracking-wider font-poppins shadow transition cursor-pointer"
-          >
-            Apply for Cohort 02
-          </button>
+
+          {/* Right Column: Switcher & Pricing Card matching 1-curriculum.PNG */}
+          <div className="lg:col-span-5 space-y-6">
+            {/* Pill Switcher matching screenshot */}
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => setActiveTier('monthly')}
+                className={`flex-1 py-3 px-5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider font-poppins transition-all duration-300 shadow cursor-pointer ${
+                  activeTier === 'monthly'
+                    ? 'text-white shadow-md'
+                    : 'bg-white text-slate-800 border-2 border-slate-300 hover:border-slate-400'
+                }`}
+                style={{
+                  background:
+                    activeTier === 'monthly'
+                      ? 'linear-gradient(135deg, #4467b0 0%, #78daeb 50%, #c9459a 100%)'
+                      : undefined
+                }}
+              >
+                MONTHLY TIER
+              </button>
+
+              <button
+                onClick={() => setActiveTier('bundle')}
+                className={`flex-1 py-3 px-5 rounded-full text-xs sm:text-sm font-bold uppercase tracking-wider font-poppins transition-all duration-300 shadow cursor-pointer ${
+                  activeTier === 'bundle'
+                    ? 'text-white shadow-md'
+                    : 'bg-white text-slate-800 border-2 border-slate-300 hover:border-slate-400'
+                }`}
+                style={{
+                  background:
+                    activeTier === 'bundle'
+                      ? 'linear-gradient(135deg, #4467b0 0%, #78daeb 50%, #c9459a 100%)'
+                      : undefined
+                }}
+              >
+                TOTAL PROGRAM BUNDLE
+              </button>
+            </div>
+
+            {/* Pricing Card matching exact rounded container in screenshot */}
+            <div className="bg-white rounded-[40px] border border-slate-300 p-8 sm:p-10 shadow-lg space-y-6 transition-all duration-300">
+              <div className="space-y-3">
+                <h3 className="text-3xl sm:text-4xl font-extrabold font-poppins text-[#111827]">
+                  {activeTier === 'monthly' ? 'Monthly Tier' : 'Total Program Bundle'}
+                </h3>
+
+                <div className="flex items-baseline gap-1">
+                  <span className="text-base sm:text-lg font-bold text-slate-800">
+                    PKR
+                  </span>
+                  <span className="text-3xl sm:text-4xl font-extrabold font-poppins text-[#c9459a]">
+                    {activeTier === 'monthly' ? '8,500' : '25,500'}
+                  </span>
+                </div>
+
+                <p className="text-xs sm:text-sm text-slate-600 font-medium pt-1">
+                  Limited seats available for Batch 1. BIC Lab capacity capped
+                </p>
+              </div>
+
+              {/* Apply Button Pill matching screenshot */}
+              <div className="pt-6">
+                <button
+                  onClick={onOpenApply}
+                  className="w-full py-3.5 rounded-full border-2 border-[#c9459a] hover:bg-[#c9459a] hover:text-white text-[#111827] bg-white text-xs sm:text-sm font-bold uppercase tracking-wider font-poppins transition-all duration-300 shadow-sm hover:shadow-md cursor-pointer flex items-center justify-center"
+                >
+                  APPLY FOR COHORT 02
+                </button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </section>

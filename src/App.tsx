@@ -4,137 +4,94 @@ import { Hero } from './components/Hero';
 import { WhatIsVibeCoding } from './components/WhatIsVibeCoding';
 import { Roadmap } from './components/Roadmap';
 import { Modules } from './components/Modules';
-import { WhyChooseUs } from './components/WhyChooseUs';
-import { SuccessStories } from './components/SuccessStories';
-import { MissionVision } from './components/MissionVision';
-import { Blog } from './components/Blog';
+import { WhyChooseUs, SuccessStoryItem } from './components/WhyChooseUs';
+import { VibeShift } from './components/VibeShift';
 import { Team } from './components/Team';
 import { Contact } from './components/Contact';
 import { MapSection } from './components/MapSection';
 import { Footer } from './components/Footer';
 import { ApplicationModal } from './components/ApplicationModal';
 import { VideoModal } from './components/VideoModal';
-import { SuccessStory } from './data/websiteData';
-import { Sparkles, ArrowRight } from 'lucide-react';
 
 export function App() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
-  const [videoModalData, setVideoModalData] = useState({
-    title: 'Discover SOCH – Vibe Coding',
-    subtitle: 'Combining Software Engineering Foundations with 5x AI Acceleration',
-    tagline: 'University of Haripur BIC Showcase'
+  const [activeVideoData, setActiveVideoData] = useState({
+    title: 'What is Vibe Coding?',
+    subtitle: 'Learn how developers combine software engineering fundamentals with modern AI workflows.',
+    tagline: 'University of Haripur BIC'
   });
 
-  const handleOpenApply = () => {
-    setIsApplyModalOpen(true);
-  };
-
   const handleOpenGeneralVideo = () => {
-    setVideoModalData({
-      title: 'Discover SOCH – Vibe Coding',
-      subtitle: 'Combining Software Engineering Foundations with 5x AI Acceleration',
-      tagline: 'University of Haripur BIC Showcase'
+    setActiveVideoData({
+      title: 'What is Vibe Coding?',
+      subtitle: 'Learn how developers combine software engineering fundamentals with modern AI workflows.',
+      tagline: 'University of Haripur BIC'
     });
     setIsVideoModalOpen(true);
   };
 
-  const handleOpenSuccessVideo = (story: SuccessStory) => {
-    setVideoModalData({
-      title: `${story.studentName} — ${story.projectBuilt}`,
-      subtitle: `"${story.quote}"`,
-      tagline: 'Cohort 01 Graduate Spotlight'
+  const handleSelectStoryVideo = (story: SuccessStoryItem) => {
+    setActiveVideoData({
+      title: `${story.name} — ${story.project}`,
+      subtitle: `"${story.quote}" (${story.achievement})`,
+      tagline: 'Cohort 01 Success Story Video'
     });
     setIsVideoModalOpen(true);
   };
 
   return (
     <div className="min-h-screen bg-white text-[#1E2A4F] flex flex-col font-sans selection:bg-[#F38A32] selection:text-white">
-      {/* 1. Sticky Navigation Bar */}
-      <Navbar onOpenApply={handleOpenApply} />
+      {/* 1. Header (Centered SOCH Vibe Coding, Apply button, Vertical Menu icon) */}
+      <Navbar onOpenApply={() => setIsApplyModalOpen(true)} />
 
-      {/* Main One-Page Content Sections */}
+      {/* Main Flow Matching Reference Site Exactly */}
       <main className="flex-1">
-        {/* 2. Hero Section */}
-        <Hero
-          onOpenApply={handleOpenApply}
-          onOpenVideo={handleOpenGeneralVideo}
-        />
+        {/* 2. Hero Section (Centered, View Course button only, Full-width Tools marquee) */}
+        <Hero />
 
-        {/* 3. What is Vibe Coding? Section */}
-        <WhatIsVibeCoding
-          onOpenVideo={handleOpenGeneralVideo}
-          onOpenApply={handleOpenApply}
-        />
+        {/* 4. What is Vibe Coding (Animation running behind centered video across full width) */}
+        <WhatIsVibeCoding onOpenVideo={handleOpenGeneralVideo} />
 
-        {/* 4. 10-Stage Roadmap Section */}
-        <Roadmap onOpenApply={handleOpenApply} />
+        {/* 02. The "Zero to Hero" Roadmap (Vertical timeline with progressive line fill & final trophy) */}
+        <Roadmap onOpenApply={() => setIsApplyModalOpen(true)} />
 
-        {/* 5. Modules Section */}
-        <Modules onOpenApply={handleOpenApply} />
+        {/* 03. Modules (Curriculum & Pay-As-You-Go Modules 100% matching 1-curriculum.PNG) */}
+        <Modules onOpenApply={() => setIsApplyModalOpen(true)} />
 
-        {/* 6. Why Choose Us Section (01-07 numbered) */}
-        <WhyChooseUs onOpenApply={handleOpenApply} />
+        {/* 04. Why Choose Us (100% matching 5-why-choose-us.PNG with Success Stories videos & modal) */}
+        <WhyChooseUs onSelectStory={handleSelectStoryVideo} />
 
-        {/* 7. Success Stories Subsection (Cohort 01) */}
-        <SuccessStories
-          onSelectVideo={handleOpenSuccessVideo}
-          onOpenApply={handleOpenApply}
-        />
+        {/* 05. The Vibe Shift (100% matching 4-the-vibe-shift.PNG with neon Pakistan map & carousel) */}
+        <VibeShift />
 
-        {/* 8. Mission & Vision Section ("From Haripur to the World", SEEK/OBSERVE/CREATE/HOPE) */}
-        <MissionVision onOpenApply={handleOpenApply} />
-
-        {/* 9. Blog Section */}
-        <Blog />
-
-        {/* 10. Team Section */}
+        {/* 07. The Team (Matching reference horizontal slider) */}
         <Team />
 
-        {/* 11. Contact Section */}
-        <Contact onOpenApply={handleOpenApply} />
+        {/* Contact Section (Matching reference design with inquiry form and direct communication) */}
+        <Contact onOpenApply={() => setIsApplyModalOpen(true)} />
 
-        {/* 12. Map Section */}
+        {/* Map Section (University of Haripur, Haripur, Khyber Pakhtunkhwa, Pakistan) */}
         <MapSection />
       </main>
 
-      {/* 13. Professional Footer */}
+      {/* Footer */}
       <Footer />
 
-      {/* Modals & Popups */}
+      {/* Interactive Application Modal Popup */}
       <ApplicationModal
         isOpen={isApplyModalOpen}
         onClose={() => setIsApplyModalOpen(false)}
       />
 
+      {/* Interactive Responsive Video Modal Lightbox for Intro & Success Stories */}
       <VideoModal
         isOpen={isVideoModalOpen}
         onClose={() => setIsVideoModalOpen(false)}
-        title={videoModalData.title}
-        subtitle={videoModalData.subtitle}
-        tagline={videoModalData.tagline}
+        title={activeVideoData.title}
+        subtitle={activeVideoData.subtitle}
+        tagline={activeVideoData.tagline}
       />
-
-      {/* Sticky Mobile Floating CTA */}
-      <div className="fixed bottom-4 left-4 right-4 z-30 sm:hidden">
-        <div className="bg-[#1E2A4F]/95 backdrop-blur-md text-white p-3 rounded-2xl shadow-2xl border border-white/10 flex items-center justify-between gap-2">
-          <div className="text-left pl-1">
-            <span className="text-[10px] font-bold text-[#F38A32] uppercase tracking-wider block">
-              Cohort 02 Open
-            </span>
-            <span className="text-xs font-bold font-poppins text-white">
-              SOCH – Vibe Coding
-            </span>
-          </div>
-          <button
-            onClick={handleOpenApply}
-            className="px-4 py-2 bg-[#F38A32] hover:bg-[#e07b27] text-white rounded-xl text-xs font-bold uppercase tracking-wider font-poppins transition shadow-md flex items-center gap-1.5 cursor-pointer"
-          >
-            <span>Apply Now</span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
