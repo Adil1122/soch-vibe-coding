@@ -17,9 +17,11 @@ export const IntegrationModal: React.FC<IntegrationModalProps> = ({ isOpen, onCl
   const fetchStatus = async () => {
     setIsLoadingHealth(true);
     try {
+      const adminToken = localStorage.getItem('soch_admin_token');
+      const authHeaders: HeadersInit = adminToken ? { Authorization: `Bearer ${adminToken}` } : {};
       const [resHealth, resInquiries] = await Promise.all([
         fetch('/api/inquiries/health').then((r) => r.json()).catch(() => null),
-        fetch('/api/inquiries').then((r) => r.json()).catch(() => null)
+        fetch('/api/inquiries', { headers: authHeaders }).then((r) => r.json()).catch(() => null)
       ]);
       setHealthData(resHealth);
       if (resInquiries?.data) {

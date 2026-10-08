@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Navbar } from './components/Navbar';
 import { Hero } from './components/Hero';
 import { WhatIsVibeCoding } from './components/WhatIsVibeCoding';
@@ -13,8 +14,9 @@ import { Footer } from './components/Footer';
 import { ApplicationModal } from './components/ApplicationModal';
 import { VideoModal } from './components/VideoModal';
 import { IntegrationModal } from './components/IntegrationModal';
+import { AdminDashboard } from './components/AdminDashboard';
 
-export function App() {
+function LandingPage() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
   const [isIntegrationModalOpen, setIsIntegrationModalOpen] = useState(false);
@@ -45,37 +47,37 @@ export function App() {
       {/* 1. Header (Vibe Academy Logo, Menu toggle + APPLY FOR COHORT 02 pill) */}
       <Navbar onOpenApply={() => setIsApplyModalOpen(true)} />
 
-      {/* Main Sections (100% clone of vibeacademy.info) */}
+      {/* Main Sections */}
       <main className="flex-1">
-        {/* 2. Hero Section (Background video, Master AI-Accelerated Software Engineering, View Course, Tech Logos) */}
+        {/* 2. Hero Section */}
         <Hero />
 
-        {/* 3. 01. What is Vibe Coding (Haripur to the World, Animated marquee background, Video player) */}
+        {/* 3. 01. What is Vibe Coding */}
         <WhatIsVibeCoding onOpenVideo={handleOpenGeneralVideo} />
 
-        {/* 4. 02. The "Zero to Hero" Roadmap (5 Stages with scroll-progress gradient fill line) */}
+        {/* 4. 02. The "Zero to Hero" Roadmap */}
         <Roadmap onOpenApply={() => setIsApplyModalOpen(true)} />
 
-        {/* 5. 03. Curriculum & Pay-As-You-Go Modules (Curriculum pillars, Download PDF, Pricing tiers) */}
+        {/* 5. 03. Curriculum & Pay-As-You-Go Modules */}
         <Modules onOpenApply={() => setIsApplyModalOpen(true)} />
 
-        {/* 6. 05. Why Choose Us? (Values, Local Opportunity, Pakistan's Digital Ascent, Revenue, Salary premium, Cohort 01 Success Stories) */}
+        {/* 6. 05. Why Choose Us? */}
         <WhyChooseUs onOpenVideo={handleOpenSuccessVideo} />
 
-        {/* 7. 06. The Vibe Shift (3 Blog Articles: Shaping the Future, Gig Economy, AI Skills) */}
+        {/* 7. 06. The Vibe Shift */}
         <VibeShift />
 
-        {/* 8. 07. Team (Meet the Vibe Academy Minds with horizontal carousel and gradient bar) */}
+        {/* 8. 07. Team */}
         <Team />
 
-        {/* 9. 08. Contact (Background video, Your Competitors Are Automating, Full application form) */}
+        {/* 9. 08. Contact */}
         <Contact onOpenApply={() => setIsApplyModalOpen(true)} />
 
-        {/* 10. Map (Full-width University of Haripur BIC Google Map embed) */}
+        {/* 10. Map */}
         <MapSection />
       </main>
 
-      {/* 11. Footer (Logo, Social links, Copyright, Back to top) */}
+      {/* 11. Footer */}
       <Footer onOpenIntegration={() => setIsIntegrationModalOpen(true)} />
 
       {/* Application Form Modal */}
@@ -100,6 +102,18 @@ export function App() {
         videoSrc={activeVideoData.src}
       />
     </div>
+  );
+}
+
+export function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/admin" element={<AdminDashboard />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

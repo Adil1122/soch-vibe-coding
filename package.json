@@ -4,8 +4,10 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite --host 0.0.0.0 --port 3000",
-    "build": "tsc && vite build",
+    "dev": "concurrently -n \"CLIENT,SERVER\" -c \"cyan,magenta\" \"npm run dev:client\" \"npm run dev:server\"",
+    "dev:client": "vite --host 0.0.0.0 --port 3000",
+    "dev:server": "npm --prefix backend run start",
+    "build": "tsc && vite build && npm --prefix backend run build",
     "lint": "tsc --noEmit",
     "preview": "vite preview --host 0.0.0.0 --port 3000"
   },
@@ -14,6 +16,7 @@
     "lucide-react": "^1.16.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-router-dom": "^7.18.4",
     "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
@@ -22,6 +25,7 @@
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
+    "concurrently": "^10.0.5",
     "tailwindcss": "^4.0.0",
     "typescript": "^5.7.0",
     "vite": "^6.0.0"

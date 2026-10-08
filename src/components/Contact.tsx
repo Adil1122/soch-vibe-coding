@@ -16,10 +16,34 @@ export const Contact: React.FC<ContactProps> = () => {
   });
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.name || !formData.email) return;
     setIsSubmitted(true);
+
+    try {
+      const parts = formData.name.trim().split(' ');
+      const firstName = parts[0] || 'Applicant';
+      const lastName = parts.slice(1).join(' ') || '.';
+
+      await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          first_name: firstName,
+          last_name: lastName,
+          cnic: 'Pending',
+          email: formData.email,
+          active_whatsapp_number: formData.phone || 'N/A',
+          academic_status: formData.status,
+          message: formData.message,
+          payment_status: 'Unpaid',
+        }),
+      });
+    } catch (e) {
+      console.error('Contact form submission error:', e);
+    }
+
     setTimeout(() => {
       setFormData({
         name: '',

@@ -25,6 +25,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [referenceId, setReferenceId] = useState('');
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   // Close on Escape key
   useEffect(() => {
@@ -73,16 +74,48 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validate()) return;
     setIsSubmitting(true);
-    setTimeout(() => {
-      const randomRef = 'VB-02-' + Math.floor(100000 + Math.random() * 900000);
-      setReferenceId(randomRef);
-      setIsSubmitting(false);
+    setSubmitError(null);
+
+    try {
+      const response = await fetch('/api/inquiries', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          first_name: formData.firstName,
+          last_name: formData.lastName,
+          cnic: formData.cnic,
+          email: formData.email,
+          active_whatsapp_number: formData.whatsapp,
+          emergency_contact_name: formData.emergencyContactName,
+          emergency_contact_phone: formData.emergencyContactPhone,
+          academic_status: formData.academicStatus,
+          programming_background: formData.programmingBackground,
+          referral_code: formData.referralCode,
+          message: formData.message,
+          payment_status: 'Unpaid',
+        }),
+      });
+
+      const resData = await response.json();
+
+      if (!response.ok) {
+        throw new Error(resData?.message || 'Failed to submit application. Please check your inputs.');
+      }
+
+      setReferenceId(resData.referenceId || `VB-02-${String(resData.inquiryId).padStart(6, '0')}`);
       setIsSubmitted(true);
-    }, 600);
+    } catch (err: any) {
+      console.error('Application submit error:', err);
+      setSubmitError(err.message || 'Network error connecting to admissions server. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -331,15 +364,22 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                 />
               </div>
 
+              {/* Submission Error Banner */}
+              {submitError && (
+                <div className="p-3 bg-red-500/15 border border-red-500/40 rounded-xl text-red-300 text-xs">
+                  {submitError}
+                </div>
+              )}
+
               {/* Submit Button - Transparent with gradient border */}
               <div className="pt-3">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full vibe-btn-dark !py-3.5 !text-sm font-semibold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full vibe-btn-dark !py-3.5 !text-sm font-semibold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <Send className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Submitting...' : 'Submit Form'}</span>
+                  <span>{isSubmitting ? 'Saving to Database...' : 'Submit Form'}</span>
                 </button>
               </div>
             </form>
