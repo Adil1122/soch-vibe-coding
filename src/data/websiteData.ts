@@ -327,6 +327,26 @@ export const SUCCESS_STORIES: SuccessStory[] = [
     thumbnailUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=800&q=80',
     videoDuration: '2:58',
     achievement: 'Serving 14 clinics across Hazara region'
+  },
+  {
+    id: 'story-4',
+    studentName: 'Zainab Tariq',
+    role: 'Batch 01 Graduate • AI Product Developer',
+    projectBuilt: 'Built "VoiceDesk AI" — Urdu & English bilingual customer phone receptionist for regional businesses.',
+    quote: 'The hands-on lab at UOH BIC turned abstract AI papers into working, money-making products. In Cohort 01, we deployed code on real servers from week 3.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=800&q=80',
+    videoDuration: '3:20',
+    achievement: 'Contracted by 8 Haripur businesses'
+  },
+  {
+    id: 'story-5',
+    studentName: 'Usman Farooq',
+    role: 'Batch 01 Graduate • Frontend Systems Engineer',
+    projectBuilt: 'Developed "Hazara Freight Dispatch" — real-time truck tracking and automated invoice generation portal.',
+    quote: 'Learning to build with next-gen AI workflows boosted my development velocity tenfold. I completed our entire capstone in a single weekend with production tests.',
+    thumbnailUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=800&q=80',
+    videoDuration: '4:05',
+    achievement: 'Hired as Lead Frontend Developer'
   }
 ];
 

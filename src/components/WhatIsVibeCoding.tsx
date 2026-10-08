@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Play } from 'lucide-react';
+import { SectionPill } from './SectionPill';
 
 interface WhatIsVibeCodingProps {
   onOpenVideo?: () => void;
@@ -11,32 +12,30 @@ export const WhatIsVibeCoding: React.FC<WhatIsVibeCodingProps> = ({ onOpenVideo 
   return (
     <section
       id="what-is-vibe-coding"
-      className="py-20 md:py-28 overflow-hidden relative"
+      className="pt-12 sm:pt-14 pb-16 sm:pb-20 overflow-hidden relative"
       style={{
         background: 'linear-gradient(180deg, #BEBEBE 0%, #CCCCCC 35%, #CBCBCB 70%, #F2F2F2 100%)'
       }}
     >
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 text-center relative z-10">
-        {/* Section Tag */}
-        <div>
-          <span className="section-tag-light">
-            01. what is vibe coding
-          </span>
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
+        {/* Section Tag (Equal distance from Tech Logos ribbon above: pt-12 sm:pt-14) */}
+        <div className="flex justify-center">
+          <SectionPill label="01. what is vibe coding" variant="light" />
         </div>
 
-        {/* Narrative Heading */}
-        <h2 className="text-2xl sm:text-3xl md:text-[35px] font-semibold text-black tracking-tight leading-snug font-sans">
+        {/* Narrative Heading (Equal distance: mt-5 sm:mt-6) */}
+        <h2 className="mt-5 sm:mt-6 text-lg sm:text-xl md:text-[22px] font-normal text-black tracking-tight leading-snug font-sans">
           From Haripur to the world! 🇵🇰
         </h2>
 
-        {/* Supporting Text */}
-        <p className="text-base sm:text-lg md:text-[19px] text-[#333333] max-w-3xl mx-auto leading-relaxed font-normal">
+        {/* Supporting Text (Equal distance: mt-4 sm:mt-5) */}
+        <p className="mt-4 sm:mt-5 text-base sm:text-lg md:text-[19px] text-[#333333] max-w-3xl mx-auto leading-relaxed font-normal">
           There’s a new wave of innovation coming, and you’re at the center of it. This summer, we’re giving you the tools to dream bigger and build faster. Let’s show the world what we’re capable of. Your life-changing summer starts now.
         </p>
       </div>
 
-      {/* Video section with animated marquee running directly in the center behind the video */}
-      <div className="relative w-full mt-14 py-8 overflow-hidden flex items-center justify-center">
+      {/* Video section with animated marquee running directly in the center behind the video (Equal distance: mt-12 sm:mt-14) */}
+      <div className="relative w-full mt-12 sm:mt-14 py-4 sm:py-6 overflow-hidden flex items-center justify-center">
         {/* Animated Marquee in the vertical and horizontal center directly behind the video */}
         <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 pointer-events-none select-none z-0 overflow-hidden">
           <div className="animate-marquee flex items-center gap-14 whitespace-nowrap">

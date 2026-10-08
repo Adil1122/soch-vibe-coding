@@ -1,88 +1,209 @@
 import React from 'react';
-import { ArrowUp } from 'lucide-react';
 
-export const Footer: React.FC = () => {
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+interface FooterProps {
+  onOpenIntegration?: () => void;
+}
 
+export const Footer: React.FC<FooterProps> = ({ onOpenIntegration }) => {
   return (
-    <footer className="bg-black text-white py-14 border-t border-white/10">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 text-center sm:text-left">
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-6">
-          {/* Logo on Footer */}
-          <div className="space-y-2 flex flex-col items-center sm:items-start">
-            <a href="#home" className="inline-block">
+    <>
+      <footer className="custom-footer">
+        {/* SOCIAL */}
+        <div className="footer-top">
+          <a
+            href="https://www.facebook.com/profile.php?id=61589446406739"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              src="https://vibeacademy.info/wp-content/uploads/2026/05/FB.png"
+              alt="Facebook"
+            />
+            Facebook
+          </a>
+          <a
+            href="https://www.instagram.com/vibeacademy01/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              src="https://vibeacademy.info/wp-content/uploads/2026/05/insta.png"
+              alt="Instagram"
+            />
+            Instagram
+          </a>
+          <a
+            href="https://www.linkedin.com/in/vibe-academy/"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              src="https://vibeacademy.info/wp-content/uploads/2026/05/Linkdline.png"
+              alt="LinkedIn"
+            />
+            LinkedIn
+          </a>
+          <a
+            href="https://www.tiktok.com/@vibeacademy01"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              src="https://vibeacademy.info/wp-content/uploads/2026/05/logo-21.png"
+              alt="TikTok"
+            />
+            TikTok
+          </a>
+          {/* WHATSAPP */}
+          <a
+            href="https://api.whatsapp.com/send/?phone=923335744117&text&type=phone_number&app_absent=0"
+            target="_blank"
+            rel="noreferrer"
+          >
+            <img
+              src="https://vibeacademy.info/wp-content/uploads/2026/05/logo-3.png"
+              alt="WhatsApp"
+            />
+            WhatsApp
+          </a>
+        </div>
+
+        {/* BOTTOM */}
+        <div className="footer-bottom">
+          <div className="copy">
+            © Vibe Academy 2026 |<br />
+            Backed by the UOH Business Incubation Center (BIC).
+            {onOpenIntegration && (
+              <div className="pt-2">
+                <button
+                  type="button"
+                  onClick={onOpenIntegration}
+                  className="text-xs text-[#78daeb] hover:text-white underline cursor-pointer transition"
+                >
+                  ⚡ Database &amp; WhatsApp Integration Guide
+                </button>
+              </div>
+            )}
+          </div>
+          {/* LOGO */}
+          <div className="footer-logo">
+            <a href="#home">
               <img
                 src="https://vibeacademy.info/wp-content/uploads/2024/11/Vibe-.png"
                 alt="Vibe Academy Logo"
-                className="h-10 w-auto object-contain"
-              />
-            </a>
-            <p className="text-xs text-white/60 max-w-sm">
-              Office 330 second floor admin block university of haripur, Pakistan
-            </p>
-          </div>
-
-          {/* Social Links (matching reference icons and links) */}
-          <div className="flex items-center gap-3">
-            <a
-              href="https://facebook.com"
-              target="_blank"
-              rel="noreferrer"
-              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center p-2.5 transition-all"
-              aria-label="Facebook"
-            >
-              <img
-                src="https://vibeacademy.info/wp-content/uploads/2026/05/FB.png"
-                alt="Facebook"
-                className="w-full h-full object-contain filter invert"
-              />
-            </a>
-            <a
-              href="https://instagram.com"
-              target="_blank"
-              rel="noreferrer"
-              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center p-2.5 transition-all"
-              aria-label="Instagram"
-            >
-              <img
-                src="https://vibeacademy.info/wp-content/uploads/2026/05/insta.png"
-                alt="Instagram"
-                className="w-full h-full object-contain filter invert"
-              />
-            </a>
-            <a
-              href="https://linkedin.com"
-              target="_blank"
-              rel="noreferrer"
-              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/25 flex items-center justify-center p-2.5 transition-all"
-              aria-label="LinkedIn"
-            >
-              <img
-                src="https://vibeacademy.info/wp-content/uploads/2026/05/Linkdline.png"
-                alt="LinkedIn"
-                className="w-full h-full object-contain filter invert"
+                className="w-12 sm:w-14 h-auto object-contain mx-auto"
               />
             </a>
           </div>
-
-          {/* Back to Top */}
-          <button
-            onClick={scrollToTop}
-            className="inline-flex items-center gap-2 text-xs uppercase tracking-wider text-white/60 hover:text-white transition-colors cursor-pointer"
-          >
-            <span>Back to top</span>
-            <ArrowUp className="w-4 h-4" />
-          </button>
+          <div className="design">
+            Address: Office 330 second floor admin block <br />
+            university of haripur
+          </div>
         </div>
+      </footer>
 
-        {/* Copyright */}
-        <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center justify-between text-xs text-white/50 gap-3">
-          <span>© Vibe Academy 2026 | Backed by the University of Haripur Business Incubation Center (BIC)</span>
-          <span>From Haripur to the World! 🇵🇰</span>
-        </div>
-      </div>
-    </footer>
+      <style>{`
+        .custom-footer {
+          width: 100%;
+          padding: 70px 60px 40px;
+          background: #000;
+          color: #fff;
+          font-family: Arial, sans-serif;
+          box-sizing: border-box;
+        }
+        /* SOCIAL */
+        .footer-top {
+          display: grid;
+          grid-template-columns: repeat(5, 1fr);
+          gap: 30px;
+          padding-bottom: 28px;
+          border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .footer-top a {
+          color: #ddd;
+          text-decoration: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          font-size: 18px;
+          white-space: nowrap;
+          transition: color 0.2s ease;
+        }
+        .footer-top a:hover {
+          color: #fff;
+        }
+        .footer-top img {
+          width: 32px;
+          height: 32px;
+          border-radius: 50%;
+          object-fit: cover;
+        }
+        /* BOTTOM */
+        .footer-bottom {
+          display: grid;
+          grid-template-columns: 1fr auto 1fr;
+          align-items: center;
+          gap: 20px;
+          padding-top: 35px;
+        }
+        .copy {
+          color: #bdbdbd;
+          font-size: 16px;
+          line-height: 1.5;
+        }
+        .footer-logo {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        .footer-logo img {
+          max-width: 55px;
+          width: 55px;
+          height: auto;
+          object-fit: contain;
+          display: block;
+          margin: 0 auto;
+        }
+        .design {
+          text-align: right;
+          color: #bdbdbd;
+          font-size: 16px;
+          line-height: 1.5;
+        }
+        /* RESPONSIVE */
+        @media(max-width: 991px) {
+          .footer-top {
+            grid-template-columns: 1fr 1fr;
+          }
+          .footer-bottom {
+            grid-template-columns: 1fr;
+            text-align: center;
+          }
+          .design, .copy {
+            text-align: center;
+          }
+          .footer-logo {
+            margin: 12px auto;
+          }
+          .footer-logo img {
+            max-width: 48px;
+            width: 48px;
+          }
+        }
+        @media(max-width: 576px) {
+          .custom-footer {
+            padding: 50px 25px;
+          }
+          .footer-top {
+            grid-template-columns: 1fr;
+            gap: 18px;
+          }
+          .footer-top a {
+            justify-content: flex-start;
+          }
+        }
+      `}</style>
+    </>
   );
 };

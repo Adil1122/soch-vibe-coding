@@ -100,16 +100,9 @@ export const Navbar: React.FC<NavbarProps> = ({ onOpenApply }) => {
             {/* Apply Button with Gradient Border (matching reference 100%) */}
             <button
               onClick={onOpenApply}
-              className="relative rounded-full p-[2px] transition-all duration-300 hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
-              style={{
-                background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
-              }}
+              className="vibe-btn-dark !py-1.5 !px-4 sm:!px-6 !text-xs sm:!text-sm font-semibold uppercase tracking-wider whitespace-nowrap"
             >
-              <div className="px-4 py-1.5 sm:px-6 sm:py-2 rounded-full bg-black/60 hover:bg-transparent transition-colors">
-                <span className="text-white text-xs sm:text-sm font-semibold uppercase tracking-wider font-sans whitespace-nowrap">
-                  APPLY FOR COHORT 02
-                </span>
-              </div>
+              <span>APPLY FOR COHORT 02</span>
             </button>
           </div>
 

@@ -1,5 +1,6 @@
 import React, { useRef } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { SectionPill } from './SectionPill';
 
 export const Team: React.FC = () => {
   const sliderRef = useRef<HTMLDivElement>(null);
@@ -47,24 +48,24 @@ export const Team: React.FC = () => {
   return (
     <section
       id="team"
-      className="py-20 md:py-28 relative"
+      className="py-16 sm:py-20 relative"
       style={{
         background: 'linear-gradient(180deg, #F2F2F2 0%, #F2F2F2 100%)'
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Tag & Heading */}
-        <div className="text-center space-y-4">
-          <span className="section-tag-light">
-            07. Team
-          </span>
-          <h2 className="text-2xl sm:text-4xl md:text-[40px] font-bold text-black tracking-tight leading-snug font-sans">
+        <div className="text-center">
+          <div className="flex justify-center">
+            <SectionPill label="07. Team" variant="light" />
+          </div>
+          <h2 className="mt-5 sm:mt-6 text-lg sm:text-xl md:text-[22px] font-normal text-black tracking-tight leading-snug font-sans">
             Meet the Vibe Academy Minds
           </h2>
         </div>
 
         {/* Team Cards Slider */}
-        <div className="mt-12 space-y-8 max-w-[1200px] mx-auto">
+        <div className="mt-12 sm:mt-16 space-y-8 max-w-[1200px] mx-auto">
           <div
             ref={sliderRef}
             className="flex gap-6 overflow-x-auto scroll-smooth pb-4 no-scrollbar"

@@ -3,7 +3,7 @@ import { TechLogosBar } from './TechLogosBar';
 
 export const Hero: React.FC = () => {
   return (
-    <section id="home" className="relative min-h-screen flex flex-col justify-between pt-32 sm:pt-40 pb-0 overflow-hidden bg-black">
+    <section id="home" className="relative pt-28 sm:pt-36 pb-0 overflow-hidden bg-black text-white">
       {/* Background Video (matching reference 100%) */}
       <div className="absolute inset-0 w-full h-full overflow-hidden pointer-events-none z-0">
         <video
@@ -19,28 +19,31 @@ export const Hero: React.FC = () => {
       </div>
 
       {/* Main Centered Content */}
-      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6 sm:space-y-8 my-auto py-12">
+      <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-8 sm:pt-12">
         {/* Main Headline (matches 0-top-section.PNG) */}
-        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[52px] font-semibold text-white tracking-tight leading-[1.15] font-sans">
+        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-[34px] font-normal text-white tracking-tight leading-[1.25] font-sans">
           Master AI-Accelerated <br />
           Software Engineering
         </h1>
 
         {/* Subtitle Paragraph (matches 0-top-section.PNG) */}
-        <p className="text-lg sm:text-xl md:text-[21px] text-white/90 max-w-3xl mx-auto leading-relaxed md:leading-[34px] font-normal">
+        <p className="mt-5 sm:mt-6 text-base sm:text-lg md:text-[19px] text-white/90 max-w-3xl mx-auto leading-relaxed md:leading-[32px] font-normal">
           Build production-ready software 5x faster using next-generation AI workflows. Officially backed by the UOH Business Incubation Center (BIC)
         </p>
 
-        {/* View Course Action Button */}
-        <div className="pt-2 flex justify-center">
-          <a href="#Curriculum-pricing" className="custom-btn cursor-pointer">
-            <span className="btn-text">View Course</span>
+        {/* View Course Action Button (Transparent with gradient border) */}
+        <div className="mt-6 sm:mt-8 flex justify-center">
+          <a
+            href="#Curriculum-pricing"
+            className="vibe-btn-dark !px-8 !py-3 !text-xs sm:!text-sm font-semibold uppercase tracking-wider"
+          >
+            <span>View Course</span>
           </a>
         </div>
       </div>
 
-      {/* Full-width continuous animated technologies ribbon */}
-      <div className="relative z-10 w-full mt-auto">
+      {/* Full-width continuous animated technologies ribbon - Spaced equally (mt-12 sm:mt-14) */}
+      <div className="relative z-10 w-full mt-12 sm:mt-14 border-t border-b border-white/5 bg-black/40 backdrop-blur-sm">
         <TechLogosBar />
       </div>
     </section>

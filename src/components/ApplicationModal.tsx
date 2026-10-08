@@ -8,14 +8,17 @@ interface ApplicationModalProps {
 
 export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onClose }) => {
   const [formData, setFormData] = useState({
-    fullName: '',
+    firstName: '',
+    lastName: '',
+    cnic: '',
     email: '',
-    phone: '',
-    city: 'Haripur',
-    status: 'University Student',
-    experienceLevel: 'Basic Coding Knowledge',
-    reasonForJoining: '',
-    agreedToCommit: false
+    whatsapp: '',
+    emergencyContactName: '',
+    emergencyContactPhone: '',
+    academicStatus: '',
+    programmingBackground: '',
+    referralCode: '',
+    message: ''
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -44,18 +47,28 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
 
   const validate = () => {
     const newErrors: Record<string, string> = {};
-    if (!formData.fullName.trim()) newErrors.fullName = 'Full Name is required';
+    if (!formData.firstName.trim()) newErrors.firstName = 'First Name is required';
+    if (!formData.lastName.trim()) newErrors.lastName = 'Last Name is required';
+    if (!formData.cnic.trim()) newErrors.cnic = 'CNIC / B-Form Number is required';
     if (!formData.email.trim()) {
-      newErrors.email = 'Email address is required';
+      newErrors.email = 'Email is required';
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
       newErrors.email = 'Enter a valid email address';
     }
-    if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone / WhatsApp number is required';
+    if (!formData.whatsapp.trim()) newErrors.whatsapp = 'Active WhatsApp Number is required';
+    if (!formData.emergencyContactName.trim()) {
+      newErrors.emergencyContactName = 'Guardian / Emergency Contact Name is required';
     }
-    if (!formData.agreedToCommit) {
-      newErrors.agreedToCommit = 'You must confirm commitment to participate';
+    if (!formData.emergencyContactPhone.trim()) {
+      newErrors.emergencyContactPhone = 'Guardian / Emergency Phone Line is required';
     }
+    if (!formData.academicStatus) {
+      newErrors.academicStatus = 'Please select Academic Status';
+    }
+    if (!formData.programmingBackground) {
+      newErrors.programmingBackground = 'Please select Programming Background';
+    }
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -65,11 +78,11 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
     if (!validate()) return;
     setIsSubmitting(true);
     setTimeout(() => {
-      const randomRef = 'VB-' + Math.floor(100000 + Math.random() * 900000);
+      const randomRef = 'VB-02-' + Math.floor(100000 + Math.random() * 900000);
       setReferenceId(randomRef);
       setIsSubmitting(false);
       setIsSubmitted(true);
-    }, 1200);
+    }, 600);
   };
 
   return (
@@ -81,63 +94,98 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
       />
 
       {/* Modal Box */}
-      <div className="relative bg-[#121212] text-white w-full max-w-2xl rounded-3xl shadow-2xl border border-white/15 overflow-hidden z-10 my-8">
+      <div className="relative bg-[#121212] text-white w-full max-w-2xl rounded-3xl shadow-2xl border border-white/15 overflow-hidden z-10 my-8 max-h-[92vh] flex flex-col">
         {/* Header */}
-        <div className="px-6 py-5 bg-[#181818] border-b border-white/10 flex items-center justify-between">
+        <div className="px-6 py-4 bg-[#181818] border-b border-white/10 flex items-center justify-between shrink-0">
           <div className="flex items-center gap-2">
             <GraduationCap className="w-5 h-5 text-[#78daeb]" />
-            <h3 className="text-lg font-bold text-white">
-              Apply for Vibe Academy — Cohort 02
-            </h3>
+            <div>
+              <h3 className="text-base sm:text-lg font-bold text-white">
+                Apply Now — Cohort 02
+              </h3>
+              <p className="text-[11px] text-white/60">
+                Backed by UOH Business Incubation Center (BIC)
+              </p>
+            </div>
           </div>
           <button
             onClick={onClose}
             aria-label="Close modal"
-            className="p-1 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+            className="p-1.5 rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Content */}
-        <div className="p-6 sm:p-8">
+        {/* Content (Scrollable) */}
+        <div className="p-6 sm:p-8 overflow-y-auto">
           {isSubmitted ? (
             <div className="text-center py-8 space-y-4">
               <CheckCircle2 className="w-16 h-16 text-[#78daeb] mx-auto animate-bounce" />
               <h4 className="text-2xl font-bold text-white">Application Submitted!</h4>
-              <p className="text-sm text-white/70 max-w-md mx-auto">
-                Your application for Cohort 02 has been registered. Reference ID:{' '}
+              <p className="text-sm text-white/70 max-w-md mx-auto leading-relaxed">
+                Thank you, <strong className="text-white">{formData.firstName}</strong>. Your Cohort 02 registration has been recorded. Reference ID:{' '}
                 <span className="font-mono font-bold text-[#c9459c]">{referenceId}</span>.
-                We will contact you via WhatsApp / Email shortly.
+                The admissions desk at University of Haripur BIC will contact you shortly.
               </p>
               <div className="pt-4">
                 <button
                   onClick={onClose}
-                  className="px-8 py-3 rounded-full text-sm font-bold uppercase tracking-wider text-white shadow-xl cursor-pointer"
-                  style={{
-                    background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
-                  }}
+                  className="vibe-btn-dark !px-8 !py-3 !text-sm font-semibold uppercase tracking-wider"
                 >
-                  Done
+                  <span>Done</span>
                 </button>
               </div>
             </div>
           ) : (
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 text-left">
+              {/* 1. First & Last Name */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                    First Name *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="First Name"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
+                  />
+                  {errors.firstName && <p className="text-xs text-red-400 mt-1">{errors.firstName}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                    Last Name *
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Last Name"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
+                  />
+                  {errors.lastName && <p className="text-xs text-red-400 mt-1">{errors.lastName}</p>}
+                </div>
+              </div>
+
+              {/* 2. CNIC / B-Form Number */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
-                  Full Name *
+                  CNIC / B-Form Number *
                 </label>
                 <input
                   type="text"
-                  placeholder="e.g. Asad Ullah"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
+                  placeholder="e.g. 13302-1234567-1"
+                  value={formData.cnic}
+                  onChange={(e) => setFormData({ ...formData, cnic: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm font-mono"
                 />
-                {errors.fullName && <p className="text-xs text-red-400 mt-1">{errors.fullName}</p>}
+                {errors.cnic && <p className="text-xs text-red-400 mt-1">{errors.cnic}</p>}
               </div>
 
+              {/* 3. Email & Active WhatsApp Number */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
@@ -145,7 +193,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                   </label>
                   <input
                     type="email"
-                    placeholder="name@example.com"
+                    placeholder="Email"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
@@ -155,91 +203,143 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
-                    Phone / WhatsApp *
+                    Active WhatsApp Number *
                   </label>
                   <input
                     type="tel"
-                    placeholder="+92 300 1234567"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                    placeholder="Active WhatsApp Number"
+                    value={formData.whatsapp}
+                    onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
                   />
-                  {errors.phone && <p className="text-xs text-red-400 mt-1">{errors.phone}</p>}
+                  {errors.whatsapp && <p className="text-xs text-red-400 mt-1">{errors.whatsapp}</p>}
                 </div>
               </div>
 
+              {/* 4. Guardian / Emergency Contact Name & Phone Line */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
-                    Status
+                    Guardian / Emergency Contact Name *
                   </label>
-                  <select
-                    value={formData.status}
-                    onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white focus:outline-none focus:border-[#78daeb] text-sm"
-                  >
-                    <option value="UOH IT Student" className="bg-[#121212] text-white">UOH IT Student</option>
-                    <option value="UOH Non-IT Student" className="bg-[#121212] text-white">UOH Non-IT Student</option>
-                    <option value="External Candidate" className="bg-[#121212] text-white">External Candidate</option>
-                  </select>
+                  <input
+                    type="text"
+                    placeholder="Guardian / Emergency Contact Name"
+                    value={formData.emergencyContactName}
+                    onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
+                  />
+                  {errors.emergencyContactName && (
+                    <p className="text-xs text-red-400 mt-1">{errors.emergencyContactName}</p>
+                  )}
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
-                    Experience Level
+                    Guardian / Emergency Phone Line *
                   </label>
-                  <select
-                    value={formData.experienceLevel}
-                    onChange={(e) => setFormData({ ...formData, experienceLevel: e.target.value })}
-                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white focus:outline-none focus:border-[#78daeb] text-sm"
-                  >
-                    <option value="Complete Beginner" className="bg-[#121212] text-white">Complete Beginner</option>
-                    <option value="Basic Coding Knowledge" className="bg-[#121212] text-white">Basic Coding Knowledge</option>
-                    <option value="Intermediate Developer" className="bg-[#121212] text-white">Intermediate Developer</option>
-                  </select>
+                  <input
+                    type="tel"
+                    placeholder="Guardian / Emergency Phone Line"
+                    value={formData.emergencyContactPhone}
+                    onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
+                    className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
+                  />
+                  {errors.emergencyContactPhone && (
+                    <p className="text-xs text-red-400 mt-1">{errors.emergencyContactPhone}</p>
+                  )}
                 </div>
               </div>
 
+              {/* 5. Academic Status Category */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
-                  Why do you want to join? (Optional)
+                  Academic Status Category *
                 </label>
-                <textarea
-                  rows={3}
-                  placeholder="Share your goals with AI-driven Vibe Coding..."
-                  value={formData.reasonForJoining}
-                  onChange={(e) => setFormData({ ...formData, reasonForJoining: e.target.value })}
+                <select
+                  value={formData.academicStatus}
+                  onChange={(e) => setFormData({ ...formData, academicStatus: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white focus:outline-none focus:border-[#78daeb] text-sm cursor-pointer"
+                >
+                  <option value="" className="bg-[#121212] text-white/50">- Select -</option>
+                  <option value="IT Department  (Computer Science / SE / IT)" className="bg-[#121212] text-white">
+                    IT Department  (Computer Science / SE / IT)
+                  </option>
+                  <option value="Non-IT Department" className="bg-[#121212] text-white">
+                    Non-IT Department
+                  </option>
+                  <option value="External Candidate" className="bg-[#121212] text-white">
+                    External Candidate
+                  </option>
+                </select>
+                {errors.academicStatus && (
+                  <p className="text-xs text-red-400 mt-1">{errors.academicStatus}</p>
+                )}
+              </div>
+
+              {/* 6. Existing Programming Background */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                  Existing Programming Background *
+                </label>
+                <select
+                  value={formData.programmingBackground}
+                  onChange={(e) => setFormData({ ...formData, programmingBackground: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white focus:outline-none focus:border-[#78daeb] text-sm cursor-pointer"
+                >
+                  <option value="" className="bg-[#121212] text-white/50">- Select -</option>
+                  <option value="Absolute Beginner (Zero development experience)" className="bg-[#121212] text-white">
+                    Absolute Beginner (Zero development experience)
+                  </option>
+                  <option value="Intermediate (Knows basic syntax parameters / HTML / CSS)" className="bg-[#121212] text-white">
+                    Intermediate (Knows basic syntax parameters / HTML / CSS)
+                  </option>
+                  <option value="Advanced (Can deploy functional custom application layers)" className="bg-[#121212] text-white">
+                    Advanced (Can deploy functional custom application layers)
+                  </option>
+                </select>
+                {errors.programmingBackground && (
+                  <p className="text-xs text-red-400 mt-1">{errors.programmingBackground}</p>
+                )}
+              </div>
+
+              {/* 7. Referral Code */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                  Referral Code (Optional)
+                </label>
+                <input
+                  type="text"
+                  placeholder="Referral Code"
+                  value={formData.referralCode}
+                  onChange={(e) => setFormData({ ...formData, referralCode: e.target.value })}
                   className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
                 />
               </div>
 
-              <div className="flex items-start gap-2 pt-2">
-                <input
-                  type="checkbox"
-                  id="commit"
-                  checked={formData.agreedToCommit}
-                  onChange={(e) => setFormData({ ...formData, agreedToCommit: e.target.checked })}
-                  className="mt-1 accent-[#78daeb]"
-                />
-                <label htmlFor="commit" className="text-xs text-white/70">
-                  I agree to commit 10-15 hours/week for live project building &amp; lab sessions at Haripur BIC.
+              {/* 8. Your Message */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                  Your Message (Optional)
                 </label>
+                <textarea
+                  rows={3}
+                  placeholder="Your Message"
+                  value={formData.message}
+                  onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm resize-none"
+                />
               </div>
-              {errors.agreedToCommit && (
-                <p className="text-xs text-red-400">{errors.agreedToCommit}</p>
-              )}
 
-              <div className="pt-4">
+              {/* Submit Button - Transparent with gradient border */}
+              <div className="pt-3">
                 <button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full py-3.5 rounded-full text-sm font-bold uppercase tracking-wider text-white shadow-xl cursor-pointer flex items-center justify-center gap-2 hover:scale-[1.01] transition-transform"
-                  style={{
-                    background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
-                  }}
+                  className="w-full vibe-btn-dark !py-3.5 !text-sm font-semibold uppercase tracking-wider flex items-center justify-center gap-2 cursor-pointer"
                 >
                   <Send className="w-4 h-4" />
-                  <span>{isSubmitting ? 'Submitting...' : 'Submit Cohort 02 Application'}</span>
+                  <span>{isSubmitting ? 'Submitting...' : 'Submit Form'}</span>
                 </button>
               </div>
             </form>

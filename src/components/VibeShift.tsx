@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { SectionPill } from './SectionPill';
 
 export const VibeShift: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(1); // Default to Slide 1 (Navigating Pakistan's Gig Economy) matching 4-the-vibe-shift.PNG
@@ -43,25 +44,23 @@ export const VibeShift: React.FC = () => {
   const currentSlide = slides[currentIndex];
 
   return (
-    <section id="blogs" className="py-20 md:py-28 bg-[#F2F2F2] border-t border-black/5 text-black relative">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="blogs" className="py-16 sm:py-20 bg-[#F2F2F2] border-t border-black/5 text-black relative">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header (matching 4-the-vibe-shift.PNG 100%) */}
-        <div className="text-center space-y-4">
-          <div>
-            <span className="section-tag-light">
-              06. Blog
-            </span>
+        <div className="text-center">
+          <div className="flex justify-center">
+            <SectionPill label="06. Blog" variant="light" />
           </div>
-          <h2 className="text-2xl sm:text-4xl md:text-[40px] font-bold text-black tracking-tight leading-snug font-sans">
+          <h2 className="mt-5 sm:mt-6 text-lg sm:text-xl md:text-[22px] font-normal text-black tracking-tight leading-snug font-sans">
             The Vibe Shift
           </h2>
-          <p className="text-base sm:text-lg md:text-[19px] text-[#555555] max-w-2xl mx-auto font-normal">
+          <p className="mt-4 sm:mt-5 text-base sm:text-lg md:text-[19px] text-[#555555] max-w-2xl mx-auto font-normal">
             Democratizing AI &amp; Shaping the Next Generation of Pakistani Developers.
           </p>
         </div>
 
         {/* Carousel Slider (matching 4-the-vibe-shift.PNG 100%) */}
-        <div className="relative max-w-5xl mx-auto px-2 sm:px-8 mt-12">
+        <div className="relative max-w-5xl mx-auto px-2 sm:px-8 mt-12 sm:mt-16">
           {/* Left Arrow Button */}
           <button
             onClick={handlePrev}
@@ -95,7 +94,7 @@ export const VibeShift: React.FC = () => {
 
             {/* Right Column: Article Details */}
             <div className="md:col-span-6 space-y-4 text-left">
-              <h3 className="text-2xl sm:text-3xl md:text-[34px] font-bold text-black leading-[1.25] tracking-tight">
+              <h3 className="text-xl sm:text-2xl md:text-[26px] font-bold text-black leading-[1.3] tracking-tight">
                 {currentSlide.title}
               </h3>
 
@@ -103,11 +102,11 @@ export const VibeShift: React.FC = () => {
                 {currentSlide.desc}
               </p>
 
-              {/* Read More button with gradient border */}
+              {/* Read More button - Transparent with gradient border */}
               <div className="pt-3">
                 <button
                   onClick={() => setSelectedPost(currentSlide)}
-                  className="custom-btn-dark cursor-pointer text-sm font-semibold"
+                  className="vibe-btn-light !px-7 !py-2.5 !text-xs sm:!text-sm font-semibold uppercase tracking-wider"
                 >
                   <span>Read More</span>
                 </button>

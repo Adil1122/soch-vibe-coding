@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Download, CheckCircle2 } from 'lucide-react';
+import { SectionPill } from './SectionPill';
 
 interface ModulesProps {
   onOpenApply: () => void;
@@ -15,23 +16,23 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
   ];
 
   return (
-    <section id="Curriculum-pricing" className="py-20 md:py-28 bg-[#F7F7F7] border-t border-black/5 text-black relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="Curriculum-pricing" className="py-16 sm:py-20 bg-[#F7F7F7] border-t border-black/5 text-black relative">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Tag & Heading */}
-        <div className="text-center space-y-4">
-          <span className="section-tag-light">
-            03. Modules
-          </span>
-          <h2 className="text-2xl sm:text-4xl md:text-[40px] font-bold text-black tracking-tight leading-snug font-sans">
+        <div className="text-center">
+          <div className="flex justify-center">
+            <SectionPill label="03. Modules" variant="light" />
+          </div>
+          <h2 className="mt-5 sm:mt-6 text-lg sm:text-xl md:text-[22px] font-normal text-black tracking-tight leading-snug font-sans">
             Curriculum &amp; Pay-As-You-Go Modules
           </h2>
         </div>
 
         {/* Two-Column Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mt-12">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-start mt-12 sm:mt-16">
           {/* Left Column: Curriculum Overview */}
           <div className="lg:col-span-6 space-y-6 text-left">
-            <h3 className="text-3xl sm:text-4xl font-extrabold text-black">
+            <h3 className="text-2xl sm:text-3xl font-bold text-black">
               Curriculum
             </h3>
 
@@ -40,7 +41,7 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
             </p>
 
             <div className="space-y-4 pt-2">
-              <h4 className="text-xl sm:text-2xl font-bold text-black">
+              <h4 className="text-lg sm:text-xl font-bold text-black">
                 Core Pillars:
               </h4>
 
@@ -56,16 +57,16 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
               </div>
             </div>
 
-            {/* Download Curriculum Button */}
+            {/* Download Curriculum Button - Transparent with gradient border */}
             <div className="pt-6">
               <a
                 href="https://vibeacademy.info/wp-content/uploads/2026/05/3-month-curriculum.pdf"
                 target="_blank"
                 rel="noreferrer"
-                className="custom-btn-dark cursor-pointer inline-flex items-center gap-2"
+                className="vibe-btn-light !px-7 !py-3 !text-xs sm:!text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
               >
-                <Download className="w-4 h-4 mr-1 text-[#4467b0]" />
-                <span className="font-semibold">Download Curriculum For Free</span>
+                <Download className="w-4 h-4 text-[#4467b0]" />
+                <span>Download Curriculum For Free</span>
               </a>
             </div>
           </div>
@@ -73,7 +74,7 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
           {/* Right Column: Pay-As-You-Go Modules & Pricing */}
           <div className="lg:col-span-6 bg-white border border-black/10 rounded-[35px] p-6 sm:p-10 shadow-xl space-y-8">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <h3 className="text-2xl sm:text-3xl font-extrabold text-black">
+              <h3 className="text-xl sm:text-2xl font-bold text-black">
                 Pay-As-You-Go Modules
               </h3>
 
@@ -110,8 +111,8 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
                     Flexible Enrollment
                   </span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-xl sm:text-2xl font-semibold text-[#555555]">PKR</span>
-                    <span className="text-3xl sm:text-4xl md:text-[38px] font-bold text-black tracking-tight">
+                    <span className="text-base sm:text-lg font-normal text-[#555555]">PKR</span>
+                    <span className="text-lg sm:text-xl font-normal text-black tracking-tight">
                       8,500
                     </span>
                     <span className="text-sm text-[#777777]">/ Month</span>
@@ -136,14 +137,12 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
                   </div>
                 </div>
 
+                {/* Apply Button - Transparent with gradient border */}
                 <button
                   onClick={onOpenApply}
-                  className="w-full py-4 rounded-full text-sm font-bold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
-                  style={{
-                    background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
-                  }}
+                  className="w-full vibe-btn-light !py-3.5 !text-xs sm:!text-sm font-semibold uppercase tracking-wider flex items-center justify-center"
                 >
-                  APPLY FOR COHORT 02
+                  <span>APPLY FOR COHORT 02</span>
                 </button>
               </div>
             ) : (
@@ -153,8 +152,8 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
                     Best Value Full Accelerator
                   </span>
                   <div className="flex items-baseline gap-2">
-                    <span className="text-xl sm:text-2xl font-semibold text-[#555555]">PKR</span>
-                    <span className="text-3xl sm:text-4xl md:text-[38px] font-bold text-black tracking-tight">
+                    <span className="text-base sm:text-lg font-normal text-[#555555]">PKR</span>
+                    <span className="text-lg sm:text-xl font-normal text-black tracking-tight">
                       25,500
                     </span>
                     <span className="text-sm text-[#777777]">/ Total Bundle</span>
@@ -179,14 +178,12 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
                   </div>
                 </div>
 
+                {/* Apply Button - Transparent with gradient border */}
                 <button
                   onClick={onOpenApply}
-                  className="w-full py-4 rounded-full text-sm font-bold uppercase tracking-wider text-white shadow-xl transition-all duration-300 hover:scale-[1.02] cursor-pointer"
-                  style={{
-                    background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
-                  }}
+                  className="w-full vibe-btn-light !py-3.5 !text-xs sm:!text-sm font-semibold uppercase tracking-wider flex items-center justify-center"
                 >
-                  APPLY FOR COHORT 02
+                  <span>APPLY FOR COHORT 02</span>
                 </button>
               </div>
             )}

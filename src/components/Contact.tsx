@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { MapPin, Phone, Send, CheckCircle2 } from 'lucide-react';
+import { SectionPill } from './SectionPill';
 
 interface ContactProps {
   onOpenApply?: () => void;
@@ -59,10 +60,8 @@ export const Contact: React.FC<ContactProps> = () => {
           }}
         >
           {/* Section Tag */}
-          <div>
-            <span className="section-tag-light bg-black/60 text-white border-white/20">
-              08. Contact
-            </span>
+          <div className="flex justify-center">
+            <SectionPill label="08. Contact" variant="dark" />
           </div>
 
           {/* Vibe Academy Logo centered */}
@@ -74,8 +73,8 @@ export const Contact: React.FC<ContactProps> = () => {
             />
           </div>
 
-          {/* Heading (smaller and not bolder, matching reference site 28px-30px font-semibold) */}
-          <h2 className="text-xl sm:text-2xl md:text-[30px] font-semibold text-white tracking-tight leading-snug font-sans">
+          {/* Heading (smaller and not bolder) */}
+          <h2 className="text-base sm:text-lg md:text-[20px] font-normal text-white tracking-tight leading-snug font-sans">
             Your Competitors Are Automating. <br />
             Are you?
           </h2>
@@ -134,15 +133,15 @@ export const Contact: React.FC<ContactProps> = () => {
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
                   className="w-full px-5 py-3.5 rounded-[20px] bg-[#80807F] text-white focus:outline-none focus:ring-2 focus:ring-white/40 text-sm font-sans border-0 cursor-pointer"
                 >
-                  <option value="University of Haripur Student" className="bg-[#444444] text-white">University of Haripur Student</option>
-                  <option value="Non-University Student" className="bg-[#444444] text-white">Non-University Student</option>
-                  <option value="Working Professional / Freelancer" className="bg-[#444444] text-white">Working Professional / Freelancer</option>
+                  <option value="UOH IT Student " className="bg-[#444444] text-white">UOH IT Student </option>
+                  <option value="UOH Non-IT Student " className="bg-[#444444] text-white">UOH Non-IT Student </option>
+                  <option value="External Candidate)." className="bg-[#444444] text-white">External Candidate).</option>
                 </select>
               </div>
 
               <div>
                 <textarea
-                  rows={3}
+                  rows={4}
                   placeholder="Message"
                   value={formData.message}
                   onChange={(e) => setFormData({ ...formData, message: e.target.value })}
@@ -150,11 +149,11 @@ export const Contact: React.FC<ContactProps> = () => {
                 />
               </div>
 
-              {/* Submit Pill Button matching reference .custom-btn */}
+              {/* Submit Pill Button - Transparent with gradient border */}
               <div className="pt-2 flex justify-center">
                 <button
                   type="submit"
-                  className="custom-btn cursor-pointer text-sm font-semibold uppercase tracking-wider inline-flex items-center gap-2"
+                  className="vibe-btn-dark !px-8 !py-3 !text-xs sm:!text-sm font-semibold uppercase tracking-wider flex items-center gap-2"
                 >
                   <span>Send You Request</span>
                   <Send className="w-4 h-4 ml-1" />

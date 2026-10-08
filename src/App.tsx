@@ -12,10 +12,12 @@ import { MapSection } from './components/MapSection';
 import { Footer } from './components/Footer';
 import { ApplicationModal } from './components/ApplicationModal';
 import { VideoModal } from './components/VideoModal';
+import { IntegrationModal } from './components/IntegrationModal';
 
 export function App() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
   const [isVideoModalOpen, setIsVideoModalOpen] = useState(false);
+  const [isIntegrationModalOpen, setIsIntegrationModalOpen] = useState(false);
   const [activeVideoData, setActiveVideoData] = useState({
     title: 'What is Vibe Coding?',
     subtitle: 'Learn how developers combine software engineering fundamentals with modern AI workflows.',
@@ -74,12 +76,18 @@ export function App() {
       </main>
 
       {/* 11. Footer (Logo, Social links, Copyright, Back to top) */}
-      <Footer />
+      <Footer onOpenIntegration={() => setIsIntegrationModalOpen(true)} />
 
       {/* Application Form Modal */}
       <ApplicationModal
         isOpen={isApplyModalOpen}
         onClose={() => setIsApplyModalOpen(false)}
+      />
+
+      {/* Database & WhatsApp Integration Guide Modal */}
+      <IntegrationModal
+        isOpen={isIntegrationModalOpen}
+        onClose={() => setIsIntegrationModalOpen(false)}
       />
 
       {/* Video Lightbox Modal */}
@@ -96,5 +104,3 @@ export function App() {
 }
 
 export default App;
-
-// test change

@@ -39,29 +39,36 @@
   background-clip: text;
 }
 
-/* Gradient outline pill button (matching reference .custom-btn) */
-.custom-btn {
+/* Transparent Button with Gradient Border for Dark Backgrounds */
+.custom-btn,
+.vibe-btn-dark {
   display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 12px 42px;
-  border-radius: 50px;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 32px;
+  border-radius: 9999px !important;
   text-decoration: none;
   font-family: "Geist", sans-serif;
+  font-size: 13px;
   font-weight: 500;
-  color: #fff;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #ffffff !important;
   position: relative;
   overflow: hidden;
   z-index: 1;
-  background: transparent;
+  background: transparent !important;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.custom-btn::before {
+.custom-btn::before,
+.vibe-btn-dark::before {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 150px;
+  border-radius: 9999px;
   padding: 2px;
   background: linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -71,63 +78,48 @@
   transition: all 0.3s ease;
 }
 
-.custom-btn:hover {
-  background: linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c);
-  box-shadow: 0 0 25px rgba(120, 218, 235, 0.4);
+.custom-btn:hover,
+.vibe-btn-dark:hover {
+  background: linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(120, 218, 235, 0.4);
 }
 
-/* Tag badge used on every section of vibeacademy.info */
-.section-tag {
-  display: inline-flex;
-  align-items: center;
-  padding: 8px 22px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: #2b2b2b;
-  color: #ffffff;
-  border: 1px solid rgba(255, 255, 255, 0.15);
+.custom-btn:hover *,
+.vibe-btn-dark:hover * {
+  color: #ffffff !important;
 }
 
-.section-tag-light {
+/* Transparent Button with Gradient Border for Light Backgrounds */
+.custom-btn-dark,
+.vibe-btn-light {
   display: inline-flex;
   align-items: center;
-  padding: 8px 22px;
-  border-radius: 9999px;
-  font-size: 12px;
-  font-weight: 500;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  background: transparent;
-  color: #000000;
-  border: 1px solid rgba(0, 0, 0, 0.2);
-}
-
-/* Gradient outline pill button for light backgrounds */
-.custom-btn-dark {
-  display: inline-flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 42px;
-  border-radius: 50px;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 32px;
+  border-radius: 9999px !important;
   text-decoration: none;
   font-family: "Geist", sans-serif;
+  font-size: 13px;
   font-weight: 500;
-  color: #000000;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #000000 !important;
   position: relative;
   overflow: hidden;
   z-index: 1;
-  background: transparent;
+  background: transparent !important;
   transition: all 0.3s ease;
+  cursor: pointer;
 }
 
-.custom-btn-dark::before {
+.custom-btn-dark::before,
+.vibe-btn-light::before {
   content: "";
   position: absolute;
   inset: 0;
-  border-radius: 150px;
+  border-radius: 9999px;
   padding: 2px;
   background: linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c);
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
@@ -137,10 +129,16 @@
   transition: all 0.3s ease;
 }
 
-.custom-btn-dark:hover {
-  background: linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c);
-  color: #ffffff;
-  box-shadow: 0 0 25px rgba(120, 218, 235, 0.4);
+.custom-btn-dark:hover,
+.vibe-btn-light:hover {
+  background: linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c) !important;
+  color: #ffffff !important;
+  box-shadow: 0 0 20px rgba(120, 218, 235, 0.4);
+}
+
+.custom-btn-dark:hover *,
+.vibe-btn-light:hover * {
+  color: #ffffff !important;
 }
 
 /* Marquee Animations */

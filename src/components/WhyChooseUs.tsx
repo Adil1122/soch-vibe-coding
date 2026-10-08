@@ -1,12 +1,16 @@
-import React from 'react';
-import { Play, Award, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Play, Award, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SUCCESS_STORIES } from '../data/websiteData';
+import { SectionPill } from './SectionPill';
 
 interface WhyChooseUsProps {
   onOpenVideo?: (videoData: { title: string; subtitle: string; tagline: string; src: string }) => void;
 }
 
 export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenVideo }) => {
+  const [desktopIndex, setDesktopIndex] = useState(0);
+  const [mobileIndex, setMobileIndex] = useState(0);
+
   const handlePlayStory = (story: typeof SUCCESS_STORIES[0]) => {
     if (onOpenVideo) {
       onOpenVideo({
@@ -18,44 +22,82 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenVideo }) => {
     }
   };
 
+  const handlePrev = () => {
+    setDesktopIndex((prev) => (prev === 0 ? SUCCESS_STORIES.length - 1 : prev - 1));
+    setMobileIndex((prev) => (prev === 0 ? SUCCESS_STORIES.length - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setDesktopIndex((prev) => (prev + 1) % SUCCESS_STORIES.length);
+    setMobileIndex((prev) => (prev + 1) % SUCCESS_STORIES.length);
+  };
+
+  // 3 stories visible in one line on desktop
+  const visibleDesktopStories = [
+    SUCCESS_STORIES[desktopIndex % SUCCESS_STORIES.length],
+    SUCCESS_STORIES[(desktopIndex + 1) % SUCCESS_STORIES.length],
+    SUCCESS_STORIES[(desktopIndex + 2) % SUCCESS_STORIES.length]
+  ];
+
   return (
     <section
       id="why-choose-us"
-      className="py-20 md:py-28 relative border-t border-black/5"
+      className="py-16 sm:py-20 relative border-t border-black/5"
       style={{
         background: 'linear-gradient(180deg, #F2F2F2 0%, #FFFFFF 100%)'
       }}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Tag & Heading */}
-        <div className="text-center space-y-4">
-          <span className="section-tag-light">
-            05. Values
-          </span>
-          <h2 className="text-2xl sm:text-4xl md:text-[40px] font-bold text-black tracking-tight leading-snug font-sans">
+        <div className="text-center">
+          <div className="flex justify-center">
+            <SectionPill label="05. Values" variant="light" />
+          </div>
+          <h2 className="mt-5 sm:mt-6 text-lg sm:text-xl md:text-[22px] font-normal text-black tracking-tight leading-snug font-sans">
             Why Choose Us?
           </h2>
-          <p className="text-base sm:text-lg md:text-[19px] text-[#555555] max-w-2xl mx-auto font-normal">
+          <p className="mt-4 sm:mt-5 text-base sm:text-lg md:text-[19px] text-[#555555] max-w-2xl mx-auto font-normal">
             Proven Outcomes • Watch real software &amp; careers shipped by our COHORT 01 graduates.
           </p>
         </div>
 
-        {/* COHORT 01 Video Success Stories Grid */}
-        <div className="space-y-6">
+        {/* COHORT 01 Video Success Stories Slider Container */}
+        <div className="space-y-6 mt-12 sm:mt-16">
           <div className="flex items-center justify-between pb-2 border-b border-black/10">
             <div className="flex items-center gap-2">
               <Award className="w-5 h-5 text-[#2A6EB4]" />
-              <h3 className="text-lg sm:text-xl font-bold text-black">
+              <h3 className="text-base sm:text-lg font-bold text-black">
                 Cohort 01 Video Success Stories
               </h3>
             </div>
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#458543] bg-[#458543]/10 px-3 py-1 rounded-full">
-              100% Shipped Live Code
-            </span>
+            <div className="flex items-center gap-4">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#458543] bg-[#458543]/10 px-3 py-1 rounded-full hidden sm:inline-block">
+                100% Shipped Live Code
+              </span>
+
+              {/* Slider Navigation Buttons */}
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={handlePrev}
+                  aria-label="Previous Success Story"
+                  className="w-8 h-8 rounded-full bg-black/80 hover:bg-black text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-105"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={handleNext}
+                  aria-label="Next Success Story"
+                  className="w-8 h-8 rounded-full bg-black/80 hover:bg-black text-white flex items-center justify-center transition-all cursor-pointer shadow-sm hover:scale-105"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {SUCCESS_STORIES.map((story) => (
+          {/* 1. DESKTOP VIEW: In ONE LINE showing exactly 3 cards with slider transition */}
+          <div className="hidden md:grid md:grid-cols-3 gap-6 lg:gap-8">
+            {visibleDesktopStories.map((story) => (
               <div
                 key={story.id}
                 className="bg-white rounded-[32px] border border-black/10 overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col group hover:-translate-y-1"
@@ -96,7 +138,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenVideo }) => {
                 <div className="p-6 flex-1 flex flex-col justify-between space-y-4">
                   <div className="space-y-3">
                     <div>
-                      <h4 className="text-xl font-bold text-black">
+                      <h4 className="text-lg font-bold text-black">
                         {story.studentName}
                       </h4>
                       <p className="text-xs font-semibold text-[#2A6EB4] mt-0.5">
@@ -130,6 +172,116 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenVideo }) => {
                 </div>
               </div>
             ))}
+          </div>
+
+          {/* Desktop Dots indicator */}
+          <div className="hidden md:flex items-center justify-center gap-2 pt-2">
+            {SUCCESS_STORIES.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => setDesktopIndex(idx)}
+                aria-label={`Go to story page ${idx + 1}`}
+                className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                  desktopIndex === idx ? 'w-8 bg-black' : 'w-2.5 bg-[#cccccc] hover:bg-[#999999]'
+                }`}
+              />
+            ))}
+          </div>
+
+          {/* 2. MOBILE VIEW: Slider showing ONLY 1 card at a time in one line */}
+          <div className="block md:hidden">
+            {SUCCESS_STORIES.map((story, idx) => {
+              if (idx !== mobileIndex) return null;
+              return (
+                <div
+                  key={story.id}
+                  className="bg-white rounded-[28px] border border-black/10 overflow-hidden shadow-lg transition-all duration-300 flex flex-col animate-in fade-in"
+                >
+                  {/* Video Thumbnail with Play Button */}
+                  <div
+                    onClick={() => handlePlayStory(story)}
+                    className="relative aspect-video bg-black overflow-hidden cursor-pointer"
+                  >
+                    <img
+                      src={story.thumbnailUrl}
+                      alt={story.studentName}
+                      className="w-full h-full object-cover opacity-90"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent flex items-center justify-center">
+                      <div
+                        className="w-13 h-13 rounded-full flex items-center justify-center text-white shadow-2xl"
+                        style={{
+                          background: 'linear-gradient(135deg, #4467b0, #6b388d, #78daeb, #c9459c)'
+                        }}
+                      >
+                        <Play className="w-5 h-5 fill-white ml-0.5" />
+                      </div>
+                    </div>
+
+                    {/* Duration badge */}
+                    <div className="absolute bottom-3 right-3 bg-black/80 text-white text-[10px] font-mono font-bold px-2 py-0.5 rounded backdrop-blur-sm">
+                      {story.videoDuration}
+                    </div>
+
+                    {/* Cohort 01 Tag */}
+                    <div className="absolute top-3 left-3 bg-black/80 text-white text-[10px] font-semibold uppercase px-2.5 py-1 rounded-full border border-white/20">
+                      Cohort 01 Graduate
+                    </div>
+                  </div>
+
+                  {/* Details */}
+                  <div className="p-5 flex-1 flex flex-col justify-between space-y-4 text-left">
+                    <div className="space-y-3">
+                      <div>
+                        <h4 className="text-lg font-bold text-black">
+                          {story.studentName}
+                        </h4>
+                        <p className="text-xs font-semibold text-[#2A6EB4] mt-0.5">
+                          {story.role}
+                        </p>
+                      </div>
+
+                      <div className="bg-[#f6f6f6] p-3 rounded-2xl text-xs text-[#333333] border border-black/5">
+                        <strong className="text-black block mb-0.5">Project Built:</strong>
+                        {story.projectBuilt}
+                      </div>
+
+                      <p className="text-xs text-[#555555] italic leading-relaxed border-l-2 border-[#c9459c] pl-3">
+                        "{story.quote}"
+                      </p>
+                    </div>
+
+                    <div className="pt-3 border-t border-black/5 flex items-center justify-between text-xs">
+                      <span className="font-bold text-[#458543] flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5" />
+                        <span>{story.achievement}</span>
+                      </span>
+                      <button
+                        onClick={() => handlePlayStory(story)}
+                        className="text-black hover:text-[#4467b0] font-semibold text-xs cursor-pointer flex items-center gap-1"
+                      >
+                        <span>Watch Story</span>
+                        <span>→</span>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+
+            {/* Mobile Dots Indicator */}
+            <div className="flex items-center justify-center gap-2 mt-5">
+              {SUCCESS_STORIES.map((_, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => setMobileIndex(idx)}
+                  aria-label={`Go to story ${idx + 1}`}
+                  className={`h-2.5 rounded-full transition-all duration-300 cursor-pointer ${
+                    mobileIndex === idx ? 'w-7 bg-black' : 'w-2.5 bg-[#cccccc]'
+                  }`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </div>
