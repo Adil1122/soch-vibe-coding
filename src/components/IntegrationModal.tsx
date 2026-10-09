@@ -48,49 +48,61 @@ export const IntegrationModal: React.FC<IntegrationModalProps> = ({ isOpen, onCl
 
   if (!isOpen) return null;
 
-  const sqlCode = `-- 1. Create Database if it does not exist
-CREATE DATABASE IF NOT EXISTS vibe_academy 
-  CHARACTER SET utf8mb4 
-  COLLATE utf8mb4_unicode_ci;
-
-USE vibe_academy;
-
--- 2. Create inquiries table with all form fields and timestamp audits
+  const sqlCode = `-- Run this in your Supabase Project > SQL Editor:
 CREATE TABLE IF NOT EXISTS inquiries (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  first_name VARCHAR(255) NOT NULL,
-  last_name VARCHAR(255) NOT NULL,
-  cnic VARCHAR(50) NOT NULL,
-  email VARCHAR(255) NOT NULL,
-  active_whatsapp_number VARCHAR(50) NOT NULL,
-  phone VARCHAR(50) NULL,
-  emergency_contact_name VARCHAR(255) NULL,
-  emergency_contact_phone VARCHAR(50) NULL,
-  academic_status VARCHAR(255) NULL,
-  programming_background VARCHAR(255) NULL,
-  referral_code VARCHAR(100) NULL,
-  message TEXT NULL,
-  payment_status ENUM('paid', 'unpaid') NOT NULL DEFAULT 'unpaid',
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  deleted_at TIMESTAMP NULL DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  id BIGSERIAL PRIMARY KEY,
+  first_name TEXT NOT NULL,
+  last_name TEXT NOT NULL,
+  cnic TEXT NOT NULL DEFAULT 'Pending',
+  email TEXT NOT NULL,
+  active_whatsapp_number TEXT,
+  phone TEXT,
+  emergency_contact_name TEXT,
+  emergency_contact_phone TEXT,
+  academic_status TEXT,
+  programming_background TEXT,
+  referral_code TEXT,
+  message TEXT,
+  payment_status TEXT NOT NULL DEFAULT 'Unpaid',
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ
+);
 
--- Optional verification query
-SELECT * FROM inquiries ORDER BY created_at DESC;`;
+-- Enable RLS and allow inserts & reads
+ALTER TABLE inquiries ENABLE ROW LEVEL SECURITY;
 
-  const envSample = `# 1. Local MySQL Database Settings
-MYSQL_HOST=127.0.0.1
-MYSQL_PORT=3306
-MYSQL_USER=root
-MYSQL_PASSWORD=
-MYSQL_DATABASE=vibe_academy
+DO $$ 
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'inquiries' AND policyname = 'Allow insert to inquiries'
+  ) THEN
+    CREATE POLICY "Allow insert to inquiries" ON inquiries FOR INSERT WITH CHECK (true);
+  END IF;
 
-# 2. WhatsApp Business Cloud API (Meta Graph API)
-WHATSAPP_CLOUD_API_ACCESS_TOKEN=EAAG...YOUR_PERMANENT_OR_TEST_TOKEN
-WHATSAPP_PHONE_NUMBER_ID=104829182910291
-WHATSAPP_API_VERSION=v21.0
-WHATSAPP_TEMPLATE_NAME=
-WHATSAPP_TEMPLATE_LANG=en_US`;
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'inquiries' AND policyname = 'Allow select on inquiries'
+  ) THEN
+    CREATE POLICY "Allow select on inquiries" ON inquiries FOR SELECT USING (true);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_policies WHERE tablename = 'inquiries' AND policyname = 'Allow update on inquiries'
+  ) THEN
+    CREATE POLICY "Allow update on inquiries" ON inquiries FOR UPDATE USING (true);
+  END IF;
+END $$;
+
+SELECT * FROM inquiries ORDER BY created_at DESC LIMIT 10;`;
+
+  const envSample = `# Set these in Vercel > Project Settings > Environment Variables:
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=eyJhbGciOi...your_public_anon_key
+SUPABASE_SERVICE_ROLE_KEY=eyJhbGciOi...your_service_role_key (optional, bypasses RLS)
+
+# Admin Portal Credentials
+ADMIN_USER=admin
+ADMIN_PASS=admin123
+JWT_SECRET=soch_vibe_coding_secret_key_2026`;
 
   const copyToClipboard = (text: string, type: 'sql' | 'env') => {
     navigator.clipboard.writeText(text);
