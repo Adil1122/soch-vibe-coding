@@ -4,6 +4,34 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
+      "source": "/api/inquiries/health",
+      "destination": "/api/inquiries/health"
+    },
+    {
+      "source": "/api/inquiries/stats",
+      "destination": "/api/inquiries/stats"
+    },
+    {
+      "source": "/api/inquiries/:id/payment-status",
+      "destination": "/api/inquiries/:id/payment-status"
+    },
+    {
+      "source": "/api/inquiries/:id",
+      "destination": "/api/inquiries/[id]"
+    },
+    {
+      "source": "/api/inquiries",
+      "destination": "/api/inquiries"
+    },
+    {
+      "source": "/api/auth/:path*",
+      "destination": "/api/auth/:path*"
+    },
+    {
+      "source": "/api/:path*",
+      "destination": "/api/[...route]"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
