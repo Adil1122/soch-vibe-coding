@@ -33,7 +33,7 @@ export class InquiriesController {
 
   /**
    * Public endpoint: User clicks "Apply for Cohort 02" and submits the application form.
-   * Data is inserted into `inquiries` table in MySQL `vibe_coding_db`.
+   * Data is inserted into `inquiries` table in Supabase.
    */
   @Post()
   async create(@Body() createInquiryDto: CreateInquiryDto) {

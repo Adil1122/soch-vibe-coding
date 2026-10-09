@@ -1,94 +1,61 @@
-import { Injectable, OnModuleInit, OnModuleDestroy, Logger } from '@nestjs/common';
-import * as mysql from 'mysql2/promise';
+import { Injectable, OnModuleInit, Logger } from '@nestjs/common';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 @Injectable()
-export class DatabaseService implements OnModuleInit, OnModuleDestroy {
+export class DatabaseService implements OnModuleInit {
   private readonly logger = new Logger(DatabaseService.name);
-  private pool: mysql.Pool;
+  private supabase: SupabaseClient;
 
   async onModuleInit() {
-    const host = process.env.DB_HOST || '127.0.0.1';
-    const port = Number(process.env.DB_PORT) || 3306;
-    const user = process.env.DB_USER || 'root';
-    const password = process.env.DB_PASSWORD || '';
-    const database = process.env.DB_NAME || 'vibe_coding_db';
+    const projectUrl = process.env.SUPABASE_URL;
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 
-    this.logger.log(`Connecting to MySQL database: ${database} on ${host}:${port} as ${user}...`);
+    if (!projectUrl || !serviceRoleKey) {
+      this.logger.error('SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY must be set in environment variables.');
+      throw new Error('Missing Supabase configuration.');
+    }
 
-    this.pool = mysql.createPool({
-      host,
-      port,
-      user,
-      password,
-      database,
-      waitForConnections: true,
-      connectionLimit: 10,
-      queueLimit: 0,
+    this.logger.log(`Connecting to Supabase: ${projectUrl}`);
+
+    this.supabase = createClient(projectUrl, serviceRoleKey, {
+      auth: {
+        autoRefreshToken: false,
+        persistSession: false,
+      },
     });
 
+    // Verify connection
     try {
-      const connection = await this.pool.getConnection();
-      this.logger.log('Successfully connected to MySQL database.');
-      connection.release();
-
-      await this.ensureTableSchema();
+      const { error } = await this.supabase.from('inquiries').select('id').limit(1);
+      if (error && error.code !== 'PGRST116' && error.code !== '42P01') {
+        this.logger.warn(`Supabase connection check warning: ${error.message}`);
+      } else {
+        this.logger.log('Successfully connected to Supabase.');
+      }
     } catch (err: any) {
-      this.logger.error(`Database connection failed: ${err.message}`, err.stack);
+      this.logger.warn(`Could not verify Supabase connection: ${err.message}`);
     }
   }
 
-  async onModuleDestroy() {
-    if (this.pool) {
-      await this.pool.end();
-      this.logger.log('Database pool destroyed.');
-    }
-  }
-
-  private async ensureTableSchema() {
-    const createTableSql = `
-      CREATE TABLE IF NOT EXISTS inquiries (
-        id INT AUTO_INCREMENT PRIMARY KEY,
-        first_name VARCHAR(255) NOT NULL,
-        last_name VARCHAR(255) NOT NULL,
-        cnic VARCHAR(50) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        active_whatsapp_number VARCHAR(50) NOT NULL,
-        emergency_contact_name VARCHAR(255) NULL,
-        emergency_contact_phone VARCHAR(50) NULL,
-        academic_status VARCHAR(255) NULL,
-        programming_background VARCHAR(255) NULL,
-        referral_code VARCHAR(100) NULL,
-        message TEXT NULL,
-        payment_status ENUM('Paid', 'Unpaid') NOT NULL DEFAULT 'Unpaid',
-        created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP NULL DEFAULT NULL
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-    `;
-    try {
-      await this.pool.query(createTableSql);
-      this.logger.log('Ensured inquiries table exists in database.');
-    } catch (err: any) {
-      this.logger.warn(`Could not verify table schema: ${err.message}`);
-    }
-  }
-
-  async query<T = any>(sql: string, params: any[] = []): Promise<T> {
-    const [results] = await this.pool.query(sql, params);
-    return results as T;
+  getClient(): SupabaseClient {
+    return this.supabase;
   }
 
   async checkHealth(): Promise<{ status: string; database: string; timestamp: string }> {
     try {
-      await this.pool.query('SELECT 1');
+      const { error } = await this.supabase.from('inquiries').select('id').limit(1);
+      if (error && error.code !== 'PGRST116' && error.code !== '42P01') {
+        throw new Error(error.message);
+      }
       return {
         status: 'UP',
-        database: process.env.DB_NAME || 'vibe_coding_db',
+        database: process.env.SUPABASE_URL || 'supabase',
         timestamp: new Date().toISOString(),
       };
     } catch (e: any) {
       return {
         status: 'DOWN',
-        database: process.env.DB_NAME || 'vibe_coding_db',
+        database: process.env.SUPABASE_URL || 'supabase',
         timestamp: new Date().toISOString(),
       };
     }

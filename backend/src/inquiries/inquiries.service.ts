@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { DatabaseService } from '../database/database.service';
 import { CreateInquiryDto } from './dto/create-inquiry.dto';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export interface Inquiry {
   id: number;
@@ -23,7 +24,16 @@ export interface Inquiry {
 
 @Injectable()
 export class InquiriesService {
-  constructor(private readonly db: DatabaseService) {}
+  private db: SupabaseClient;
+
+  constructor(private readonly databaseService: DatabaseService) {}
+
+  private getDb(): SupabaseClient {
+    if (!this.db) {
+      this.db = this.databaseService.getClient();
+    }
+    return this.db;
+  }
 
   async create(dto: CreateInquiryDto) {
     const firstName = (dto.first_name || dto.firstName || '').trim();
@@ -43,41 +53,31 @@ export class InquiriesService {
       throw new BadRequestException('First Name, Last Name, CNIC, Email, and WhatsApp Number are required.');
     }
 
-    const insertSql = `
-      INSERT INTO inquiries (
-        first_name,
-        last_name,
+    const { data, error } = await this.getDb()
+      .from('inquiries')
+      .insert({
+        first_name: firstName,
+        last_name: lastName,
         cnic,
         email,
-        active_whatsapp_number,
-        phone,
-        emergency_contact_name,
-        emergency_contact_phone,
-        academic_status,
-        programming_background,
-        referral_code,
+        active_whatsapp_number: whatsapp,
+        phone: whatsapp,
+        emergency_contact_name: emergencyName,
+        emergency_contact_phone: emergencyPhone,
+        academic_status: academicStatus,
+        programming_background: programmingBackground,
+        referral_code: referralCode,
         message,
-        payment_status
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+        payment_status: paymentStatus,
+      })
+      .select('id')
+      .single();
 
-    const result: any = await this.db.query(insertSql, [
-      firstName,
-      lastName,
-      cnic,
-      email,
-      whatsapp,
-      whatsapp, // also sets legacy phone column to match whatsapp
-      emergencyName,
-      emergencyPhone,
-      academicStatus,
-      programmingBackground,
-      referralCode,
-      message,
-      paymentStatus,
-    ]);
+    if (error) {
+      throw new BadRequestException(`Failed to create inquiry: ${error.message}`);
+    }
 
-    const insertedId = result.insertId;
+    const insertedId = data.id;
     const referenceId = `VB-02-${String(insertedId).padStart(6, '0')}`;
 
     return {
@@ -104,43 +104,39 @@ export class InquiriesService {
   }
 
   async findAll(query?: { search?: string; status?: string }): Promise<Inquiry[]> {
-    let sql = 'SELECT * FROM inquiries';
-    const conditions: string[] = [];
-    const params: any[] = [];
+    let qb = this.getDb().from('inquiries').select('*');
 
     if (query?.status && ['Paid', 'Unpaid'].includes(query.status)) {
-      conditions.push('payment_status = ?');
-      params.push(query.status);
+      qb = qb.eq('payment_status', query.status);
     }
 
     if (query?.search && query.search.trim()) {
-      const searchTerm = `%${query.search.trim()}%`;
-      conditions.push(`(
-        first_name LIKE ? OR 
-        last_name LIKE ? OR 
-        email LIKE ? OR 
-        cnic LIKE ? OR 
-        active_whatsapp_number LIKE ? OR 
-        referral_code LIKE ?
-      )`);
-      params.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
+      const searchTerm = query.search.trim();
+      qb = qb.or(
+        `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,cnic.ilike.%${searchTerm}%,active_whatsapp_number.ilike.%${searchTerm}%,referral_code.ilike.%${searchTerm}%`,
+      );
     }
 
-    if (conditions.length > 0) {
-      sql += ' WHERE ' + conditions.join(' AND ');
+    qb = qb.order('created_at', { ascending: false });
+
+    const { data, error } = await qb;
+    if (error) {
+      throw new BadRequestException(`Failed to fetch inquiries: ${error.message}`);
     }
-
-    sql += ' ORDER BY created_at DESC';
-
-    return this.db.query<Inquiry[]>(sql, params);
+    return (data || []) as Inquiry[];
   }
 
   async findOne(id: number): Promise<Inquiry> {
-    const rows = await this.db.query<Inquiry[]>('SELECT * FROM inquiries WHERE id = ?', [id]);
-    if (!rows || rows.length === 0) {
+    const { data, error } = await this.getDb()
+      .from('inquiries')
+      .select('*')
+      .eq('id', id)
+      .single();
+
+    if (error || !data) {
       throw new NotFoundException(`Inquiry with ID ${id} not found.`);
     }
-    return rows[0];
+    return data as Inquiry;
   }
 
   async updatePaymentStatus(id: number, status: 'Paid' | 'Unpaid') {
@@ -151,8 +147,14 @@ export class InquiriesService {
     // Verify exists
     await this.findOne(id);
 
-    const updateSql = 'UPDATE inquiries SET payment_status = ?, updated_at = NOW() WHERE id = ?';
-    await this.db.query(updateSql, [status, id]);
+    const { error } = await this.getDb()
+      .from('inquiries')
+      .update({ payment_status: status, updated_at: new Date().toISOString() })
+      .eq('id', id);
+
+    if (error) {
+      throw new BadRequestException(`Failed to update payment status: ${error.message}`);
+    }
 
     const updated = await this.findOne(id);
     return {
@@ -164,7 +166,16 @@ export class InquiriesService {
 
   async delete(id: number) {
     await this.findOne(id);
-    await this.db.query('DELETE FROM inquiries WHERE id = ?', [id]);
+
+    const { error } = await this.getDb()
+      .from('inquiries')
+      .delete()
+      .eq('id', id);
+
+    if (error) {
+      throw new BadRequestException(`Failed to delete inquiry: ${error.message}`);
+    }
+
     return {
       success: true,
       message: `Inquiry #${id} deleted successfully.`,
@@ -172,19 +183,34 @@ export class InquiriesService {
   }
 
   async getStats() {
-    const totalRow = await this.db.query<any[]>('SELECT COUNT(*) as total FROM inquiries');
-    const paidRow = await this.db.query<any[]>("SELECT COUNT(*) as paid FROM inquiries WHERE payment_status = 'Paid'");
-    const unpaidRow = await this.db.query<any[]>("SELECT COUNT(*) as unpaid FROM inquiries WHERE payment_status = 'Unpaid'");
+    const { count: total, error: e1 } = await this.getDb()
+      .from('inquiries')
+      .select('*', { count: 'exact', head: true });
 
-    const total = totalRow[0]?.total || 0;
-    const paid = paidRow[0]?.paid || 0;
-    const unpaid = unpaidRow[0]?.unpaid || 0;
+    const { count: paid, error: e2 } = await this.getDb()
+      .from('inquiries')
+      .select('*', { count: 'exact', head: true })
+      .eq('payment_status', 'Paid');
+
+    const { count: unpaid, error: e3 } = await this.getDb()
+      .from('inquiries')
+      .select('*', { count: 'exact', head: true })
+      .eq('payment_status', 'Unpaid');
+
+    if (e1 || e2 || e3) {
+      throw new BadRequestException('Failed to fetch stats.');
+    }
+
+    const totalCount = total || 0;
+    const paidCount = paid || 0;
+    const unpaidCount = unpaid || 0;
 
     return {
-      total,
-      paid,
-      unpaid,
-      paidPercentage: total > 0 ? Math.round((paid / total) * 100) : 0,
+      total: totalCount,
+      paid: paidCount,
+      unpaid: unpaidCount,
+      paidPercentage: totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0,
     };
   }
 }
+
