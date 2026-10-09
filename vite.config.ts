@@ -14,7 +14,7 @@ export default defineConfig({
             return next();
           }
           try {
-            const { default: handler } = await server.ssrLoadModule('/api/[...route].ts');
+            const { default: handler } = await server.ssrLoadModule('/api/index.ts');
             let body = {};
             if (req.method === 'POST' || req.method === 'PATCH') {
               const buffers: Buffer[] = [];
