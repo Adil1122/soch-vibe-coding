@@ -1,0 +1,53 @@
+
+---Downloaded files---
+The import files for: Import traders were successfully downloaded!
+Initial max execution time = 300
+Files info:
+Site URL = https://aquilastech.com
+Data file = /home/u189600359/domains/aquilastech.com/public_html/wp-content/themes/traders/sample-data/contents-demo.xml
+Widget file = /home/u189600359/domains/aquilastech.com/public_html/wp-content/themes/traders/sample-data/widget-settings.json
+Customizer file = /home/u189600359/domains/aquilastech.com/public_html/wp-content/themes/traders/sample-data/customizer-data.dat
+Redux files:
+not defined!
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+[ERROR] Failed to import "04" (Media)
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+---Importing widgets---
+Error: Widget import data could not be read. Please try a different file.
+
+---Importing customizer settings---
+Error: The customizer import file is not in a correct format. Please make sure to use the correct customizer import file.
+
+---ocdi/after_import---
+

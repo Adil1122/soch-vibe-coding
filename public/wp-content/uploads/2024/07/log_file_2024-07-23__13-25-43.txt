@@ -1,0 +1,57 @@
+
+---Downloaded files---
+The import files for: Monst  Demo Content Defult were successfully downloaded!
+Initial max execution time = 300
+Files info:
+Site URL = https://aquilastech.com
+Data file = /home/u189600359/domains/aquilastech.com/public_html/wp-content/themes/monst/includes/demo-content/demo-content/demo-content.xml
+Widget file = /home/u189600359/domains/aquilastech.com/public_html/wp-content/themes/monst/includes/demo-content/demo-content/widgets.wie
+Customizer file = not defined!
+Redux files:
+monst_theme_mod -> /home/u189600359/domains/aquilastech.com/public_html/wp-content/themes/monst/includes/demo-content/demo-content/redux-options.json 
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+------
+New AJAX call!
+
+
+---Importing widgets---
+Blog Sidebar : 
+
+Block - No Title - Widget already exists
+Block - No Title - Imported
+Block - No Title - Imported
+Block - No Title - Imported
+
+Page Sidebar : 
+
+Block - No Title - Widget already exists
+Block - No Title - Widget already exists
+
+
+
+---Importing Redux settings---
+Redux settings import for: monst_theme_mod finished successfully!
+
+---ocdi/after_import---
+
