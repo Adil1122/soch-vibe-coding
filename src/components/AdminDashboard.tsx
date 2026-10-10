@@ -31,6 +31,7 @@ interface InquiryRecord {
   cnic: string;
   email: string;
   active_whatsapp_number: string;
+  phone?: string;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
   academic_status: string | null;
@@ -81,7 +82,7 @@ export const AdminDashboard: React.FC = () => {
     }
   };
 
-  // Fetch inquiries from NestJS backend
+  // Fetch inquiries from backend
   const fetchInquiries = async () => {
     if (!token) return;
     setIsLoading(true);
@@ -100,6 +101,10 @@ export const AdminDashboard: React.FC = () => {
       }
 
       const json = await res.json();
+      if (json.supabaseError) {
+        setErrorMsg(`Supabase notice: ${json.supabaseError}`);
+      }
+
       if (json.success && Array.isArray(json.data)) {
         setInquiries(json.data);
       } else {
@@ -107,7 +112,7 @@ export const AdminDashboard: React.FC = () => {
       }
     } catch (err: any) {
       console.error(err);
-      setErrorMsg('Failed to connect to backend server. Make sure the NestJS server is running.');
+      setErrorMsg('Failed to connect to backend server. Make sure the server is reachable.');
     } finally {
       setIsLoading(false);
     }
@@ -255,33 +260,47 @@ export const AdminDashboard: React.FC = () => {
 
   // Filtered & Sorted Inquiries
   const filteredInquiries = useMemo(() => {
-    return inquiries
+    return (inquiries || [])
       .filter((item) => {
-        if (statusFilter !== 'ALL' && item.payment_status !== statusFilter) {
+        if (!item) return false;
+        const itemStatus = String(item.payment_status || 'Unpaid').toLowerCase();
+        if (statusFilter !== 'ALL' && itemStatus !== statusFilter.toLowerCase()) {
           return false;
         }
         if (!searchTerm.trim()) return true;
-        const q = searchTerm.toLowerCase();
+        const q = searchTerm.toLowerCase().trim();
+        const fName = String(item.first_name || '').toLowerCase();
+        const lName = String(item.last_name || '').toLowerCase();
+        const mail = String(item.email || '').toLowerCase();
+        const cnic = String(item.cnic || '').toLowerCase();
+        const phone = String(item.active_whatsapp_number || item.phone || '').toLowerCase();
+        const ref = String(item.referral_code || '').toLowerCase();
+        const msg = String(item.message || '').toLowerCase();
         return (
-          item.first_name.toLowerCase().includes(q) ||
-          item.last_name.toLowerCase().includes(q) ||
-          item.email.toLowerCase().includes(q) ||
-          item.cnic.toLowerCase().includes(q) ||
-          item.active_whatsapp_number.toLowerCase().includes(q) ||
-          (item.referral_code && item.referral_code.toLowerCase().includes(q))
+          fName.includes(q) ||
+          lName.includes(q) ||
+          mail.includes(q) ||
+          cnic.includes(q) ||
+          phone.includes(q) ||
+          ref.includes(q) ||
+          msg.includes(q)
         );
       })
       .sort((a, b) => {
-        const timeA = new Date(a.created_at).getTime();
-        const timeB = new Date(b.created_at).getTime();
-        return sortBy === 'newest' ? timeB - timeA : timeA - timeB;
+        const timeA = new Date(a.created_at || 0).getTime();
+        const timeB = new Date(b.created_at || 0).getTime();
+        if (timeA && timeB) {
+          return sortBy === 'newest' ? timeB - timeA : timeA - timeB;
+        }
+        return sortBy === 'newest' ? (b.id || 0) - (a.id || 0) : (a.id || 0) - (b.id || 0);
       });
   }, [inquiries, searchTerm, statusFilter, sortBy]);
 
   // Statistics
   const stats = useMemo(() => {
-    const total = inquiries.length;
-    const paid = inquiries.filter((i) => i.payment_status === 'Paid').length;
+    const list = inquiries || [];
+    const total = list.length;
+    const paid = list.filter((i) => String(i.payment_status || '').toLowerCase() === 'paid').length;
     const unpaid = total - paid;
     const paidRate = total > 0 ? Math.round((paid / total) * 100) : 0;
     return { total, paid, unpaid, paidRate };
@@ -430,7 +449,7 @@ export const AdminDashboard: React.FC = () => {
                 }`}
               />
               <span className="text-white/70 text-[11px]">
-                {dbHealth === 'UP' ? 'MySQL: vibe_coding_db' : 'MySQL Offline'}
+                {dbHealth === 'UP' ? 'Supabase: inquiries' : 'DB Offline'}
               </span>
             </div>
 
@@ -636,21 +655,41 @@ export const AdminDashboard: React.FC = () => {
                     <td colSpan={7} className="py-16 text-center text-white/50">
                       <div className="flex flex-col items-center gap-2">
                         <RefreshCw className="w-6 h-6 animate-spin text-[#78daeb]" />
-                        <span className="text-sm">Loading applications from MySQL...</span>
+                        <span className="text-sm">Fetching applications from database...</span>
                       </div>
                     </td>
                   </tr>
                 ) : filteredInquiries.length === 0 ? (
                   <tr>
                     <td colSpan={7} className="py-16 text-center text-white/50">
-                      <div className="max-w-xs mx-auto space-y-2">
+                      <div className="max-w-md mx-auto space-y-3">
                         <Users className="w-10 h-10 text-white/20 mx-auto" />
-                        <p className="text-base font-medium text-white/70">No applications match</p>
-                        <p className="text-xs text-white/40">
-                          {searchTerm
-                            ? `No records found matching "${searchTerm}". Try a different keyword.`
-                            : 'No inquiries recorded yet. Applications submitted via the modal will appear here.'}
+                        <p className="text-base font-semibold text-white/80">No applications match</p>
+                        <p className="text-xs text-white/50">
+                          {searchTerm || statusFilter !== 'ALL'
+                            ? `No records found matching your active filter (${statusFilter !== 'ALL' ? `Status: ${statusFilter}` : ''} ${searchTerm ? `Search: "${searchTerm}"` : ''}).`
+                            : 'No inquiries recorded yet in the database table.'}
                         </p>
+                        <div className="flex items-center justify-center gap-2 pt-2">
+                          {(searchTerm || statusFilter !== 'ALL') && (
+                            <button
+                              onClick={() => {
+                                setSearchTerm('');
+                                setStatusFilter('ALL');
+                              }}
+                              className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 text-xs text-white font-medium cursor-pointer transition-colors"
+                            >
+                              Reset Filters
+                            </button>
+                          )}
+                          <button
+                            onClick={fetchInquiries}
+                            className="px-3 py-1.5 rounded-xl bg-[#78daeb]/20 hover:bg-[#78daeb]/30 border border-[#78daeb]/30 text-xs text-[#78daeb] font-medium cursor-pointer transition-colors flex items-center gap-1.5"
+                          >
+                            <RefreshCw className="w-3.5 h-3.5" />
+                            <span>Reload from Database</span>
+                          </button>
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -675,12 +714,12 @@ export const AdminDashboard: React.FC = () => {
                                   : 'linear-gradient(135deg, #6b388d, #c9459c)',
                               }}
                             >
-                              {inquiry.first_name[0]}
-                              {inquiry.last_name[0]}
+                              {(inquiry.first_name?.[0] || 'A').toUpperCase()}
+                              {(inquiry.last_name?.[0] || 'P').toUpperCase()}
                             </div>
                             <div>
                               <div className="font-semibold text-white flex items-center gap-1.5">
-                                <span>{inquiry.first_name} {inquiry.last_name}</span>
+                                <span>{inquiry.first_name || 'Applicant'} {inquiry.last_name || ''}</span>
                               </div>
                               <div className="text-[11px] font-mono text-[#78daeb]">
                                 Ref: VB-02-{String(inquiry.id).padStart(6, '0')}
@@ -691,25 +730,31 @@ export const AdminDashboard: React.FC = () => {
 
                         {/* 2. CNIC */}
                         <td className="py-4 px-4 font-mono text-xs text-white/80 whitespace-nowrap">
-                          {inquiry.cnic}
+                          {inquiry.cnic || '—'}
                         </td>
 
                         {/* 3. Contact Info */}
                         <td className="py-4 px-4">
                           <div className="space-y-1">
-                            <a
-                              href={`https://wa.me/${inquiry.active_whatsapp_number.replace(/[^0-9]/g, '')}`}
-                              target="_blank"
-                              rel="noreferrer"
-                              className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 transition-colors font-mono"
-                              title="Message on WhatsApp"
-                            >
-                              <Phone className="w-3.5 h-3.5" />
-                              <span>{inquiry.active_whatsapp_number}</span>
-                            </a>
+                            {(() => {
+                              const phoneNum = inquiry.active_whatsapp_number || inquiry.phone || '';
+                              const cleanDigits = phoneNum.replace(/[^0-9]/g, '');
+                              return (
+                                <a
+                                  href={cleanDigits ? `https://wa.me/${cleanDigits}` : '#'}
+                                  target="_blank"
+                                  rel="noreferrer"
+                                  className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 transition-colors font-mono"
+                                  title="Message on WhatsApp"
+                                >
+                                  <Phone className="w-3.5 h-3.5" />
+                                  <span>{phoneNum || 'N/A'}</span>
+                                </a>
+                              );
+                            })()}
                             <div className="flex items-center gap-1.5 text-xs text-white/60">
                               <Mail className="w-3.5 h-3.5 text-white/40" />
-                              <span className="truncate max-w-[180px]">{inquiry.email}</span>
+                              <span className="truncate max-w-[180px]">{inquiry.email || '—'}</span>
                             </div>
                           </div>
                         </td>
@@ -797,7 +842,7 @@ export const AdminDashboard: React.FC = () => {
           {/* Footer count indicator */}
           <div className="px-6 py-3 border-t border-white/5 bg-white/[0.01] flex items-center justify-between text-xs text-white/50">
             <span>Showing {filteredInquiries.length} of {inquiries.length} inquiries</span>
-            <span>Database: MySQL (`vibe_coding_db`)</span>
+            <span>Database: Supabase (`inquiries`)</span>
           </div>
         </div>
       </main>
@@ -902,22 +947,28 @@ export const AdminDashboard: React.FC = () => {
                   <span className="text-[11px] text-white/50 uppercase tracking-wider block mb-1">
                     Active WhatsApp
                   </span>
-                  <a
-                    href={`https://wa.me/${selectedInquiry.active_whatsapp_number.replace(/[^0-9]/g, '')}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="font-mono text-emerald-400 hover:underline flex items-center gap-1"
-                  >
-                    <Phone className="w-3.5 h-3.5" />
-                    <span>{selectedInquiry.active_whatsapp_number}</span>
-                  </a>
+                  {(() => {
+                    const phoneNum = selectedInquiry.active_whatsapp_number || selectedInquiry.phone || '';
+                    const cleanDigits = phoneNum.replace(/[^0-9]/g, '');
+                    return (
+                      <a
+                        href={cleanDigits ? `https://wa.me/${cleanDigits}` : '#'}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="font-mono text-emerald-400 hover:underline flex items-center gap-1"
+                      >
+                        <Phone className="w-3.5 h-3.5" />
+                        <span>{phoneNum || 'N/A'}</span>
+                      </a>
+                    );
+                  })()}
                 </div>
                 <div className="p-3.5 rounded-xl bg-white/[0.02] border border-white/5">
                   <span className="text-[11px] text-white/50 uppercase tracking-wider block mb-1">
                     Email Address
                   </span>
                   <span className="text-white/90 break-all">
-                    {selectedInquiry.email}
+                    {selectedInquiry.email || '—'}
                   </span>
                 </div>
               </div>

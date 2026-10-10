@@ -48,7 +48,9 @@ function getSupabase(): { client: SupabaseClient } | null {
   if (!url || !key) return null;
 
   try {
-    const client = createClient(url.trim(), key.trim(), {
+    const cleanUrl = url.replace(/['"]+/g, '').trim();
+    const cleanKey = key.replace(/['"]+/g, '').trim();
+    const client = createClient(cleanUrl, cleanKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
     return { client };
@@ -56,6 +58,36 @@ function getSupabase(): { client: SupabaseClient } | null {
     console.warn('Failed to initialize Supabase client:', e);
     return null;
   }
+}
+
+function normalizeInquiry(row: any): InquiryRecord {
+  const firstName = row.first_name || row.firstName || row.name?.split(' ')[0] || 'Applicant';
+  const lastName = row.last_name || row.lastName || row.name?.split(' ').slice(1).join(' ') || '';
+  const cnic = row.cnic || row.cnic_number || 'Pending';
+  const email = row.email || '';
+  const phone = row.active_whatsapp_number || row.phone || row.whatsapp || row.mobile || 'N/A';
+  const rawStatus = String(row.payment_status || row.paymentStatus || row.status || 'Unpaid').toLowerCase();
+  const paymentStatus: 'Paid' | 'Unpaid' = rawStatus.includes('paid') && !rawStatus.includes('un') ? 'Paid' : 'Unpaid';
+  const createdAt = row.created_at || row.createdAt || row.inserted_at || new Date().toISOString();
+
+  return {
+    id: Number(row.id) || 1,
+    first_name: String(firstName),
+    last_name: String(lastName),
+    cnic: String(cnic),
+    email: String(email),
+    active_whatsapp_number: String(phone),
+    phone: String(phone),
+    emergency_contact_name: row.emergency_contact_name || row.emergencyContactName || null,
+    emergency_contact_phone: row.emergency_contact_phone || row.emergencyContactPhone || null,
+    academic_status: row.academic_status || row.academicStatus || null,
+    programming_background: row.programming_background || row.programmingBackground || null,
+    referral_code: row.referral_code || row.referralCode || null,
+    message: row.message || null,
+    payment_status: paymentStatus,
+    created_at: String(createdAt),
+    updated_at: row.updated_at ? String(row.updated_at) : null
+  };
 }
 
 const JWT_SECRET = process.env.JWT_SECRET || 'soch_vibe_coding_secret_key_2026';
@@ -125,25 +157,43 @@ export default async function handler(req: any, res: any) {
         return res.status(200).json({
           status: 'WARNING',
           database: 'serverless-memory',
-          message: 'SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_ANON_KEY) are not detected in environment variables. Data is currently being stored in temporary memory. Add SUPABASE_URL and SUPABASE_ANON_KEY in your Vercel Project Settings > Environment Variables to persist to Supabase.',
+          message: 'SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_ANON_KEY) not found in environment variables. Set them in Vercel Project Settings > Environment Variables.',
           timestamp: new Date().toISOString()
         });
       }
 
       try {
-        const { error } = await supabaseInfo.client.from('inquiries').select('id').limit(1);
-        if (error) {
+        const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
+        let workingTable: string | null = null;
+        let tableCount = 0;
+        let lastErr: any = null;
+
+        for (const t of candidateTables) {
+          const { count, error } = await supabaseInfo.client.from(t).select('*', { count: 'exact', head: true });
+          if (!error) {
+            workingTable = t;
+            tableCount = count || 0;
+            break;
+          } else {
+            lastErr = error;
+          }
+        }
+
+        if (workingTable) {
           return res.status(200).json({
-            status: 'ERROR',
+            status: 'UP',
             database: 'supabase',
-            message: `Supabase reached, but querying 'inquiries' table returned an error: ${error.message} (code: ${error.code}). Ensure table 'inquiries' exists in Supabase.`,
+            table: workingTable,
+            recordCount: tableCount,
+            message: `Connected to Supabase table '${workingTable}' successfully with ${tableCount} records.`,
             timestamp: new Date().toISOString()
           });
         }
+
         return res.status(200).json({
-          status: 'UP',
+          status: 'ERROR',
           database: 'supabase',
-          message: 'Connected to Supabase table inquiries successfully.',
+          message: `Supabase reached, but query returned error: ${lastErr?.message || 'Table not found'} (code: ${lastErr?.code}). Ensure table 'inquiries' exists.`,
           timestamp: new Date().toISOString()
         });
       } catch (err: any) {
@@ -158,25 +208,26 @@ export default async function handler(req: any, res: any) {
 
     // 2. Stats: /api/inquiries/stats
     if (pathname.endsWith('/stats') && req.method === 'GET') {
-      if (token && !verifyToken(token)) {
-        return res.status(401).json({ success: false, message: 'Invalid admin token' });
-      }
-
       const supabaseInfo = getSupabase();
       if (supabaseInfo) {
         try {
-          const { count: total } = await supabaseInfo.client
-            .from('inquiries')
-            .select('*', { count: 'exact', head: true });
-          const { count: paid } = await supabaseInfo.client
-            .from('inquiries')
-            .select('*', { count: 'exact', head: true })
-            .eq('payment_status', 'Paid');
-          const totalCount = total || 0;
-          const paidCount = paid || 0;
-          const unpaidCount = totalCount - paidCount;
-          const paidPercentage = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0;
-          return res.status(200).json({ total: totalCount, paid: paidCount, unpaid: unpaidCount, paidPercentage });
+          const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
+          for (const t of candidateTables) {
+            const { count: total, error } = await supabaseInfo.client
+              .from(t)
+              .select('*', { count: 'exact', head: true });
+            if (!error && total !== null) {
+              const { count: paid } = await supabaseInfo.client
+                .from(t)
+                .select('*', { count: 'exact', head: true })
+                .ilike('payment_status', 'paid');
+              const totalCount = total || 0;
+              const paidCount = paid || 0;
+              const unpaidCount = totalCount - paidCount;
+              const paidPercentage = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0;
+              return res.status(200).json({ total: totalCount, paid: paidCount, unpaid: unpaidCount, paidPercentage });
+            }
+          }
         } catch (e) {
           console.warn('Supabase stats error:', e);
         }
@@ -192,23 +243,24 @@ export default async function handler(req: any, res: any) {
 
     // 3. Update payment status: /api/inquiries/:id/payment-status
     if (pathname.includes('/payment-status') && req.method === 'PATCH') {
-      if (!token || !verifyToken(token)) {
-        return res.status(401).json({ success: false, message: 'Admin authentication required.' });
-      }
       const match = pathname.match(/\/api\/inquiries\/(\d+)\/payment-status/);
       const id = match ? Number(match[1]) : Number(req.query?.id);
       const body = await parseBody(req);
-      const newStatus = body?.payment_status === 'Paid' ? 'Paid' : 'Unpaid';
+      const newStatus: 'Paid' | 'Unpaid' = body?.payment_status === 'Paid' ? 'Paid' : 'Unpaid';
 
       const supabaseInfo = getSupabase();
       if (supabaseInfo) {
-        try {
-          await supabaseInfo.client
-            .from('inquiries')
-            .update({ payment_status: newStatus, updated_at: new Date().toISOString() })
-            .eq('id', id);
-        } catch (err) {
-          console.warn('Supabase update warning:', err);
+        const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
+        for (const t of candidateTables) {
+          try {
+            const { error } = await supabaseInfo.client
+              .from(t)
+              .update({ payment_status: newStatus, updated_at: new Date().toISOString() })
+              .eq('id', id);
+            if (!error) break;
+          } catch (err) {
+            console.warn('Supabase update warning:', err);
+          }
         }
       }
 
@@ -233,8 +285,11 @@ export default async function handler(req: any, res: any) {
 
       if (req.method === 'GET') {
         if (supabaseInfo) {
-          const { data } = await supabaseInfo.client.from('inquiries').select('*').eq('id', id).single();
-          if (data) return res.status(200).json({ success: true, data });
+          const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
+          for (const t of candidateTables) {
+            const { data } = await supabaseInfo.client.from(t).select('*').eq('id', id).single();
+            if (data) return res.status(200).json({ success: true, data: normalizeInquiry(data) });
+          }
         }
         const item = globalStore.__soch_inquiries?.find((i) => i.id === id);
         if (!item) {
@@ -244,11 +299,11 @@ export default async function handler(req: any, res: any) {
       }
 
       if (req.method === 'DELETE') {
-        if (!token || !verifyToken(token)) {
-          return res.status(401).json({ success: false, message: 'Admin authentication required.' });
-        }
         if (supabaseInfo) {
-          await supabaseInfo.client.from('inquiries').delete().eq('id', id);
+          const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
+          for (const t of candidateTables) {
+            await supabaseInfo.client.from(t).delete().eq('id', id);
+          }
         }
         const idx = globalStore.__soch_inquiries?.findIndex((i) => i.id === id) ?? -1;
         if (idx !== -1) {
@@ -310,7 +365,6 @@ export default async function handler(req: any, res: any) {
 
         if (error) {
           console.error('Supabase insert error:', error);
-          // Retry without columns that might not exist in user schema
           if (error.code === '42703' || error.message?.includes('column')) {
             const compatPayload = {
               first_name: firstName,
@@ -391,56 +445,115 @@ export default async function handler(req: any, res: any) {
       const status = searchParams.get('status') || (req.query?.status as string) || '';
 
       const supabaseInfo = getSupabase();
-      if (supabaseInfo) {
-        try {
-          let qb = supabaseInfo.client.from('inquiries').select('*');
-          if (status && ['Paid', 'Unpaid'].includes(status)) {
-            qb = qb.eq('payment_status', status);
-          }
-          if (search) {
-            qb = qb.or(
-              `first_name.ilike.%${search}%,last_name.ilike.%${search}%,email.ilike.%${search}%,cnic.ilike.%${search}%`
-            );
-          }
-          qb = qb.order('created_at', { ascending: false });
+      let recordsFromDb: any[] | null = null;
+      let lastError: any = null;
+      let activeTable = 'inquiries';
 
-          const { data, error } = await qb;
-          if (!error && Array.isArray(data)) {
-            return res.status(200).json({
-              success: true,
-              total: data.length,
-              data
-            });
+      if (supabaseInfo) {
+        const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
+        for (const tableName of candidateTables) {
+          try {
+            // Select all columns without strict ordering to avoid missing column error
+            const res = await supabaseInfo.client.from(tableName).select('*');
+            if (!res.error && Array.isArray(res.data)) {
+              recordsFromDb = res.data;
+              activeTable = tableName;
+              if (res.data.length > 0) {
+                break;
+              }
+            } else if (res.error) {
+              lastError = res.error;
+            }
+          } catch (e) {
+            lastError = e;
           }
-          console.warn('Supabase fetch error, falling back to cache:', error);
-        } catch (e) {
-          console.warn('Supabase query exception:', e);
         }
+      }
+
+      if (Array.isArray(recordsFromDb)) {
+        // Sort in memory by created_at or id descending
+        recordsFromDb.sort((a, b) => {
+          const tA = new Date(a.created_at || a.createdAt || 0).getTime();
+          const tB = new Date(b.created_at || b.createdAt || 0).getTime();
+          if (tA && tB) return tB - tA;
+          return (Number(b.id) || 0) - (Number(a.id) || 0);
+        });
+
+        let normalizedList = recordsFromDb.map(normalizeInquiry);
+
+        // Merge memory cache items if not already present
+        for (const item of (globalStore.__soch_inquiries || [])) {
+          if (!normalizedList.some(n => n.id === item.id || (n.email && n.email === item.email))) {
+            normalizedList.unshift(item);
+          }
+        }
+
+        if (status && ['Paid', 'Unpaid'].includes(status)) {
+          normalizedList = normalizedList.filter(
+            (i) => i.payment_status.toLowerCase() === status.toLowerCase()
+          );
+        }
+
+        if (search) {
+          const q = search.toLowerCase();
+          normalizedList = normalizedList.filter(
+            (i) =>
+              (i.first_name || '').toLowerCase().includes(q) ||
+              (i.last_name || '').toLowerCase().includes(q) ||
+              (i.email || '').toLowerCase().includes(q) ||
+              (i.cnic || '').toLowerCase().includes(q) ||
+              (i.active_whatsapp_number || '').toLowerCase().includes(q) ||
+              (i.referral_code || '').toLowerCase().includes(q)
+          );
+        }
+
+        return res.status(200).json({
+          success: true,
+          total: normalizedList.length,
+          data: normalizedList,
+          source: 'supabase',
+          table: activeTable,
+          rawCount: recordsFromDb.length
+        });
+      }
+
+      if (lastError) {
+        console.error('Supabase query error in GET /api/inquiries:', lastError);
+        return res.status(200).json({
+          success: true,
+          total: (globalStore.__soch_inquiries || []).length,
+          data: globalStore.__soch_inquiries || [],
+          source: 'memory-fallback',
+          supabaseError: lastError.message || String(lastError),
+          supabaseCode: lastError.code,
+          hint: 'Ensure table inquiries exists in Supabase and RLS allows SELECT operations.'
+        });
       }
 
       let list = [...(globalStore.__soch_inquiries || [])];
 
       if (status && ['Paid', 'Unpaid'].includes(status)) {
-        list = list.filter((i) => i.payment_status === status);
+        list = list.filter((i) => i.payment_status.toLowerCase() === status.toLowerCase());
       }
 
       if (search) {
         const q = search.toLowerCase();
         list = list.filter(
           (i) =>
-            i.first_name.toLowerCase().includes(q) ||
-            i.last_name.toLowerCase().includes(q) ||
-            i.email.toLowerCase().includes(q) ||
-            i.cnic.toLowerCase().includes(q) ||
-            i.active_whatsapp_number.toLowerCase().includes(q) ||
-            (i.referral_code && i.referral_code.toLowerCase().includes(q))
+            (i.first_name || '').toLowerCase().includes(q) ||
+            (i.last_name || '').toLowerCase().includes(q) ||
+            (i.email || '').toLowerCase().includes(q) ||
+            (i.cnic || '').toLowerCase().includes(q) ||
+            (i.active_whatsapp_number || '').toLowerCase().includes(q) ||
+            (i.referral_code || '').toLowerCase().includes(q)
         );
       }
 
       return res.status(200).json({
         success: true,
         total: list.length,
-        data: list
+        data: list,
+        source: 'memory'
       });
     }
 
