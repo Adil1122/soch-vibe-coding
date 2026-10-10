@@ -20,10 +20,6 @@
       "destination": "/api/auth"
     },
     {
-      "source": "/api/(.*)",
-      "destination": "/api"
-    },
-    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }

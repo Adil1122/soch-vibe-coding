@@ -10,27 +10,35 @@ export default async function handler(req: any, res: any) {
     return res.status(200).end();
   }
 
-  const urlStr = req.url || '/api';
+  try {
+    const urlStr = req.url || '/api';
 
-  if (urlStr.includes('/api/inquiries')) {
-    return inquiriesHandler(req, res);
+    if (urlStr.includes('/api/inquiries')) {
+      return await inquiriesHandler(req, res);
+    }
+
+    if (urlStr.includes('/api/auth')) {
+      return await authHandler(req, res);
+    }
+
+    return res.status(200).json({
+      name: 'SOCH Vibe Coding API',
+      status: 'UP',
+      version: '1.0.0',
+      endpoints: [
+        '/api/inquiries',
+        '/api/inquiries/health',
+        '/api/inquiries/stats',
+        '/api/inquiries/:id/payment-status',
+        '/api/auth/login',
+        '/api/auth/me'
+      ]
+    });
+  } catch (err: any) {
+    console.error('API Index Handler error:', err);
+    return res.status(500).json({
+      error: 'API handler failure',
+      message: err?.message || 'Internal server error'
+    });
   }
-
-  if (urlStr.includes('/api/auth')) {
-    return authHandler(req, res);
-  }
-
-  return res.status(200).json({
-    name: 'SOCH Vibe Coding API',
-    status: 'UP',
-    version: '1.0.0',
-    endpoints: [
-      '/api/inquiries',
-      '/api/inquiries/health',
-      '/api/inquiries/stats',
-      '/api/inquiries/:id/payment-status',
-      '/api/auth/login',
-      '/api/auth/me'
-    ]
-  });
 }
