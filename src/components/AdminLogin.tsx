@@ -157,10 +157,7 @@ export const AdminLogin: React.FC = () => {
               />
             </div>
 
-            <div className="p-3 rounded-xl bg-white/5 border border-white/10 text-[11px] text-white/60 space-y-1">
-              <p className="font-semibold text-white/80">Default Credentials:</p>
-              <p>Username: <code className="text-[#78daeb]">admin</code> | Password: <code className="text-[#78daeb]">admin123</code></p>
-            </div>
+
 
             <button
               type="submit"
@@ -172,11 +169,7 @@ export const AdminLogin: React.FC = () => {
             </button>
           </form>
 
-          <div className="pt-2 text-center">
-            <Link to="/" className="text-xs text-white/50 hover:text-white transition-colors">
-              ← Return to Public Homepage
-            </Link>
-          </div>
+
         </div>
       </div>
     </div>

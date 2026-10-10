@@ -74,22 +74,9 @@ export const Footer: React.FC<FooterProps> = ({ onOpenIntegration }) => {
             © Vibe Academy 2026 |<br />
             Backed by the UOH Business Incubation Center (BIC).
             <div className="pt-2 flex flex-wrap items-center gap-2 text-xs">
-              {onOpenIntegration && (
-                <button
-                  type="button"
-                  onClick={onOpenIntegration}
-                  className="text-[#78daeb] hover:text-white underline cursor-pointer transition"
-                >
-                  ⚡ Database Guide
-                </button>
-              )}
+
               <span className="text-white/30">•</span>
-              <a
-                href="/admin"
-                className="text-[#c9459c] hover:text-white underline cursor-pointer transition font-medium"
-              >
-                🔐 Admissions Admin Portal (/admin)
-              </a>
+
             </div>
           </div>
           {/* LOGO */}
