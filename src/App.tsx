@@ -15,6 +15,7 @@ import { ApplicationModal } from './components/ApplicationModal';
 import { VideoModal } from './components/VideoModal';
 import { IntegrationModal } from './components/IntegrationModal';
 import { AdminDashboard } from './components/AdminDashboard';
+import { AdminLogin } from './components/AdminLogin';
 
 function LandingPage() {
   const [isApplyModalOpen, setIsApplyModalOpen] = useState(false);
@@ -110,6 +111,8 @@ export function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<AdminLogin />} />
+        <Route path="/admin/login" element={<Navigate to="/login" replace />} />
         <Route path="/admin" element={<AdminDashboard />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
