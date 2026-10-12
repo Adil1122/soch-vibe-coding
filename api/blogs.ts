@@ -1,4 +1,4 @@
-import { getSupabase, loadLocalEnv } from './db';
+import { getSupabase, loadLocalEnv } from './db.ts';
 
 loadLocalEnv();
 

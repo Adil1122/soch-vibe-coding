@@ -15,6 +15,27 @@ function verifyToken(token?: string | null): boolean {
   }
 }
 
+function sendJson(res: any, status: number, data: any) {
+  try {
+    if (typeof res.status === 'function') {
+      res.status(status);
+      if (typeof res.json === 'function') {
+        return res.json(data);
+      }
+    } else {
+      res.statusCode = status;
+    }
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify(data));
+  } catch (e) {
+    console.error('[auth] Failed to send JSON response:', e);
+    try {
+      res.statusCode = status;
+      res.end(JSON.stringify(data));
+    } catch {}
+  }
+}
+
 async function parseBody(req: any) {
   if (req.body) {
     if (typeof req.body === 'string') {
@@ -45,16 +66,29 @@ export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status ? res.status(200).end() : (res.statusCode = 200, res.end());
   }
 
   try {
     const urlStr = req.url || '/api/auth';
     const parsedUrl = new URL(urlStr, 'http://localhost');
     const pathname = parsedUrl.pathname.replace(/\/+$/, '');
+    const pathParam = String(
+      (Array.isArray(req.query?.path) ? req.query.path.join('/') : req.query?.path) ||
+      parsedUrl.searchParams.get('path') ||
+      ''
+    );
+    const matchedHeader = String(
+      req.headers['x-matched-path'] ||
+      req.headers['x-forwarded-uri'] ||
+      req.headers['x-original-url'] ||
+      ''
+    );
+    const fullPath = `${pathname}/${pathParam} ${urlStr} ${matchedHeader}`.toLowerCase();
 
     // /api/auth/login
-    if (pathname.endsWith('/login') && req.method === 'POST') {
+    const isLogin = fullPath.includes('login') || pathname.endsWith('/login');
+    if (isLogin && req.method === 'POST') {
       const body = await parseBody(req);
       const username = (body.username || '').trim().toLowerCase();
       const password = (body.password || '').trim();
@@ -71,7 +105,7 @@ export default async function handler(req: any, res: any) {
         const signature = crypto.createHmac('sha256', JWT_SECRET).update(data).digest('base64url');
         const token = `${data}.${signature}`;
 
-        return res.status(200).json({
+        return sendJson(res, 200, {
           success: true,
           token,
           user: {
@@ -82,31 +116,33 @@ export default async function handler(req: any, res: any) {
         });
       }
 
-      return res.status(401).json({
+      return sendJson(res, 401, {
         success: false,
         message: 'Invalid administrator credentials.'
       });
     }
 
     // /api/auth/me
-    if (pathname.endsWith('/me') && req.method === 'GET') {
+    const isMe = fullPath.includes('/me') || fullPath.endsWith('me') || pathname.endsWith('/me');
+    if (isMe && req.method === 'GET') {
       const authHeader = req.headers?.authorization || req.headers?.Authorization;
       const token = authHeader && typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
         ? authHeader.slice(7)
         : null;
 
       if (!token || !verifyToken(token)) {
-        return res.status(401).json({ authenticated: false, message: 'Invalid or expired token' });
+        return sendJson(res, 401, { authenticated: false, message: 'Invalid or expired token' });
       }
 
-      return res.status(200).json({
+      return sendJson(res, 200, {
         authenticated: true,
         user: { role: 'admin', username: 'admin', displayName: 'SOCH Administrator' }
       });
     }
 
-    return res.status(404).json({ message: 'Auth route not found' });
+    return sendJson(res, 404, { message: 'Auth route not found' });
   } catch (err: any) {
-    return res.status(500).json({ success: false, message: err?.message || 'Internal Server Error' });
+    console.error('[auth] Handler exception:', err);
+    return sendJson(res, 500, { success: false, message: err?.message || 'Internal Server Error' });
   }
 }

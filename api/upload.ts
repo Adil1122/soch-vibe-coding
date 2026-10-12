@@ -1,6 +1,6 @@
 import { put } from '@vercel/blob';
 import { handleUpload } from '@vercel/blob/client';
-import { getSupabase, uploadToSupabaseStorage, loadLocalEnv } from './db';
+import { getSupabase, uploadToSupabaseStorage, loadLocalEnv } from './db.ts';
 
 loadLocalEnv();
 

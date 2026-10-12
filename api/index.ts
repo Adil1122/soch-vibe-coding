@@ -1,8 +1,28 @@
-import inquiriesHandler from './inquiries';
-import authHandler from './auth';
-import successStoriesHandler from './success-stories';
-import blogsHandler from './blogs';
-import uploadHandler from './upload';
+import inquiriesHandler from './inquiries.ts';
+import authHandler from './auth.ts';
+import successStoriesHandler from './success-stories.ts';
+import blogsHandler from './blogs.ts';
+import uploadHandler from './upload.ts';
+
+function sendJson(res: any, status: number, data: any) {
+  try {
+    if (typeof res.status === 'function') {
+      res.status(status);
+      if (typeof res.json === 'function') {
+        return res.json(data);
+      }
+    } else {
+      res.statusCode = status;
+    }
+    res.setHeader('Content-Type', 'application/json');
+    return res.end(JSON.stringify(data));
+  } catch {
+    try {
+      res.statusCode = status;
+      res.end(JSON.stringify(data));
+    } catch {}
+  }
+}
 
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -10,7 +30,7 @@ export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
 
   if (req.method === 'OPTIONS') {
-    return res.status(200).end();
+    return res.status ? res.status(200).end() : (res.statusCode = 200, res.end());
   }
 
   try {
@@ -36,7 +56,7 @@ export default async function handler(req: any, res: any) {
       return await uploadHandler(req, res);
     }
 
-    return res.status(200).json({
+    return sendJson(res, 200, {
       name: 'SOCH Vibe Coding API',
       status: 'UP',
       version: '1.1.0',
@@ -57,7 +77,7 @@ export default async function handler(req: any, res: any) {
     });
   } catch (err: any) {
     console.error('API Index Handler error:', err);
-    return res.status(500).json({
+    return sendJson(res, 500, {
       error: 'API handler failure',
       message: err?.message || 'Internal server error'
     });

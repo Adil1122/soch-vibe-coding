@@ -4,15 +4,15 @@
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "rewrites": [
-    { "source": "/api/inquiries/:path*", "destination": "/api/inquiries" },
+    { "source": "/api/inquiries/:path*", "destination": "/api/inquiries?path=:path*" },
     { "source": "/api/inquiries", "destination": "/api/inquiries" },
-    { "source": "/api/auth/:path*", "destination": "/api/auth" },
+    { "source": "/api/auth/:path*", "destination": "/api/auth?path=:path*" },
     { "source": "/api/auth", "destination": "/api/auth" },
-    { "source": "/api/success-stories/:path*", "destination": "/api/success-stories" },
+    { "source": "/api/success-stories/:path*", "destination": "/api/success-stories?path=:path*" },
     { "source": "/api/success-stories", "destination": "/api/success-stories" },
-    { "source": "/api/blogs/:path*", "destination": "/api/blogs" },
+    { "source": "/api/blogs/:path*", "destination": "/api/blogs?path=:path*" },
     { "source": "/api/blogs", "destination": "/api/blogs" },
-    { "source": "/api/upload/:path*", "destination": "/api/upload" },
+    { "source": "/api/upload/:path*", "destination": "/api/upload?path=:path*" },
     { "source": "/api/upload", "destination": "/api/upload" },
     { "source": "/((?!api/).*)", "destination": "/index.html" }
   ]

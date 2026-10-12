@@ -46,7 +46,8 @@ export const AdminLogin: React.FC = () => {
       // 2. Secondary fallback: attempt live Vercel production endpoint
       if (!tokenToSave) {
         try {
-          const liveRes = await fetch('https://soch-vibe-coding.vercel.app/api/auth/login', {
+          // vercel live link: soch-vibe-coding.vercel.app
+          const liveRes = await fetch('https://vibeacademy.info/api/auth/login', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username, password }),

@@ -145,7 +145,7 @@ export const AdminDashboard: React.FC = () => {
       setDbHealth(data?.status === 'UP' ? 'UP' : 'DOWN');
     } catch {
       try {
-        const liveRes = await fetch('https://soch-vibe-coding.vercel.app/api/inquiries/health');
+        const liveRes = await fetch('https://vibeacademy.info/api/inquiries/health');
         const liveData = await liveRes.json();
         setDbHealth(liveData?.status === 'UP' ? 'UP' : 'DOWN');
       } catch {
@@ -180,7 +180,7 @@ export const AdminDashboard: React.FC = () => {
 
       if (records.length === 0) {
         try {
-          const fallbackRes = await fetch(`https://soch-vibe-coding.vercel.app/api/inquiries?_t=${Date.now()}`, {
+          const fallbackRes = await fetch(`https://vibeacademy.info/api/inquiries?_t=${Date.now()}`, {
             cache: 'no-store',
             headers: { 'Cache-Control': 'no-cache, no-store, must-revalidate' }
           });
@@ -273,7 +273,7 @@ export const AdminDashboard: React.FC = () => {
       }
 
       if (!updateOk) {
-        const liveRes = await fetch(`https://soch-vibe-coding.vercel.app/api/inquiries/${inquiry.id}/payment-status`, {
+        const liveRes = await fetch(`https://vibeacademy.info/api/inquiries/${inquiry.id}/payment-status`, {
           method: 'PATCH',
           headers: {
             'Content-Type': 'application/json',
@@ -736,13 +736,12 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
             {/* DB Health Pill */}
             <div className="hidden sm:flex items-center gap-1.5 ml-4 px-2.5 py-1 rounded-full text-[11px] font-mono bg-white/5 border border-white/10">
               <span
-                className={`w-2 h-2 rounded-full ${
-                  dbHealth === 'UP'
-                    ? 'bg-emerald-400 animate-pulse'
-                    : dbHealth === 'CHECKING'
+                className={`w-2 h-2 rounded-full ${dbHealth === 'UP'
+                  ? 'bg-emerald-400 animate-pulse'
+                  : dbHealth === 'CHECKING'
                     ? 'bg-amber-400'
                     : 'bg-red-400'
-                }`}
+                  }`}
               />
               <span className="text-white/60">DB:</span>
               <span className={dbHealth === 'UP' ? 'text-emerald-400' : 'text-red-400'}>
@@ -789,11 +788,10 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 border-t border-white/5 py-2.5 flex items-center gap-2 overflow-x-auto no-scrollbar">
           <button
             onClick={() => setActiveTab('inquiries')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 ${
-              activeTab === 'inquiries'
-                ? 'bg-gradient-to-r from-[#4467b0] to-[#c9459c] text-white shadow-lg shadow-[#c9459c]/20'
-                : 'text-white/60 hover:text-white hover:bg-white/5'
-            }`}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 ${activeTab === 'inquiries'
+              ? 'bg-gradient-to-r from-[#4467b0] to-[#c9459c] text-white shadow-lg shadow-[#c9459c]/20'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
           >
             <Users className="w-4 h-4" />
             <span>Applications (Inquiries)</span>
@@ -804,11 +802,10 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
 
           <button
             onClick={() => setActiveTab('stories')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 ${
-              activeTab === 'stories'
-                ? 'bg-gradient-to-r from-[#4467b0] to-[#c9459c] text-white shadow-lg shadow-[#c9459c]/20'
-                : 'text-white/60 hover:text-white hover:bg-white/5'
-            }`}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 ${activeTab === 'stories'
+              ? 'bg-gradient-to-r from-[#4467b0] to-[#c9459c] text-white shadow-lg shadow-[#c9459c]/20'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
           >
             <Film className="w-4 h-4" />
             <span>Cohort 01 Video Success Stories</span>
@@ -819,11 +816,10 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
 
           <button
             onClick={() => setActiveTab('blogs')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 ${
-              activeTab === 'blogs'
-                ? 'bg-gradient-to-r from-[#4467b0] to-[#c9459c] text-white shadow-lg shadow-[#c9459c]/20'
-                : 'text-white/60 hover:text-white hover:bg-white/5'
-            }`}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 ${activeTab === 'blogs'
+              ? 'bg-gradient-to-r from-[#4467b0] to-[#c9459c] text-white shadow-lg shadow-[#c9459c]/20'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
           >
             <Newspaper className="w-4 h-4" />
             <span>The Vibe Shift (Blogs)</span>
@@ -834,11 +830,10 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
 
           <button
             onClick={() => setActiveTab('setup')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 ${
-              activeTab === 'setup'
-                ? 'bg-white/20 text-white'
-                : 'text-white/60 hover:text-white hover:bg-white/5'
-            }`}
+            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer shrink-0 ${activeTab === 'setup'
+              ? 'bg-white/20 text-white'
+              : 'text-white/60 hover:text-white hover:bg-white/5'
+              }`}
           >
             <Database className="w-4 h-4" />
             <span>Vercel & DB Setup Guide</span>
@@ -929,31 +924,28 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
                 <div className="flex items-center bg-black/60 p-1 rounded-xl border border-white/15">
                   <button
                     onClick={() => setStatusFilter('ALL')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                      statusFilter === 'ALL'
-                        ? 'bg-white/20 text-white'
-                        : 'text-white/60 hover:text-white'
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'ALL'
+                      ? 'bg-white/20 text-white'
+                      : 'text-white/60 hover:text-white'
+                      }`}
                   >
                     All ({stats.total})
                   </button>
                   <button
                     onClick={() => setStatusFilter('Unpaid')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                      statusFilter === 'Unpaid'
-                        ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
-                        : 'text-white/60 hover:text-white'
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'Unpaid'
+                      ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30'
+                      : 'text-white/60 hover:text-white'
+                      }`}
                   >
                     Unpaid ({stats.unpaid})
                   </button>
                   <button
                     onClick={() => setStatusFilter('Paid')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
-                      statusFilter === 'Paid'
-                        ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                        : 'text-white/60 hover:text-white'
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${statusFilter === 'Paid'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
+                      : 'text-white/60 hover:text-white'
+                      }`}
                   >
                     Paid ({stats.paid})
                   </button>
@@ -1096,11 +1088,10 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
                             <td className="py-4 px-4 text-center">
                               <div className="inline-flex flex-col items-center gap-1.5">
                                 <span
-                                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border transition-colors ${
-                                    isPaid
-                                      ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
-                                      : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
-                                  }`}
+                                  className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold border transition-colors ${isPaid
+                                    ? 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30'
+                                    : 'bg-amber-500/15 text-amber-300 border-amber-500/30'
+                                    }`}
                                 >
                                   {isPaid ? (
                                     <>
@@ -1118,11 +1109,10 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
                                 <button
                                   disabled={isUpdating}
                                   onClick={() => handleTogglePaymentStatus(inquiry, isPaid ? 'Unpaid' : 'Paid')}
-                                  className={`text-[11px] underline font-medium cursor-pointer transition-colors disabled:opacity-50 ${
-                                    isPaid
-                                      ? 'text-amber-400 hover:text-amber-300'
-                                      : 'text-emerald-400 hover:text-emerald-300'
-                                  }`}
+                                  className={`text-[11px] underline font-medium cursor-pointer transition-colors disabled:opacity-50 ${isPaid
+                                    ? 'text-amber-400 hover:text-amber-300'
+                                    : 'text-emerald-400 hover:text-emerald-300'
+                                    }`}
                                 >
                                   {isUpdating ? 'Updating...' : isPaid ? 'Mark Unpaid' : 'Mark Paid'}
                                 </button>
