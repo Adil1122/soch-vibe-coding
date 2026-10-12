@@ -1,41 +1,18 @@
-import fs from 'fs';
-import path from 'path';
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
+﻿import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-// Auto-load .env into process.env if not already present
-export function loadLocalEnv() {
-  const possiblePaths = [
-    path.resolve(process.cwd(), '.env'),
-    path.resolve(process.cwd(), '.env.local')
-  ];
-  for (const envPath of possiblePaths) {
-    if (fs.existsSync(envPath)) {
-      try {
-        const content = fs.readFileSync(envPath, 'utf-8');
-        for (const line of content.split('\n')) {
-          const trimmed = line.trim();
-          if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
-            const idx = trimmed.indexOf('=');
-            const key = trimmed.slice(0, idx).trim();
-            const val = trimmed.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
-            if (!process.env[key]) {
-              process.env[key] = val;
-            }
-          }
-        }
-      } catch (e) {
-        console.warn('Failed to parse .env file:', e);
-      }
-    }
-  }
+/**
+ * No-op on Vercel (kept for backward-compat with callers).
+ * Vercel injects env vars into process.env automatically.
+ * Local dev: use a .env file loaded by vite (VITE_* prefix) or dotenv in your dev server.
+ */
+export function loadLocalEnv(): void {
+  // Intentionally empty — env vars are managed by Vercel (production)
+  // and by vite/dotenv (local dev). No fs access needed.
 }
-
-loadLocalEnv();
 
 let cachedClient: SupabaseClient | null = null;
 
 export function getSupabase(): { client: SupabaseClient } | null {
-  loadLocalEnv();
   if (cachedClient) return { client: cachedClient };
 
   const url =
@@ -48,17 +25,30 @@ export function getSupabase(): { client: SupabaseClient } | null {
     process.env.SUPABASE_ANON_KEY ||
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-  if (!url || !key) return null;
+  if (!url || !key) {
+    console.error(
+      '[db] Supabase env vars missing. Set SUPABASE_URL and ' +
+      'SUPABASE_SERVICE_ROLE_KEY (or SUPABASE_ANON_KEY) in ' +
+      'Vercel Project Settings -> Environment Variables.'
+    );
+    return null;
+  }
 
   try {
     const cleanUrl = url.replace(/['"]+/g, '').trim();
     const cleanKey = key.replace(/['"]+/g, '').trim();
+
+    if (!cleanUrl.startsWith('https://')) {
+      console.error('[db] SUPABASE_URL does not look valid:', cleanUrl);
+      return null;
+    }
+
     cachedClient = createClient(cleanUrl, cleanKey, {
       auth: { autoRefreshToken: false, persistSession: false }
     });
     return { client: cachedClient };
   } catch (e) {
-    console.warn('Failed to initialize Supabase client in api/db:', e);
+    console.error('[db] Failed to initialize Supabase client:', e);
     return null;
   }
 }
