@@ -1,43 +1,88 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Play, Award, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { SUCCESS_STORIES } from '../data/websiteData';
 import { SectionPill } from './SectionPill';
+
+interface StoryItem {
+  id: string | number;
+  studentName: string;
+  role: string;
+  projectBuilt: string;
+  quote: string;
+  thumbnailUrl: string;
+  videoDuration: string;
+  achievement: string;
+  videoUrl?: string;
+}
 
 interface WhyChooseUsProps {
   onOpenVideo?: (videoData: { title: string; subtitle: string; tagline: string; src: string }) => void;
 }
 
 export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenVideo }) => {
+  const [stories, setStories] = useState<StoryItem[]>(SUCCESS_STORIES);
   const [desktopIndex, setDesktopIndex] = useState(0);
   const [mobileIndex, setMobileIndex] = useState(0);
 
-  const handlePlayStory = (story: typeof SUCCESS_STORIES[0]) => {
+  useEffect(() => {
+    const fetchStories = async () => {
+      try {
+        const res = await fetch(`/api/success-stories?_t=${Date.now()}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            const mapped: StoryItem[] = json.data.map((item: any) => ({
+              id: item.id,
+              studentName: item.student_name || item.studentName || 'Cohort 01 Student',
+              role: item.role || 'Cohort 01 Graduate',
+              projectBuilt: item.project_description || item.projectBuilt || 'Built AI-powered application',
+              quote: item.student_details || item.quote || '',
+              thumbnailUrl: item.thumbnail_url || item.thumbnailUrl || 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+              videoDuration: item.video_duration || item.videoDuration || '3:00',
+              achievement: item.achievement || '100% Shipped Live Code',
+              videoUrl: item.video_url || item.videoUrl
+            }));
+            setStories(mapped);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch success stories from API, using default stories:', e);
+      }
+    };
+    fetchStories();
+  }, []);
+
+  const handlePlayStory = (story: StoryItem) => {
     if (onOpenVideo) {
       onOpenVideo({
         title: `${story.studentName} – ${story.projectBuilt.split('—')[0]}`,
         subtitle: story.quote,
         tagline: 'Cohort 01 Success Story',
-        src: 'https://vibeacademy.info/wp-content/uploads/2026/05/WhatsApp-Video-2026-05-21-at-7.16.02-PM.mp4'
+        src: story.videoUrl || 'https://vibeacademy.info/wp-content/uploads/2026/05/WhatsApp-Video-2026-05-21-at-7.16.02-PM.mp4'
       });
     }
   };
 
+  const storiesCount = stories.length || 1;
+
   const handlePrev = () => {
-    setDesktopIndex((prev) => (prev === 0 ? SUCCESS_STORIES.length - 1 : prev - 1));
-    setMobileIndex((prev) => (prev === 0 ? SUCCESS_STORIES.length - 1 : prev - 1));
+    setDesktopIndex((prev) => (prev === 0 ? storiesCount - 1 : prev - 1));
+    setMobileIndex((prev) => (prev === 0 ? storiesCount - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setDesktopIndex((prev) => (prev + 1) % SUCCESS_STORIES.length);
-    setMobileIndex((prev) => (prev + 1) % SUCCESS_STORIES.length);
+    setDesktopIndex((prev) => (prev + 1) % storiesCount);
+    setMobileIndex((prev) => (prev + 1) % storiesCount);
   };
 
-  // 3 stories visible in one line on desktop
-  const visibleDesktopStories = [
-    SUCCESS_STORIES[desktopIndex % SUCCESS_STORIES.length],
-    SUCCESS_STORIES[(desktopIndex + 1) % SUCCESS_STORIES.length],
-    SUCCESS_STORIES[(desktopIndex + 2) % SUCCESS_STORIES.length]
-  ];
+  // 3 stories visible in one line on desktop (or fewer if total < 3)
+  const visibleDesktopStories = stories.length <= 3
+    ? stories
+    : [
+        stories[desktopIndex % storiesCount],
+        stories[(desktopIndex + 1) % storiesCount],
+        stories[(desktopIndex + 2) % storiesCount]
+      ];
 
   return (
     <section
@@ -176,7 +221,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenVideo }) => {
 
           {/* Desktop Dots indicator */}
           <div className="hidden md:flex items-center justify-center gap-2 pt-2">
-            {SUCCESS_STORIES.map((_, idx) => (
+            {stories.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => setDesktopIndex(idx)}
@@ -190,7 +235,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenVideo }) => {
 
           {/* 2. MOBILE VIEW: Slider showing ONLY 1 card at a time in one line */}
           <div className="block md:hidden">
-            {SUCCESS_STORIES.map((story, idx) => {
+            {stories.map((story, idx) => {
               if (idx !== mobileIndex) return null;
               return (
                 <div
@@ -271,7 +316,7 @@ export const WhyChooseUs: React.FC<WhyChooseUsProps> = ({ onOpenVideo }) => {
 
             {/* Mobile Dots Indicator */}
             <div className="flex items-center justify-center gap-2 mt-5">
-              {SUCCESS_STORIES.map((_, idx) => (
+              {stories.map((_, idx) => (
                 <button
                   key={idx}
                   onClick={() => setMobileIndex(idx)}

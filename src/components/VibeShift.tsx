@@ -1,47 +1,84 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { SectionPill } from './SectionPill';
 
+interface SlideItem {
+  id: number | string;
+  title: string;
+  desc: string;
+  img: string;
+  readTime?: string;
+  date?: string;
+}
+
+const DEFAULT_SLIDES: SlideItem[] = [
+  {
+    id: 0,
+    title: 'How Local Developers are Shaping the Future',
+    desc: 'Pakistan is no longer just a rising star in the global tech scene; it’s a full-blown supernova, especially when it comes to Artificial Intelligence. From bustling tech hubs in Lahore and Karachi to emerging innovation centers like Haripur, local developers are not just adopting AI—they’re actively shaping its future.',
+    img: 'https://vibeacademy.info/wp-content/uploads/2026/05/How-Local-Developers-are-Shaping-the-Future.png',
+    readTime: '5 min read',
+    date: 'May 2026'
+  },
+  {
+    id: 1,
+    title: "Navigating Pakistan's Gig Economy with AI Superpowers",
+    desc: 'The freelance game has changed, and if you’re not integrating AI, you’re already playing catch-up. Pakistan’s freelance workforce, already the 4th largest globally, is entering a new era: Freelancing 2.0.',
+    img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Navigating.png',
+    readTime: '6 min read',
+    date: 'May 2026'
+  },
+  {
+    id: 2,
+    title: 'Why AI Skills are Non-Negotiable for Pakistani Builders in 2026: A Deep Dive',
+    desc: 'Let’s be real: the tech landscape of 2026 is vastly different from even a few years ago. For Pakistani coders, having AI skills isn’t a bonus anymore; it’s a fundamental requirement to stay relevant and competitive.',
+    img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Why-AI-Skills-are-Non-Negotiable-for-Pakistani-Builders.png',
+    readTime: '7 min read',
+    date: 'May 2026'
+  }
+];
+
 export const VibeShift: React.FC = () => {
-  const [currentIndex, setCurrentIndex] = useState(1); // Default to Slide 1 (Navigating Pakistan's Gig Economy) matching 4-the-vibe-shift.PNG
+  const [slides, setSlides] = useState<SlideItem[]>(DEFAULT_SLIDES);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [selectedPost, setSelectedPost] = useState<{ title: string; desc: string; img: string; date?: string; readTime?: string } | null>(null);
 
-  const slides = [
-    {
-      id: 0,
-      title: 'How Local Developers are Shaping the Future',
-      desc: 'Pakistan is no longer just a rising star in the global tech scene; it’s a full-blown supernova, especially when it comes to Artificial Intelligence. From bustling tech hubs in Lahore and Karachi to emerging innovation centers like Haripur, local developers are not just adopting AI—they’re actively shaping its future.',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/How-Local-Developers-are-Shaping-the-Future.png',
-      readTime: '5 min read',
-      date: 'May 2026'
-    },
-    {
-      id: 1,
-      title: "Navigating Pakistan's Gig Economy with AI Superpowers",
-      desc: 'The freelance game has changed, and if you’re not integrating AI, you’re already playing catch-up. Pakistan’s freelance workforce, already the 4th largest globally, is entering a new era: Freelancing 2.0.',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Navigating.png',
-      readTime: '6 min read',
-      date: 'May 2026'
-    },
-    {
-      id: 2,
-      title: 'Why AI Skills are Non-Negotiable for Pakistani Builders in 2026: A Deep Dive',
-      desc: 'Let’s be real: the tech landscape of 2026 is vastly different from even a few years ago. For Pakistani coders, having AI skills isn’t a bonus anymore; it’s a fundamental requirement to stay relevant and competitive.',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Why-AI-Skills-are-Non-Negotiable-for-Pakistani-Builders.png',
-      readTime: '7 min read',
-      date: 'May 2026'
-    }
-  ];
+  useEffect(() => {
+    const fetchBlogs = async () => {
+      try {
+        const res = await fetch(`/api/blogs?_t=${Date.now()}`);
+        if (res.ok) {
+          const json = await res.json();
+          if (json.success && Array.isArray(json.data) && json.data.length > 0) {
+            const mapped: SlideItem[] = json.data.map((item: any) => ({
+              id: item.id,
+              title: item.blog_heading || item.title || 'Vibe Shift Article',
+              desc: item.blog_details || item.details || item.desc || '',
+              img: item.blog_image || item.image_url || item.img || 'https://vibeacademy.info/wp-content/uploads/2026/05/How-Local-Developers-are-Shaping-the-Future.png',
+              readTime: item.read_time || item.readTime || '5 min read',
+              date: item.published_date || item.date || 'May 2026'
+            }));
+            setSlides(mapped);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to fetch blogs from API, using default slides:', e);
+      }
+    };
+    fetchBlogs();
+  }, []);
+
+  const slidesCount = slides.length || 1;
 
   const handlePrev = () => {
-    setCurrentIndex((prev) => (prev === 0 ? slides.length - 1 : prev - 1));
+    setCurrentIndex((prev) => (prev === 0 ? slidesCount - 1 : prev - 1));
   };
 
   const handleNext = () => {
-    setCurrentIndex((prev) => (prev === slides.length - 1 ? 0 : prev + 1));
+    setCurrentIndex((prev) => (prev === slidesCount - 1 ? 0 : prev + 1));
   };
 
-  const currentSlide = slides[currentIndex];
+  const currentSlide = slides[currentIndex % slidesCount] || DEFAULT_SLIDES[0];
 
   return (
     <section id="blogs" className="py-16 sm:py-20 bg-[#F2F2F2] border-t border-black/5 text-black relative">

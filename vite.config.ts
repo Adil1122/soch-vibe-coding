@@ -1,6 +1,25 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
+import fs from 'fs';
+import path from 'path';
+
+// Pre-load .env into process.env so API dev middleware has all credentials
+const envPath = path.resolve(__dirname, '.env');
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, 'utf-8');
+  for (const line of envContent.split('\n')) {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith('#') && trimmed.includes('=')) {
+      const idx = trimmed.indexOf('=');
+      const key = trimmed.slice(0, idx).trim();
+      const val = trimmed.slice(idx + 1).trim().replace(/^['"]|['"]$/g, '');
+      if (!process.env[key]) {
+        process.env[key] = val;
+      }
+    }
+  }
+}
 
 export default defineConfig({
   plugins: [
@@ -16,7 +35,7 @@ export default defineConfig({
           try {
             const { default: handler } = await server.ssrLoadModule('/api/index.ts');
             let body = {};
-            if (req.method === 'POST' || req.method === 'PATCH') {
+            if (req.method === 'POST' || req.method === 'PATCH' || req.method === 'PUT' || req.method === 'DELETE') {
               const buffers: Buffer[] = [];
               for await (const chunk of req) {
                 buffers.push(Buffer.from(chunk));
@@ -35,6 +54,7 @@ export default defineConfig({
             const routeSegments = urlObj.pathname.replace(/^\/api\/?/, '').split('/').filter(Boolean);
             (req as any).query = {
               route: routeSegments,
+              ...(routeSegments.length > 1 ? { id: routeSegments[1] } : {}),
               ...Object.fromEntries(urlObj.searchParams.entries())
             };
             (res as any).status = (code: number) => {
@@ -63,4 +83,3 @@ export default defineConfig({
     allowedHosts: 'all',
   },
 });
-

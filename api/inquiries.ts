@@ -1,5 +1,6 @@
-import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import * as crypto from 'crypto';
+import { getSupabase, loadLocalEnv } from './db';
+
+loadLocalEnv();
 
 export interface InquiryRecord {
   id: number;
@@ -18,48 +19,6 @@ export interface InquiryRecord {
   payment_status: 'Paid' | 'Unpaid';
   created_at: string;
   updated_at: string | null;
-}
-
-const LIVE_BACKEND_ORIGIN = 'https://soch-vibe-coding.vercel.app';
-
-// In-memory store across warm invocations
-const globalStore = globalThis as unknown as {
-  __soch_inquiries?: InquiryRecord[];
-  __soch_next_id?: number;
-};
-
-if (!globalStore.__soch_inquiries) {
-  globalStore.__soch_inquiries = [];
-  globalStore.__soch_next_id = 1;
-}
-
-function getSupabase(): { client: SupabaseClient } | null {
-  const url =
-    process.env.SUPABASE_URL ||
-    process.env.NEXT_PUBLIC_SUPABASE_URL ||
-    process.env.VITE_SUPABASE_URL ||
-    process.env.SUPABASE_PROJECT_URL;
-
-  const key =
-    process.env.SUPABASE_SERVICE_ROLE_KEY ||
-    process.env.SUPABASE_ANON_KEY ||
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ||
-    process.env.SUPABASE_KEY ||
-    process.env.VITE_SUPABASE_ANON_KEY;
-
-  if (!url || !key) return null;
-
-  try {
-    const cleanUrl = url.replace(/['"]+/g, '').trim();
-    const cleanKey = key.replace(/['"]+/g, '').trim();
-    const client = createClient(cleanUrl, cleanKey, {
-      auth: { autoRefreshToken: false, persistSession: false }
-    });
-    return { client };
-  } catch (e) {
-    console.warn('Failed to initialize Supabase client:', e);
-    return null;
-  }
 }
 
 function normalizeInquiry(row: any): InquiryRecord {
@@ -118,11 +77,9 @@ async function parseBody(req: any) {
 
 export default async function handler(req: any, res: any) {
   res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
   res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-  res.setHeader('Pragma', 'no-cache');
-  res.setHeader('Expires', '0');
 
   if (req.method === 'OPTIONS') {
     return res.status(200).end();
@@ -133,140 +90,216 @@ export default async function handler(req: any, res: any) {
     const parsedUrl = new URL(urlStr, 'http://localhost');
     const pathname = parsedUrl.pathname.replace(/\/+$/, '');
     const searchParams = parsedUrl.searchParams;
-
-    const authHeader = req.headers?.authorization || req.headers?.Authorization;
+    const supabaseInfo = getSupabase();
 
     // 1. Health check: /api/inquiries/health
     if (pathname.endsWith('/health') && req.method === 'GET') {
-      const supabaseInfo = getSupabase();
       if (supabaseInfo) {
         try {
-          const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
-          for (const t of candidateTables) {
-            const { count, error } = await supabaseInfo.client.from(t).select('*', { count: 'exact', head: true });
-            if (!error) {
-              return res.status(200).json({
-                status: 'UP',
-                database: 'supabase',
-                table: t,
-                recordCount: count || 0,
-                message: `Connected to Supabase table '${t}' successfully with ${count || 0} records.`,
-                timestamp: new Date().toISOString()
-              });
-            }
+          const { count, error } = await supabaseInfo.client
+            .from('inquiries')
+            .select('*', { count: 'exact', head: true });
+
+          if (!error) {
+            return res.status(200).json({
+              status: 'UP',
+              database: 'supabase',
+              table: 'inquiries',
+              recordCount: count || 0,
+              message: `Connected to Supabase table 'inquiries' successfully with ${count || 0} records.`,
+              timestamp: new Date().toISOString()
+            });
           }
         } catch (e: any) {
-          console.warn('Supabase local check failed:', e);
+          console.warn('Supabase local health check failed:', e);
         }
       }
 
-      // Live backend health check
-      try {
-        const liveRes = await fetch(`${LIVE_BACKEND_ORIGIN}/api/inquiries/health`);
-        const liveJson = await liveRes.json();
-        return res.status(200).json(liveJson);
-      } catch {
-        return res.status(200).json({
-          status: 'UP',
-          database: 'supabase',
-          message: 'Connected to Supabase inquiries database.',
-          timestamp: new Date().toISOString()
-        });
-      }
+      return res.status(200).json({
+        status: 'UP',
+        database: 'supabase',
+        table: 'inquiries',
+        recordCount: 0,
+        message: 'Connected to inquiries service.',
+        timestamp: new Date().toISOString()
+      });
     }
 
     // 2. Stats: /api/inquiries/stats
     if (pathname.endsWith('/stats') && req.method === 'GET') {
-      const supabaseInfo = getSupabase();
       if (supabaseInfo) {
         try {
-          const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
-          for (const t of candidateTables) {
-            const { count: total, error } = await supabaseInfo.client
-              .from(t)
-              .select('*', { count: 'exact', head: true });
-            if (!error && total !== null) {
-              const { count: paid } = await supabaseInfo.client
-                .from(t)
-                .select('*', { count: 'exact', head: true })
-                .ilike('payment_status', 'paid');
-              const totalCount = total || 0;
-              const paidCount = paid || 0;
-              const unpaidCount = totalCount - paidCount;
-              const paidPercentage = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0;
-              return res.status(200).json({ total: totalCount, paid: paidCount, unpaid: unpaidCount, paidPercentage });
-            }
+          const { count: total, error } = await supabaseInfo.client
+            .from('inquiries')
+            .select('*', { count: 'exact', head: true });
+
+          if (!error && total !== null) {
+            const { count: paid } = await supabaseInfo.client
+              .from('inquiries')
+              .select('*', { count: 'exact', head: true })
+              .ilike('payment_status', 'paid');
+
+            const totalCount = total || 0;
+            const paidCount = paid || 0;
+            const unpaidCount = totalCount - paidCount;
+            const paidPercentage = totalCount > 0 ? Math.round((paidCount / totalCount) * 100) : 0;
+            return res.status(200).json({ total: totalCount, paid: paidCount, unpaid: unpaidCount, paidPercentage });
           }
         } catch (e) {
           console.warn('Supabase stats error:', e);
         }
       }
 
-      // Live proxy
-      try {
-        const liveRes = await fetch(`${LIVE_BACKEND_ORIGIN}/api/inquiries/stats`, {
-          headers: authHeader ? { Authorization: authHeader } : {}
-        });
-        const liveJson = await liveRes.json();
-        return res.status(200).json(liveJson);
-      } catch (e) {
-        console.warn('Live stats fetch error:', e);
-      }
-
       return res.status(200).json({ total: 0, paid: 0, unpaid: 0, paidPercentage: 0 });
     }
 
-    // 3. Update payment status: /api/inquiries/:id/payment-status
+    // 3. Update payment status: PATCH /api/inquiries/:id/payment-status
     if (pathname.includes('/payment-status') && req.method === 'PATCH') {
       const match = pathname.match(/\/api\/inquiries\/(\d+)\/payment-status/);
       const id = match ? Number(match[1]) : Number(req.query?.id);
       const body = await parseBody(req);
       const newStatus: 'Paid' | 'Unpaid' = body?.payment_status === 'Paid' ? 'Paid' : 'Unpaid';
 
-      const supabaseInfo = getSupabase();
-      if (supabaseInfo) {
-        const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
-        for (const t of candidateTables) {
-          try {
-            const { error } = await supabaseInfo.client
-              .from(t)
-              .update({ payment_status: newStatus, updated_at: new Date().toISOString() })
-              .eq('id', id);
-            if (!error) {
-              return res.status(200).json({
-                success: true,
-                message: `Inquiry #${id} payment status updated to ${newStatus}.`,
-                data: { id, payment_status: newStatus }
-              });
-            }
-          } catch (err) {
-            console.warn('Supabase update warning:', err);
-          }
-        }
+      if (!id) {
+        return res.status(400).json({ success: false, message: 'Valid inquiry ID is required.' });
       }
 
-      // Forward to live database
-      try {
-        const liveRes = await fetch(`${LIVE_BACKEND_ORIGIN}/api/inquiries/${id}/payment-status`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            ...(authHeader ? { Authorization: authHeader } : {})
-          },
-          body: JSON.stringify({ payment_status: newStatus })
-        });
-        const liveJson = await liveRes.json();
-        return res.status(liveRes.status).json(liveJson);
-      } catch (e: any) {
-        return res.status(200).json({
-          success: true,
-          message: `Inquiry #${id} payment status updated to ${newStatus}.`,
-          data: { id, payment_status: newStatus }
+      if (!supabaseInfo) {
+        return res.status(500).json({
+          success: false,
+          message: 'Database connection is not configured.'
         });
       }
+
+      const { data, error } = await supabaseInfo.client
+        .from('inquiries')
+        .update({ payment_status: newStatus, updated_at: new Date().toISOString() })
+        .eq('id', id)
+        .select('*');
+
+      if (error) {
+        console.error('Supabase update payment status error:', error);
+        return res.status(500).json({
+          success: false,
+          message: `Database error updating payment status: ${error.message}`
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Inquiry #${id} payment status updated to ${newStatus} in database.`,
+        data: data && data.length > 0 ? normalizeInquiry(data[0]) : { id, payment_status: newStatus },
+        source: 'supabase'
+      });
     }
 
-    // 4. Submit application: POST /api/inquiries
+    // 4. Update full inquiry record: PUT / PATCH /api/inquiries/:id
+    if ((req.method === 'PUT' || req.method === 'PATCH') && !pathname.includes('/payment-status')) {
+      const match = pathname.match(/\/api\/inquiries\/(\d+)/);
+      const id = match ? Number(match[1]) : Number(req.query?.id || (await parseBody(req))?.id);
+
+      if (!id) {
+        return res.status(400).json({ success: false, message: 'Valid inquiry ID is required for update.' });
+      }
+
+      const body = await parseBody(req);
+      const updateData: Record<string, any> = {
+        updated_at: new Date().toISOString()
+      };
+
+      if (body.first_name !== undefined) updateData.first_name = String(body.first_name).trim();
+      if (body.last_name !== undefined) updateData.last_name = String(body.last_name).trim();
+      if (body.cnic !== undefined) updateData.cnic = String(body.cnic).trim();
+      if (body.email !== undefined) updateData.email = String(body.email).trim();
+      if (body.active_whatsapp_number !== undefined || body.phone !== undefined) {
+        const phone = String(body.active_whatsapp_number || body.phone).trim();
+        updateData.active_whatsapp_number = phone;
+        updateData.phone = phone;
+      }
+      if (body.emergency_contact_name !== undefined) updateData.emergency_contact_name = body.emergency_contact_name ? String(body.emergency_contact_name).trim() : null;
+      if (body.emergency_contact_phone !== undefined) updateData.emergency_contact_phone = body.emergency_contact_phone ? String(body.emergency_contact_phone).trim() : null;
+      if (body.academic_status !== undefined) updateData.academic_status = body.academic_status ? String(body.academic_status).trim() : null;
+      if (body.programming_background !== undefined) updateData.programming_background = body.programming_background ? String(body.programming_background).trim() : null;
+      if (body.referral_code !== undefined) updateData.referral_code = body.referral_code ? String(body.referral_code).trim() : null;
+      if (body.message !== undefined) updateData.message = body.message ? String(body.message).trim() : null;
+      if (body.payment_status !== undefined) {
+        const rawStatus = String(body.payment_status).toLowerCase();
+        updateData.payment_status = rawStatus.includes('paid') && !rawStatus.includes('un') ? 'Paid' : 'Unpaid';
+      }
+
+      if (!supabaseInfo) {
+        return res.status(500).json({
+          success: false,
+          message: 'Database connection is not configured.'
+        });
+      }
+
+      const { data, error } = await supabaseInfo.client
+        .from('inquiries')
+        .update(updateData)
+        .eq('id', id)
+        .select('*');
+
+      if (error) {
+        console.error('Supabase update inquiry error:', error);
+        return res.status(500).json({
+          success: false,
+          message: `Database error updating inquiry #${id}: ${error.message}`
+        });
+      }
+
+      if (!data || data.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: `Inquiry #${id} not found in database.`
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Inquiry #${id} updated successfully in database.`,
+        data: normalizeInquiry(data[0]),
+        source: 'supabase'
+      });
+    }
+
+    // 5. Delete inquiry: DELETE /api/inquiries/:id
+    if (req.method === 'DELETE') {
+      const match = pathname.match(/\/api\/inquiries\/(\d+)/);
+      const id = match ? Number(match[1]) : Number(req.query?.id || (await parseBody(req))?.id);
+
+      if (!id) {
+        return res.status(400).json({ success: false, message: 'Valid inquiry ID is required for deletion.' });
+      }
+
+      if (!supabaseInfo) {
+        return res.status(500).json({
+          success: false,
+          message: 'Database connection is not configured.'
+        });
+      }
+
+      const { error } = await supabaseInfo.client
+        .from('inquiries')
+        .delete()
+        .eq('id', id);
+
+      if (error) {
+        console.error('Supabase delete inquiry error:', error);
+        return res.status(500).json({
+          success: false,
+          message: `Database error deleting inquiry #${id}: ${error.message}`
+        });
+      }
+
+      return res.status(200).json({
+        success: true,
+        message: `Inquiry #${id} permanently deleted from database.`,
+        source: 'supabase'
+      });
+    }
+
+    // 6. Submit application / Add inquiry: POST /api/inquiries
     if (req.method === 'POST') {
       const body = await parseBody(req);
       const firstName = (body.first_name || body.firstName || '').trim();
@@ -289,163 +322,107 @@ export default async function handler(req: any, res: any) {
         });
       }
 
-      const supabaseInfo = getSupabase();
-      if (supabaseInfo) {
-        const payload: Record<string, any> = {
-          first_name: firstName,
-          last_name: lastName,
-          cnic: cnic || 'Pending',
-          email,
-          active_whatsapp_number: whatsapp || 'N/A',
-          phone: whatsapp || 'N/A',
-          emergency_contact_name: emergencyName,
-          emergency_contact_phone: emergencyPhone,
-          academic_status: academicStatus,
-          programming_background: programmingBackground,
-          referral_code: referralCode,
-          message,
-          payment_status: paymentStatus
-        };
+      const payload: Record<string, any> = {
+        first_name: firstName,
+        last_name: lastName,
+        cnic: cnic || 'Pending',
+        email,
+        active_whatsapp_number: whatsapp || 'N/A',
+        phone: whatsapp || 'N/A',
+        emergency_contact_name: emergencyName,
+        emergency_contact_phone: emergencyPhone,
+        academic_status: academicStatus,
+        programming_background: programmingBackground,
+        referral_code: referralCode,
+        message,
+        payment_status: paymentStatus,
+        created_at: new Date().toISOString()
+      };
 
-        const { data, error } = await supabaseInfo.client
-          .from('inquiries')
-          .insert(payload)
-          .select('id')
-          .single();
-
-        if (error) {
-          console.error('Supabase direct insert error:', error);
-          if (error.code === '42703' || error.message?.includes('column')) {
-            const compatPayload = {
-              first_name: firstName,
-              last_name: lastName,
-              cnic: cnic || 'Pending',
-              email,
-              phone: whatsapp || 'N/A',
-              academic_status: academicStatus,
-              message,
-              payment_status: paymentStatus
-            };
-            const retry = await supabaseInfo.client.from('inquiries').insert(compatPayload).select('id').single();
-            if (retry.data?.id) {
-              const ref = `VB-02-${String(retry.data.id).padStart(6, '0')}`;
-              return res.status(201).json({ success: true, inquiryId: retry.data.id, referenceId: ref });
-            }
-          }
-        } else if (data?.id) {
-          const ref = `VB-02-${String(data.id).padStart(6, '0')}`;
-          return res.status(201).json({ success: true, inquiryId: data.id, referenceId: ref });
-        }
-      }
-
-      // Forward to live database on Vercel
-      try {
-        const liveRes = await fetch(`${LIVE_BACKEND_ORIGIN}/api/inquiries`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(body)
+      if (!supabaseInfo) {
+        return res.status(500).json({
+          success: false,
+          message: 'Database connection is not configured.'
         });
-        const liveJson = await liveRes.json();
-        return res.status(liveRes.status).json(liveJson);
-      } catch (err: any) {
-        console.error('Failed to save to live backend:', err);
       }
 
-      const fallbackId = globalStore.__soch_next_id!++;
-      const ref = `VB-02-${String(fallbackId).padStart(6, '0')}`;
+      const { data, error } = await supabaseInfo.client
+        .from('inquiries')
+        .insert(payload)
+        .select('*')
+        .single();
+
+      if (error) {
+        console.error('Supabase direct insert error:', error);
+        return res.status(500).json({
+          success: false,
+          message: `Database error submitting inquiry: ${error.message}`
+        });
+      }
+
+      const normalized = normalizeInquiry(data);
+      const ref = `VB-02-${String(normalized.id).padStart(6, '0')}`;
       return res.status(201).json({
         success: true,
-        message: 'Cohort 02 application submitted successfully.',
-        inquiryId: fallbackId,
-        referenceId: ref
+        message: 'Cohort 02 application submitted successfully and stored in database.',
+        inquiryId: normalized.id,
+        referenceId: ref,
+        data: normalized,
+        source: 'supabase'
       });
     }
 
-    // 5. List inquiries: GET /api/inquiries
+    // 7. List inquiries: GET /api/inquiries
     if (req.method === 'GET') {
       const search = (searchParams.get('search') || (req.query?.search as string) || '').trim();
       const status = searchParams.get('status') || (req.query?.status as string) || '';
 
-      const supabaseInfo = getSupabase();
-      let recordsFromDb: any[] | null = null;
-      let activeTable = 'inquiries';
-
-      if (supabaseInfo) {
-        const candidateTables = ['inquiries', 'Inquiries', 'inquiry'];
-        for (const tableName of candidateTables) {
-          try {
-            const res = await supabaseInfo.client.from(tableName).select('*');
-            if (!res.error && Array.isArray(res.data) && res.data.length > 0) {
-              recordsFromDb = res.data;
-              activeTable = tableName;
-              break;
-            }
-          } catch (e) {
-            console.warn('Supabase table query error:', e);
-          }
-        }
+      if (!supabaseInfo) {
+        return res.status(500).json({
+          success: false,
+          message: 'Database connection is not configured.'
+        });
       }
 
-      // If local Supabase is not configured or returned 0 rows, fetch from live backend (unless already on live host)
-      const host = req.headers?.host || '';
-      const isAlreadyOnLiveHost = host.includes('soch-vibe-coding.vercel.app');
-      if ((!recordsFromDb || recordsFromDb.length === 0) && !isAlreadyOnLiveHost) {
-        try {
-          const liveRes = await fetch(`${LIVE_BACKEND_ORIGIN}/api/inquiries`, {
-            headers: authHeader ? { Authorization: authHeader } : {}
-          });
-          const liveJson = await liveRes.json();
-          if (liveJson.success && Array.isArray(liveJson.data) && liveJson.data.length > 0) {
-            recordsFromDb = liveJson.data;
-          }
-        } catch (e) {
-          console.warn('Live backend fetch failed:', e);
-        }
+      const { data, error } = await supabaseInfo.client
+        .from('inquiries')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Supabase query inquiries error:', error);
+        return res.status(500).json({
+          success: false,
+          message: `Database error loading inquiries: ${error.message}`
+        });
       }
 
-      if (Array.isArray(recordsFromDb) && recordsFromDb.length > 0) {
-        recordsFromDb.sort((a, b) => {
-          const tA = new Date(a.created_at || a.createdAt || 0).getTime();
-          const tB = new Date(b.created_at || b.createdAt || 0).getTime();
-          if (tA && tB) return tB - tA;
-          return (Number(b.id) || 0) - (Number(a.id) || 0);
-        });
+      let normalizedList = (data || []).map(normalizeInquiry);
 
-        let normalizedList = recordsFromDb.map(normalizeInquiry);
+      if (status && ['Paid', 'Unpaid'].includes(status)) {
+        normalizedList = normalizedList.filter(
+          (i) => i.payment_status.toLowerCase() === status.toLowerCase()
+        );
+      }
 
-        if (status && ['Paid', 'Unpaid'].includes(status)) {
-          normalizedList = normalizedList.filter(
-            (i) => i.payment_status.toLowerCase() === status.toLowerCase()
-          );
-        }
-
-        if (search) {
-          const q = search.toLowerCase();
-          normalizedList = normalizedList.filter(
-            (i) =>
-              (i.first_name || '').toLowerCase().includes(q) ||
-              (i.last_name || '').toLowerCase().includes(q) ||
-              (i.email || '').toLowerCase().includes(q) ||
-              (i.cnic || '').toLowerCase().includes(q) ||
-              (i.active_whatsapp_number || '').toLowerCase().includes(q) ||
-              (i.referral_code || '').toLowerCase().includes(q)
-          );
-        }
-
-        return res.status(200).json({
-          success: true,
-          total: normalizedList.length,
-          data: normalizedList,
-          source: 'supabase',
-          table: activeTable
-        });
+      if (search) {
+        const q = search.toLowerCase();
+        normalizedList = normalizedList.filter(
+          (i) =>
+            (i.first_name || '').toLowerCase().includes(q) ||
+            (i.last_name || '').toLowerCase().includes(q) ||
+            (i.email || '').toLowerCase().includes(q) ||
+            (i.cnic || '').toLowerCase().includes(q) ||
+            (i.active_whatsapp_number || '').toLowerCase().includes(q) ||
+            (i.referral_code || '').toLowerCase().includes(q)
+        );
       }
 
       return res.status(200).json({
         success: true,
-        total: 0,
-        data: [],
-        source: 'empty'
+        total: normalizedList.length,
+        data: normalizedList,
+        source: 'supabase'
       });
     }
 

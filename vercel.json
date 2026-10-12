@@ -20,6 +20,30 @@
       "destination": "/api/auth"
     },
     {
+      "source": "/api/success-stories/:path*",
+      "destination": "/api/success-stories"
+    },
+    {
+      "source": "/api/success-stories",
+      "destination": "/api/success-stories"
+    },
+    {
+      "source": "/api/blogs/:path*",
+      "destination": "/api/blogs"
+    },
+    {
+      "source": "/api/blogs",
+      "destination": "/api/blogs"
+    },
+    {
+      "source": "/api/upload/:path*",
+      "destination": "/api/upload"
+    },
+    {
+      "source": "/api/upload",
+      "destination": "/api/upload"
+    },
+    {
       "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
