@@ -1,8 +1,76 @@
 import { put } from '@vercel/blob';
 import { handleUpload } from '@vercel/blob/client';
-import { getSupabase, uploadToSupabaseStorage, loadLocalEnv } from './db.ts';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-loadLocalEnv();
+let cachedClient: SupabaseClient | null = null;
+
+function getSupabase(): { client: SupabaseClient } | null {
+  if (cachedClient) return { client: cachedClient };
+
+  const url =
+    process.env.SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.VITE_SUPABASE_URL;
+
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_KEY ||
+    process.env.SUPABASE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !key) return null;
+
+  try {
+    const cleanUrl = url.replace(/['"]+/g, '').trim();
+    const cleanKey = key.replace(/['"]+/g, '').trim();
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) return null;
+    cachedClient = createClient(cleanUrl, cleanKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
+    });
+    return { client: cachedClient };
+  } catch (e) {
+    console.error('[upload] Supabase client initialization exception:', e);
+    return null;
+  }
+}
+
+async function uploadToSupabaseStorage(
+  filename: string,
+  buffer: Buffer,
+  contentType: string,
+  folder = 'thumbnails'
+): Promise<string> {
+  const supabaseInfo = getSupabase();
+  if (!supabaseInfo) {
+    throw new Error('Supabase client is not configured.');
+  }
+
+  const { client } = supabaseInfo;
+  const cleanFilename = filename.replace(/[^a-zA-Z0-9._-]/g, '_');
+  const filePath = `${folder}/${Date.now()}-${cleanFilename}`;
+
+  try {
+    await client.storage.createBucket('media', { public: true });
+  } catch {}
+
+  const { error: uploadError } = await client.storage
+    .from('media')
+    .upload(filePath, buffer, { contentType, upsert: true });
+
+  if (uploadError) {
+    throw new Error(`Supabase storage upload error: ${uploadError.message}`);
+  }
+
+  const { data: publicUrlData } = client.storage.from('media').getPublicUrl(filePath);
+  if (!publicUrlData?.publicUrl) {
+    throw new Error('Failed to retrieve public URL from Supabase storage.');
+  }
+
+  return publicUrlData.publicUrl;
+}
 
 async function parseBody(req: any) {
   if (req.body) {

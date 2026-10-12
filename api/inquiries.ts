@@ -1,6 +1,45 @@
-import { getSupabase, loadLocalEnv } from './db.ts';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
-loadLocalEnv();
+let cachedClient: SupabaseClient | null = null;
+
+function getSupabase(): { client: SupabaseClient } | null {
+  if (cachedClient) return { client: cachedClient };
+
+  const url =
+    process.env.SUPABASE_URL ||
+    process.env.NEXT_PUBLIC_SUPABASE_URL ||
+    process.env.VITE_SUPABASE_URL;
+
+  const key =
+    process.env.SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_SERVICE_ROLE_KEY ||
+    process.env.VITE_SUPABASE_ANON_KEY ||
+    process.env.VITE_SUPABASE_KEY ||
+    process.env.SUPABASE_KEY ||
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+  if (!url || !key) {
+    return null;
+  }
+
+  try {
+    const cleanUrl = url.replace(/['"]+/g, '').trim();
+    const cleanKey = key.replace(/['"]+/g, '').trim();
+
+    if (!cleanUrl.startsWith('http://') && !cleanUrl.startsWith('https://')) {
+      return null;
+    }
+
+    cachedClient = createClient(cleanUrl, cleanKey, {
+      auth: { autoRefreshToken: false, persistSession: false }
+    });
+    return { client: cachedClient };
+  } catch (e) {
+    console.error('[inquiries] Supabase client initialization exception:', e);
+    return null;
+  }
+}
 
 export interface InquiryRecord {
   id: number;
