@@ -1,13 +1,12 @@
-﻿{
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
   "framework": "vite",
   "buildCommand": "npm run build",
   "outputDirectory": "dist",
   "functions": {
-    "api/inquiries.ts": { "runtime": "nodejs22.x" },
-    "api/auth.ts": { "runtime": "nodejs22.x" },
-    "api/success-stories.ts": { "runtime": "nodejs22.x" },
-    "api/blogs.ts": { "runtime": "nodejs22.x" },
-    "api/upload.ts": { "runtime": "nodejs22.x" }
+    "api/*.ts": {
+      "runtime": "nodejs22.x"
+    }
   },
   "rewrites": [
     { "source": "/api/inquiries/:path*", "destination": "/api/inquiries" },
