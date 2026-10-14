@@ -34,7 +34,7 @@ export const Team: React.FC = () => {
     {
       name: 'Talal Fayyaz',
       role: 'SEO & Content',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Aneeqa-scaled.webp'
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/talal.jpeg'
     },
     {
       name: 'Aliyan Khan',
