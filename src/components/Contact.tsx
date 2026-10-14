@@ -151,7 +151,7 @@ export const Contact: React.FC<ContactProps> = () => {
                 />
               </div>
 
-              <div>
+              <div style={{ display: 'none' }}>
                 <select
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}

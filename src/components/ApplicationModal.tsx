@@ -57,12 +57,12 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
       newErrors.email = 'Enter a valid email address';
     }
     if (!formData.whatsapp.trim()) newErrors.whatsapp = 'Active WhatsApp Number is required';
-    if (!formData.emergencyContactName.trim()) {
+    /*if (!formData.emergencyContactName.trim()) {
       newErrors.emergencyContactName = 'Guardian / Emergency Contact Name is required';
     }
     if (!formData.emergencyContactPhone.trim()) {
       newErrors.emergencyContactPhone = 'Guardian / Emergency Phone Line is required';
-    }
+    }*/
     if (!formData.academicStatus) {
       newErrors.academicStatus = 'Please select Academic Status';
     }
@@ -251,14 +251,14 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
 
               {/* 4. Guardian / Emergency Contact Name & Phone Line */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
+                <div style={{ display: 'none' }}>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
                     Guardian / Emergency Contact Name *
                   </label>
                   <input
                     type="text"
                     placeholder="Guardian / Emergency Contact Name"
-                    value={formData.emergencyContactName}
+                    value={formData.emergencyContactName + 'none'}
                     onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
                   />
@@ -274,7 +274,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                   <input
                     type="tel"
                     placeholder="Guardian / Emergency Phone Line"
-                    value={formData.emergencyContactPhone}
+                    value={formData.emergencyContactPhone + 'none'}
                     onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
                   />
@@ -337,7 +337,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
               </div>
 
               {/* 7. Referral Code */}
-              <div>
+              <div style={{ display: 'none' }}>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
                   Referral Code (Optional)
                 </label>

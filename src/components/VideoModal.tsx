@@ -53,7 +53,7 @@ export const VideoModal: React.FC<VideoModalProps> = ({
               {tagline || 'Vibe Academy Video'}
             </span>
             <h3 className="text-sm sm:text-base font-bold text-white">
-              {title}
+              {''}
             </h3>
           </div>
 

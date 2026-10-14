@@ -82,21 +82,19 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
               <div className="flex items-center bg-[#F2F2F2] p-1 rounded-full border border-black/10 self-start sm:self-auto">
                 <button
                   onClick={() => setPricingPlan('monthly')}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all uppercase tracking-wider cursor-pointer ${
-                    pricingPlan === 'monthly'
-                      ? 'bg-black text-white shadow-md'
-                      : 'text-[#666666] hover:text-black'
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all uppercase tracking-wider cursor-pointer ${pricingPlan === 'monthly'
+                    ? 'bg-black text-white shadow-md'
+                    : 'text-[#666666] hover:text-black'
+                    }`}
                 >
                   Monthly Tier
                 </button>
                 <button
                   onClick={() => setPricingPlan('bundle')}
-                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all uppercase tracking-wider cursor-pointer ${
-                    pricingPlan === 'bundle'
-                      ? 'bg-black text-white shadow-md'
-                      : 'text-[#666666] hover:text-black'
-                  }`}
+                  className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all uppercase tracking-wider cursor-pointer ${pricingPlan === 'bundle'
+                    ? 'bg-black text-white shadow-md'
+                    : 'text-[#666666] hover:text-black'
+                    }`}
                 >
                   Total Bundle
                 </button>
@@ -112,8 +110,8 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
                   </span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-base sm:text-lg font-normal text-[#555555]">PKR</span>
-                    <span className="text-lg sm:text-xl font-normal text-black tracking-tight">
-                      8,500
+                    <span className="text-lg sm:text-xl font-normal text-black tracking-tight" style={{ fontSize: '70px' }}>
+                      6,000
                     </span>
                     <span className="text-sm text-[#777777]">/ Month</span>
                   </div>
@@ -153,11 +151,14 @@ export const Modules: React.FC<ModulesProps> = ({ onOpenApply }) => {
                   </span>
                   <div className="flex items-baseline gap-2">
                     <span className="text-base sm:text-lg font-normal text-[#555555]">PKR</span>
-                    <span className="text-lg sm:text-xl font-normal text-black tracking-tight">
-                      25,500
+                    <span className="text-lg sm:text-xl font-normal text-black tracking-tight" style={{ fontSize: '70px' }}>
+                      16,500
                     </span>
                     <span className="text-sm text-[#777777]">/ Total Bundle</span>
                   </div>
+
+
+
                   <p className="text-xs sm:text-sm text-[#666666] pt-2">
                     Limited seats available for Batch 1. BIC Lab capacity capped
                   </p>

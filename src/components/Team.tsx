@@ -9,7 +9,7 @@ export const Team: React.FC = () => {
     {
       name: 'Ijlal Khan',
       role: 'Founder Vibe Academy',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/04/file.jpg'
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/WhatsApp-Image-2026-05-22-at-1.13.04-PM.jpeg'
     },
     {
       name: 'Muhammad Adil',
@@ -22,19 +22,29 @@ export const Team: React.FC = () => {
       img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Mazhar.webp'
     },
     {
-      name: 'Aneeqa Jadoon',
+      name: 'Saman Zeb',
       role: 'Socail Media Manager',
       img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Aneeqa-scaled.webp'
     },
     {
-      name: 'Naveed Rehman',
+      name: 'Rukhsar Adil',
       role: 'Operational Desk',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/04/file.webp'
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Aneeqa-scaled.webp'
     },
     {
-      name: 'Zeeshan Tariq',
+      name: 'Talal Fayyaz',
       role: 'SEO & Content',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/04/file.jpg'
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Aneeqa-scaled.webp'
+    },
+    {
+      name: 'Aliyan Khan',
+      role: 'SEO & Content',
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Aneeqa-scaled.webp'
+    },
+    {
+      name: 'Haris Khan',
+      role: 'SEO & Content',
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Aneeqa-scaled.webp'
     }
   ];
 
