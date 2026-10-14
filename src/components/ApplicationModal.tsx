@@ -267,7 +267,7 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                   )}
                 </div>
 
-                <div>
+                <div style={{ display: 'none' }}>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
                     Guardian / Emergency Phone Line *
                   </label>
