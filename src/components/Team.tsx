@@ -39,12 +39,12 @@ export const Team: React.FC = () => {
     {
       name: 'Aliyan Khan',
       role: 'SEO & Content',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Aneeqa-scaled.webp'
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/04/aliyan.jpeg'
     },
     {
       name: 'Haris Khan',
       role: 'SEO & Content',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/Aneeqa-scaled.webp'
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/04/haris.jpeg'
     }
   ];
 
