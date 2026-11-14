@@ -11,8 +11,11 @@ export interface Inquiry {
   email: string;
   active_whatsapp_number: string;
   phone?: string;
+  guardian_name: string | null;
+  guardian_number: string | null;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
+  selected_timing: string | null;
   academic_status: string | null;
   programming_background: string | null;
   referral_code: string | null;
@@ -41,8 +44,9 @@ export class InquiriesService {
     const cnic = (dto.cnic || '').trim();
     const email = (dto.email || '').trim();
     const whatsapp = (dto.active_whatsapp_number || dto.whatsapp || '').trim();
-    const emergencyName = (dto.emergency_contact_name || dto.emergencyContactName || '').trim() || null;
-    const emergencyPhone = (dto.emergency_contact_phone || dto.emergencyContactPhone || '').trim() || null;
+    const guardianName = (dto.guardian_name || dto.guardianName || dto.emergency_contact_name || dto.emergencyContactName || '').trim() || null;
+    const guardianNumber = (dto.guardian_number || dto.guardianNumber || dto.emergency_contact_phone || dto.emergencyContactPhone || '').trim() || null;
+    const selectedTiming = (dto.selected_timing || dto.selectedTiming || dto.timing || '').trim() || null;
     const academicStatus = (dto.academic_status || dto.academicStatus || '').trim() || null;
     const programmingBackground = (dto.programming_background || dto.programmingBackground || '').trim() || null;
     const referralCode = (dto.referral_code || dto.referralCode || '').trim() || null;
@@ -62,8 +66,11 @@ export class InquiriesService {
         email,
         active_whatsapp_number: whatsapp,
         phone: whatsapp,
-        emergency_contact_name: emergencyName,
-        emergency_contact_phone: emergencyPhone,
+        guardian_name: guardianName,
+        guardian_number: guardianNumber,
+        emergency_contact_name: guardianName,
+        emergency_contact_phone: guardianNumber,
+        selected_timing: selectedTiming,
         academic_status: academicStatus,
         programming_background: programmingBackground,
         referral_code: referralCode,
@@ -92,8 +99,11 @@ export class InquiriesService {
         cnic,
         email,
         whatsapp,
-        emergencyContactName: emergencyName,
-        emergencyContactPhone: emergencyPhone,
+        guardianName,
+        guardianNumber,
+        emergencyContactName: guardianName,
+        emergencyContactPhone: guardianNumber,
+        selectedTiming,
         academicStatus,
         programmingBackground,
         referralCode,
@@ -113,7 +123,7 @@ export class InquiriesService {
     if (query?.search && query.search.trim()) {
       const searchTerm = query.search.trim();
       qb = qb.or(
-        `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,cnic.ilike.%${searchTerm}%,active_whatsapp_number.ilike.%${searchTerm}%,referral_code.ilike.%${searchTerm}%`,
+        `first_name.ilike.%${searchTerm}%,last_name.ilike.%${searchTerm}%,email.ilike.%${searchTerm}%,cnic.ilike.%${searchTerm}%,active_whatsapp_number.ilike.%${searchTerm}%,guardian_name.ilike.%${searchTerm}%,guardian_number.ilike.%${searchTerm}%,selected_timing.ilike.%${searchTerm}%,referral_code.ilike.%${searchTerm}%`,
       );
     }
 

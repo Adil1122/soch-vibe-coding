@@ -13,8 +13,9 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
     cnic: '',
     email: '',
     whatsapp: '',
-    emergencyContactName: '',
-    emergencyContactPhone: '',
+    guardianName: '',
+    guardianNumber: '',
+    selectedTiming: '',
     academicStatus: '',
     programmingBackground: '',
     referralCode: '',
@@ -57,12 +58,15 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
       newErrors.email = 'Enter a valid email address';
     }
     if (!formData.whatsapp.trim()) newErrors.whatsapp = 'Active WhatsApp Number is required';
-    /*if (!formData.emergencyContactName.trim()) {
-      newErrors.emergencyContactName = 'Guardian / Emergency Contact Name is required';
+    if (!formData.guardianName.trim()) {
+      newErrors.guardianName = 'Guardian Name is required';
     }
-    if (!formData.emergencyContactPhone.trim()) {
-      newErrors.emergencyContactPhone = 'Guardian / Emergency Phone Line is required';
-    }*/
+    if (!formData.guardianNumber.trim()) {
+      newErrors.guardianNumber = 'Guardian Number is required';
+    }
+    if (!formData.selectedTiming) {
+      newErrors.selectedTiming = 'Please select a timing';
+    }
     if (!formData.academicStatus) {
       newErrors.academicStatus = 'Please select Academic Status';
     }
@@ -92,8 +96,11 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
           cnic: formData.cnic,
           email: formData.email,
           active_whatsapp_number: formData.whatsapp,
-          emergency_contact_name: formData.emergencyContactName,
-          emergency_contact_phone: formData.emergencyContactPhone,
+          guardian_name: formData.guardianName,
+          guardian_number: formData.guardianNumber,
+          emergency_contact_name: formData.guardianName,
+          emergency_contact_phone: formData.guardianNumber,
+          selected_timing: formData.selectedTiming,
           academic_status: formData.academicStatus,
           programming_background: formData.programmingBackground,
           referral_code: formData.referralCode,
@@ -249,39 +256,61 @@ export const ApplicationModal: React.FC<ApplicationModalProps> = ({ isOpen, onCl
                 </div>
               </div>
 
-              {/* 4. Guardian / Emergency Contact Name & Phone Line */}
+              {/* 4. Guardian Name & Guardian Number */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div style={{ display: 'none' }}>
+                <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
-                    Guardian / Emergency Contact Name *
+                    Guardian Name *
                   </label>
                   <input
                     type="text"
-                    placeholder="Guardian / Emergency Contact Name"
-                    value={formData.emergencyContactName + 'none'}
-                    onChange={(e) => setFormData({ ...formData, emergencyContactName: e.target.value })}
+                    placeholder="Guardian Name"
+                    value={formData.guardianName}
+                    onChange={(e) => setFormData({ ...formData, guardianName: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
                   />
-                  {errors.emergencyContactName && (
-                    <p className="text-xs text-red-400 mt-1">{errors.emergencyContactName}</p>
+                  {errors.guardianName && (
+                    <p className="text-xs text-red-400 mt-1">{errors.guardianName}</p>
                   )}
                 </div>
 
-                <div style={{ display: 'none' }}>
+                <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
-                    Guardian / Emergency Phone Line *
+                    Guardian Number *
                   </label>
                   <input
                     type="tel"
-                    placeholder="Guardian / Emergency Phone Line"
-                    value={formData.emergencyContactPhone + 'none'}
-                    onChange={(e) => setFormData({ ...formData, emergencyContactPhone: e.target.value })}
+                    placeholder="Guardian Number"
+                    value={formData.guardianNumber}
+                    onChange={(e) => setFormData({ ...formData, guardianNumber: e.target.value })}
                     className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white placeholder-white/40 focus:outline-none focus:border-[#78daeb] text-sm"
                   />
-                  {errors.emergencyContactPhone && (
-                    <p className="text-xs text-red-400 mt-1">{errors.emergencyContactPhone}</p>
+                  {errors.guardianNumber && (
+                    <p className="text-xs text-red-400 mt-1">{errors.guardianNumber}</p>
                   )}
                 </div>
+              </div>
+
+              {/* 5. Select Timing */}
+              <div>
+                <label className="block text-xs font-semibold uppercase tracking-wider text-white/70 mb-1.5">
+                  Select Timing *
+                </label>
+                <select
+                  value={formData.selectedTiming}
+                  onChange={(e) => setFormData({ ...formData, selectedTiming: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-black/60 border border-white/20 text-white focus:outline-none focus:border-[#78daeb] text-sm cursor-pointer"
+                >
+                  <option value="" className="bg-[#121212] text-white/50">- Select Timing -</option>
+                  <option value="12:00pm" className="bg-[#121212] text-white">12:00pm</option>
+                  <option value="1:00pm" className="bg-[#121212] text-white">1:00pm</option>
+                  <option value="2:00pm" className="bg-[#121212] text-white">2:00pm</option>
+                  <option value="3:00pm" className="bg-[#121212] text-white">3:00pm</option>
+                  <option value="4:00pm" className="bg-[#121212] text-white">4:00pm</option>
+                </select>
+                {errors.selectedTiming && (
+                  <p className="text-xs text-red-400 mt-1">{errors.selectedTiming}</p>
+                )}
               </div>
 
               {/* 5. Academic Status Category */}

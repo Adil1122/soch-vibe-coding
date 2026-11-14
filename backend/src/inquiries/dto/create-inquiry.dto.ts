@@ -11,6 +11,13 @@ export class CreateInquiryDto {
   emergencyContactName?: string;
   emergency_contact_phone?: string;
   emergencyContactPhone?: string;
+  guardian_name?: string;
+  guardianName?: string;
+  guardian_number?: string;
+  guardianNumber?: string;
+  selected_timing?: string;
+  selectedTiming?: string;
+  timing?: string;
   academic_status?: string;
   academicStatus?: string;
   programming_background?: string;

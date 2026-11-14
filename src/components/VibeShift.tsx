@@ -129,18 +129,14 @@ export const VibeShift: React.FC = () => {
               </div>
             </div>
 
-            {/* Right Column: Article Details */}
-            <div className="md:col-span-6 space-y-4 text-left">
+            {/* Right Column: Blog Name + Read More */}
+            <div className="md:col-span-6 space-y-5 text-left">
               <h3 className="text-xl sm:text-2xl md:text-[26px] font-bold text-black leading-[1.3] tracking-tight">
                 {currentSlide.title}
               </h3>
 
-              <p className="text-base sm:text-[17px] text-[#444444] leading-relaxed font-normal pt-1">
-                {currentSlide.desc}
-              </p>
-
               {/* Read More button - Transparent with gradient border */}
-              <div className="pt-3">
+              <div className="pt-1">
                 <button
                   onClick={() => setSelectedPost(currentSlide)}
                   className="vibe-btn-light !px-7 !py-2.5 !text-xs sm:!text-sm font-semibold uppercase tracking-wider"
@@ -201,13 +197,7 @@ export const VibeShift: React.FC = () => {
             </div>
 
             <div className="text-base text-[#333333] leading-relaxed space-y-4">
-              <p>{selectedPost.desc}</p>
-              <p>
-                In the new paradigm of software development, engineering velocity is augmented by conversational reasoning models and precision steering. Developers who understand software architecture and combine it with AI orchestration achieve unprecedented build velocity.
-              </p>
-              <div className="p-4 rounded-2xl bg-[#f5f5f5] border border-black/5 text-sm text-[#222222] italic">
-                "Vibe coding is not about knowing less computer science; it’s about directing more computational power per thought."
-              </div>
+              <p className="whitespace-pre-line">{selectedPost.desc}</p>
             </div>
 
             <div className="pt-4 border-t border-black/10 flex justify-end">

@@ -49,8 +49,11 @@ export interface InquiryRecord {
   email: string;
   active_whatsapp_number: string;
   phone?: string;
+  guardian_name: string | null;
+  guardian_number: string | null;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
+  selected_timing: string | null;
   academic_status: string | null;
   programming_background: string | null;
   referral_code: string | null;
@@ -69,6 +72,9 @@ function normalizeInquiry(row: any): InquiryRecord {
   const rawStatus = String(row.payment_status || row.paymentStatus || row.status || 'Unpaid').toLowerCase();
   const paymentStatus: 'Paid' | 'Unpaid' = rawStatus.includes('paid') && !rawStatus.includes('un') ? 'Paid' : 'Unpaid';
   const createdAt = row.created_at || row.createdAt || row.inserted_at || new Date().toISOString();
+  const guardianName = row.guardian_name || row.guardianName || row.emergency_contact_name || row.emergencyContactName || null;
+  const guardianNumber = row.guardian_number || row.guardianNumber || row.emergency_contact_phone || row.emergencyContactPhone || null;
+  const selectedTiming = row.selected_timing || row.selectedTiming || row.timing || null;
 
   return {
     id: Number(row.id) || 1,
@@ -78,8 +84,11 @@ function normalizeInquiry(row: any): InquiryRecord {
     email: String(email),
     active_whatsapp_number: String(phone),
     phone: String(phone),
-    emergency_contact_name: row.emergency_contact_name || row.emergencyContactName || null,
-    emergency_contact_phone: row.emergency_contact_phone || row.emergencyContactPhone || null,
+    guardian_name: guardianName,
+    guardian_number: guardianNumber,
+    emergency_contact_name: row.emergency_contact_name || row.emergencyContactName || guardianName,
+    emergency_contact_phone: row.emergency_contact_phone || row.emergencyContactPhone || guardianNumber,
+    selected_timing: selectedTiming,
     academic_status: row.academic_status || row.academicStatus || null,
     programming_background: row.programming_background || row.programmingBackground || null,
     referral_code: row.referral_code || row.referralCode || null,
@@ -300,8 +309,28 @@ export default async function handler(req: any, res: any) {
         updateData.active_whatsapp_number = phone;
         updateData.phone = phone;
       }
-      if (body.emergency_contact_name !== undefined) updateData.emergency_contact_name = body.emergency_contact_name ? String(body.emergency_contact_name).trim() : null;
-      if (body.emergency_contact_phone !== undefined) updateData.emergency_contact_phone = body.emergency_contact_phone ? String(body.emergency_contact_phone).trim() : null;
+      if (body.guardian_name !== undefined) {
+        const gName = body.guardian_name ? String(body.guardian_name).trim() : null;
+        updateData.guardian_name = gName;
+        updateData.emergency_contact_name = gName;
+      } else if (body.emergency_contact_name !== undefined) {
+        const eName = body.emergency_contact_name ? String(body.emergency_contact_name).trim() : null;
+        updateData.emergency_contact_name = eName;
+        updateData.guardian_name = eName;
+      }
+      if (body.guardian_number !== undefined) {
+        const gNum = body.guardian_number ? String(body.guardian_number).trim() : null;
+        updateData.guardian_number = gNum;
+        updateData.emergency_contact_phone = gNum;
+      } else if (body.emergency_contact_phone !== undefined) {
+        const ePhone = body.emergency_contact_phone ? String(body.emergency_contact_phone).trim() : null;
+        updateData.emergency_contact_phone = ePhone;
+        updateData.guardian_number = ePhone;
+      }
+      if (body.selected_timing !== undefined || body.timing !== undefined) {
+        const timingVal = body.selected_timing ?? body.timing;
+        updateData.selected_timing = timingVal ? String(timingVal).trim() : null;
+      }
       if (body.academic_status !== undefined) updateData.academic_status = body.academic_status ? String(body.academic_status).trim() : null;
       if (body.programming_background !== undefined) updateData.programming_background = body.programming_background ? String(body.programming_background).trim() : null;
       if (body.referral_code !== undefined) updateData.referral_code = body.referral_code ? String(body.referral_code).trim() : null;
@@ -382,8 +411,9 @@ export default async function handler(req: any, res: any) {
       const cnic = (body.cnic || '').trim();
       const email = (body.email || '').trim();
       const whatsapp = (body.active_whatsapp_number || body.whatsapp || body.phone || '').trim();
-      const emergencyName = (body.emergency_contact_name || body.emergencyContactName || '').trim() || null;
-      const emergencyPhone = (body.emergency_contact_phone || body.emergencyContactPhone || '').trim() || null;
+      const guardianName = (body.guardian_name || body.guardianName || body.emergency_contact_name || body.emergencyContactName || '').trim() || null;
+      const guardianNumber = (body.guardian_number || body.guardianNumber || body.emergency_contact_phone || body.emergencyContactPhone || '').trim() || null;
+      const selectedTiming = (body.selected_timing || body.selectedTiming || body.timing || '').trim() || null;
       const academicStatus = (body.academic_status || body.academicStatus || '').trim() || null;
       const programmingBackground = (body.programming_background || body.programmingBackground || '').trim() || null;
       const referralCode = (body.referral_code || body.referralCode || '').trim() || null;
@@ -404,8 +434,11 @@ export default async function handler(req: any, res: any) {
         email,
         active_whatsapp_number: whatsapp || 'N/A',
         phone: whatsapp || 'N/A',
-        emergency_contact_name: emergencyName,
-        emergency_contact_phone: emergencyPhone,
+        guardian_name: guardianName,
+        guardian_number: guardianNumber,
+        emergency_contact_name: guardianName,
+        emergency_contact_phone: guardianNumber,
+        selected_timing: selectedTiming,
         academic_status: academicStatus,
         programming_background: programmingBackground,
         referral_code: referralCode,
@@ -502,6 +535,9 @@ export default async function handler(req: any, res: any) {
             (i.email || '').toLowerCase().includes(q) ||
             (i.cnic || '').toLowerCase().includes(q) ||
             (i.active_whatsapp_number || '').toLowerCase().includes(q) ||
+            (i.guardian_name || '').toLowerCase().includes(q) ||
+            (i.guardian_number || '').toLowerCase().includes(q) ||
+            (i.selected_timing || '').toLowerCase().includes(q) ||
             (i.referral_code || '').toLowerCase().includes(q)
         );
       }

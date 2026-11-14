@@ -48,8 +48,11 @@ export interface InquiryRecord {
   email: string;
   active_whatsapp_number: string;
   phone?: string;
+  guardian_name?: string | null;
+  guardian_number?: string | null;
   emergency_contact_name: string | null;
   emergency_contact_phone: string | null;
+  selected_timing?: string | null;
   academic_status: string | null;
   programming_background: string | null;
   referral_code: string | null;
@@ -586,8 +589,9 @@ export const AdminDashboard: React.FC = () => {
       'CNIC',
       'Email',
       'WhatsApp Number',
-      'Emergency Contact Name',
-      'Emergency Contact Phone',
+      'Guardian Name',
+      'Guardian Number',
+      'Selected Timing',
       'Academic Status',
       'Programming Background',
       'Referral Code',
@@ -603,8 +607,9 @@ export const AdminDashboard: React.FC = () => {
       `"${i.cnic}"`,
       `"${i.email}"`,
       `"${i.active_whatsapp_number || i.phone || ''}"`,
-      `"${i.emergency_contact_name || ''}"`,
-      `"${i.emergency_contact_phone || ''}"`,
+      `"${i.guardian_name || i.emergency_contact_name || ''}"`,
+      `"${i.guardian_number || i.emergency_contact_phone || ''}"`,
+      `"${i.selected_timing || ''}"`,
       `"${i.academic_status || ''}"`,
       `"${i.programming_background || ''}"`,
       `"${i.referral_code || ''}"`,
@@ -626,7 +631,13 @@ export const AdminDashboard: React.FC = () => {
 
   // Copy Schema SQL
   const handleCopySql = () => {
-    const sqlText = `-- Create success_stories table
+    const sqlText = `-- Add Guardian & Timing columns to inquiries table
+ALTER TABLE public.inquiries
+  ADD COLUMN IF NOT EXISTS guardian_name TEXT,
+  ADD COLUMN IF NOT EXISTS guardian_number TEXT,
+  ADD COLUMN IF NOT EXISTS selected_timing TEXT;
+
+-- Create success_stories table
 CREATE TABLE IF NOT EXISTS public.success_stories (
   id BIGSERIAL PRIMARY KEY,
   student_name TEXT NOT NULL,
@@ -681,6 +692,9 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
           (i.email || '').toLowerCase().includes(q) ||
           (i.cnic || '').toLowerCase().includes(q) ||
           (i.active_whatsapp_number || '').toLowerCase().includes(q) ||
+          (i.guardian_name || i.emergency_contact_name || '').toLowerCase().includes(q) ||
+          (i.guardian_number || i.emergency_contact_phone || '').toLowerCase().includes(q) ||
+          (i.selected_timing || '').toLowerCase().includes(q) ||
           (i.referral_code || '').toLowerCase().includes(q)
         );
       })
@@ -1081,6 +1095,11 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
                                 <div className="text-[11px] text-white/50 truncate">
                                   {inquiry.programming_background || '—'}
                                 </div>
+                                {inquiry.selected_timing && (
+                                  <div className="text-[11px] text-[#78daeb] font-mono">
+                                    Timing: {inquiry.selected_timing}
+                                  </div>
+                                )}
                               </div>
                             </td>
 
@@ -1525,7 +1544,13 @@ CREATE POLICY "Allow full access on blogs" ON public.blogs FOR ALL USING (true) 
                 </p>
 
                 <div className="p-3.5 rounded-xl bg-black border border-white/15 overflow-x-auto text-[11px] font-mono text-white/80 max-h-[340px] overflow-y-auto space-y-2">
-                  <pre>{`-- Table: success_stories (Cohort 01 Videos)
+                  <pre>{`-- Alter inquiries table for Guardian & Timing
+ALTER TABLE public.inquiries
+  ADD COLUMN IF NOT EXISTS guardian_name TEXT,
+  ADD COLUMN IF NOT EXISTS guardian_number TEXT,
+  ADD COLUMN IF NOT EXISTS selected_timing TEXT;
+
+-- Table: success_stories (Cohort 01 Videos)
 CREATE TABLE IF NOT EXISTS public.success_stories (
   id BIGSERIAL PRIMARY KEY,
   student_name TEXT NOT NULL,
@@ -1629,12 +1654,16 @@ CREATE POLICY "Allow full access on blogs"
                 <span className="text-white font-medium">{selectedInquiry.programming_background || '—'}</span>
               </div>
               <div className="p-3.5 rounded-xl bg-white/5 space-y-1">
-                <span className="text-white/40 block">Emergency Contact</span>
+                <span className="text-white/40 block">Guardian Name &amp; Number</span>
                 <span className="text-white font-medium">
-                  {selectedInquiry.emergency_contact_name || '—'} ({selectedInquiry.emergency_contact_phone || 'N/A'})
+                  {selectedInquiry.guardian_name || selectedInquiry.emergency_contact_name || '—'} ({selectedInquiry.guardian_number || selectedInquiry.emergency_contact_phone || 'N/A'})
                 </span>
               </div>
               <div className="p-3.5 rounded-xl bg-white/5 space-y-1">
+                <span className="text-white/40 block">Selected Timing</span>
+                <span className="text-[#78daeb] font-mono font-medium">{selectedInquiry.selected_timing || '—'}</span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-white/5 space-y-1 sm:col-span-2">
                 <span className="text-white/40 block">Referral Code</span>
                 <span className="text-[#78daeb] font-mono">{selectedInquiry.referral_code || 'None'}</span>
               </div>
@@ -1790,23 +1819,51 @@ CREATE POLICY "Allow full access on blogs"
               </div>
 
               <div>
-                <label className="block text-white/70 mb-1 font-semibold">Emergency Contact Name</label>
+                <label className="block text-white/70 mb-1 font-semibold">Guardian Name</label>
                 <input
                   type="text"
-                  value={editingInquiry.emergency_contact_name || ''}
-                  onChange={(e) => setEditingInquiry({ ...editingInquiry, emergency_contact_name: e.target.value })}
+                  value={editingInquiry.guardian_name ?? editingInquiry.emergency_contact_name ?? ''}
+                  onChange={(e) =>
+                    setEditingInquiry({
+                      ...editingInquiry,
+                      guardian_name: e.target.value,
+                      emergency_contact_name: e.target.value
+                    })
+                  }
                   className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-white focus:outline-none focus:border-[#78daeb]"
                 />
               </div>
 
               <div>
-                <label className="block text-white/70 mb-1 font-semibold">Emergency Contact Phone</label>
+                <label className="block text-white/70 mb-1 font-semibold">Guardian Number</label>
                 <input
                   type="text"
-                  value={editingInquiry.emergency_contact_phone || ''}
-                  onChange={(e) => setEditingInquiry({ ...editingInquiry, emergency_contact_phone: e.target.value })}
+                  value={editingInquiry.guardian_number ?? editingInquiry.emergency_contact_phone ?? ''}
+                  onChange={(e) =>
+                    setEditingInquiry({
+                      ...editingInquiry,
+                      guardian_number: e.target.value,
+                      emergency_contact_phone: e.target.value
+                    })
+                  }
                   className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-white focus:outline-none focus:border-[#78daeb]"
                 />
+              </div>
+
+              <div className="sm:col-span-2">
+                <label className="block text-white/70 mb-1 font-semibold">Select Timing</label>
+                <select
+                  value={editingInquiry.selected_timing || ''}
+                  onChange={(e) => setEditingInquiry({ ...editingInquiry, selected_timing: e.target.value })}
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-black/60 border border-white/15 text-white focus:outline-none focus:border-[#78daeb]"
+                >
+                  <option value="">- Select Timing -</option>
+                  <option value="12:00pm">12:00pm</option>
+                  <option value="1:00pm">1:00pm</option>
+                  <option value="2:00pm">2:00pm</option>
+                  <option value="3:00pm">3:00pm</option>
+                  <option value="4:00pm">4:00pm</option>
+                </select>
               </div>
 
               <div className="sm:col-span-2">
