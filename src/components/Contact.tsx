@@ -194,7 +194,7 @@ export const Contact: React.FC<ContactProps> = () => {
             </div>
             <div className="flex items-center gap-2">
               <Phone className="w-3.5 h-3.5 text-[#c9459c] shrink-0" />
-              <span>+92 371 9330600 / 03301584825</span>
+              <span>+92 371 9330600</span>
             </div>
           </div>
         </div>
