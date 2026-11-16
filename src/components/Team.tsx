@@ -9,7 +9,7 @@ export const Team: React.FC = () => {
     {
       name: 'Ijlal Khan',
       role: 'Founder Vibe Academy',
-      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/WhatsApp-Image-2026-05-22-at-1.13.04-PM.jpeg'
+      img: 'https://vibeacademy.info/wp-content/uploads/2026/05/ijlalkhan.jpeg'
     },
     {
       name: 'Muhammad Adil',
