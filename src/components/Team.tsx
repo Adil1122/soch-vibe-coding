@@ -13,7 +13,7 @@ export const Team: React.FC = () => {
     },
     {
       name: 'Muhammad Adil',
-      role: 'co-Founder/ Instructor',
+      role: 'Co-Founder / Instructor',
       img: 'https://vibeacademy.info/wp-content/uploads/2026/04/Adil.webp'
     },
     {

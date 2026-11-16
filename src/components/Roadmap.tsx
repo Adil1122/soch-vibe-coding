@@ -248,16 +248,6 @@ export const Roadmap: React.FC<RoadmapProps> = ({ onOpenApply }) => {
           </div>
         </div>
 
-        {/* Mobile Trophy (positioned directly under the left vertical line, small authentic size matching reference) */}
-        <div className="flex md:hidden relative items-center justify-start pl-1 sm:pl-1.5 pt-3 pb-2" style={{ zIndex: 10 }}>
-          <div className="relative group cursor-pointer flex flex-col items-center">
-            <img
-              src="https://vibeacademy.info/wp-content/uploads/2026/05/Untitled-design-1-1-814x1024.webp"
-              alt="Vibe Academy Haripur Graduation Trophy"
-              className="w-7 sm:w-8 h-auto object-contain drop-shadow-sm transition-transform duration-300 hover:scale-105"
-            />
-          </div>
-        </div>
       </div>
     </section>
   );
